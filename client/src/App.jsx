@@ -189,6 +189,30 @@ function App() {
   const formatSize = (bytes) =>
     bytes < 1024 ? `${bytes} o` : `${(bytes / 1024).toFixed(1)} Ko`;
 
+  const parseColorInput = (str) => {
+    const s = (str || '').trim();
+    const hex6 = s.replace(/^#/, '').match(/^([0-9a-fA-F]{6})$/);
+    if (hex6) return `#${hex6[1].toLowerCase()}`;
+    const hex3 = s.replace(/^#/, '').match(/^([0-9a-fA-F]{3})$/);
+    if (hex3) return `#${hex3[1].replace(/(.)/g, '$1$1').toLowerCase()}`;
+    const rgbMatch = s.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/);
+    if (rgbMatch) {
+      const r = Math.min(255, Math.max(0, parseInt(rgbMatch[1], 10)));
+      const g = Math.min(255, Math.max(0, parseInt(rgbMatch[2], 10)));
+      const b = Math.min(255, Math.max(0, parseInt(rgbMatch[3], 10)));
+      return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
+    return null;
+  };
+
+  const handleHexChange = (key, inputValue) => {
+    const hex = parseColorInput(inputValue);
+    setConfig({
+      ...config,
+      couleurs: { ...config.couleurs, [key]: hex || inputValue },
+    });
+  };
+
   return (
     <div className="app">
       <header>
@@ -535,6 +559,9 @@ function App() {
                 </fieldset>
                 <fieldset>
                   <legend>Palette de couleurs</legend>
+                  <p className="hint" style={{ marginTop: '-0.5rem', marginBottom: '0.75rem' }}>
+                    Sélecteur RGB ou saisie hex (#ff0000) / RGB (rgb(255,0,0))
+                  </p>
                   <div className="palette-grid palette-grid-5">
                     {[
                       { key: 'clair', label: 'Clair (fond)', default: '#ffffff', fallback: ['fond', 'blanc'] },
@@ -543,17 +570,20 @@ function App() {
                       { key: 'secondaire', label: 'Secondaire', default: '#64748b', fallback: [] },
                       { key: 'accent', label: 'Tertiaire', default: '#f59e0b', fallback: [] },
                     ].map(({ key, label, default: def, fallback }) => {
-                      const value = config.couleurs?.[key] ?? fallback.map((f) => config.couleurs?.[f]).find(Boolean) ?? def;
+                      const rawValue = config.couleurs?.[key] ?? fallback.map((f) => config.couleurs?.[f]).find(Boolean) ?? '';
+                      const displayValue = rawValue || def;
+                      const isValidHex = /^#[0-9a-fA-F]{6}$|^#[0-9a-fA-F]{3}$/.test(displayValue);
+                      const pickerValue = isValidHex ? displayValue : def;
                       return (
                       <div key={key} className="palette-item">
                         <label className="palette-swatch-wrap">
                           <span
                             className={`palette-preview ${key === 'clair' ? 'palette-preview-light' : ''}`}
-                            style={{ backgroundColor: value }}
+                            style={{ backgroundColor: isValidHex ? displayValue : def }}
                           />
                           <input
                             type="color"
-                            value={value}
+                            value={pickerValue}
                             onChange={(e) =>
                               setConfig({
                                 ...config,
@@ -561,20 +591,17 @@ function App() {
                               })
                             }
                             className="palette-swatch-input"
+                            title="Sélecteur de couleur"
                           />
                         </label>
                         <span className="palette-label">{label}</span>
                         <input
                           type="text"
-                          value={config.couleurs?.[key] ?? (fallback.map((f) => config.couleurs?.[f]).find(Boolean) ?? '')}
-                          onChange={(e) =>
-                            setConfig({
-                              ...config,
-                              couleurs: { ...config.couleurs, [key]: e.target.value },
-                            })
-                          }
+                          value={rawValue}
+                          onChange={(e) => handleHexChange(key, e.target.value)}
                           className="color-hex"
                           placeholder={def}
+                          title="Code hexadécimal (ex: #ff0000 ou ff0000)"
                         />
                       </div>
                     );
