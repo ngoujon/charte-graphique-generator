@@ -123,6 +123,41 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginBottom: SP.sm,
   },
+  paletteGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SP.lg,
+    marginTop: SP.xl,
+  },
+  paletteCard: {
+    width: 165,
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: BORDER,
+    backgroundColor: '#ffffff',
+  },
+  paletteCardSwatch: {
+    height: 110,
+  },
+  paletteCardBody: {
+    padding: SP.md,
+    backgroundColor: '#fafbfc',
+    borderTopWidth: 1,
+    borderTopColor: BORDER,
+  },
+  paletteCardName: {
+    fontSize: 11,
+    fontFamily: 'Helvetica-Bold',
+    marginBottom: 4,
+    textTransform: 'capitalize',
+  },
+  paletteCardHex: {
+    fontSize: 10,
+    fontFamily: 'Courier',
+    color: MUTED,
+    letterSpacing: 0.5,
+  },
   colorLabel: {
     fontSize: 10,
     color: MUTED,
@@ -419,6 +454,13 @@ function mergeStyles(...args) {
 function hexToRgb(hex) {
   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return m ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) } : null;
+}
+
+function getHexLuminance(hex) {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return 0.5;
+  const [r, g, b] = [rgb.r, rgb.g, rgb.b].map((v) => v / 255);
+  return 0.299 * r + 0.587 * g + 0.114 * b;
 }
 
 function rgbToHex(r, g, b) {
@@ -762,6 +804,43 @@ export async function generatePdf(config, imagePaths, outputPath) {
 
   pages.push(pageLogo);
 
+  const paletteLabels = {
+    clair: 'Fond',
+    sombre: 'Texte',
+    primaire: 'Principale',
+    secondaire: 'Secondaire',
+    accent: 'Tertiaire',
+  };
+
+  const paletteCards = colorEntries.map(([key, hex]) => {
+    const label = paletteLabels[key] || key;
+    const luminance = getHexLuminance(hex);
+    const isLight = luminance > 0.6;
+    const swatchBorder = isLight ? { borderWidth: 1, borderColor: BORDER } : {};
+    return React.createElement(
+      View,
+      { key: key, style: styles.paletteCard },
+      React.createElement(View, {
+        style: mergeStyles(styles.paletteCardSwatch, {
+          backgroundColor: hex,
+          ...swatchBorder,
+        }),
+      }),
+      React.createElement(
+        View,
+        { style: styles.paletteCardBody },
+        React.createElement(Text, {
+          style: mergeStyles(styles.paletteCardName, { color: texte }),
+          children: label,
+        }),
+        React.createElement(Text, {
+          style: styles.paletteCardHex,
+          children: hex,
+        })
+      )
+    );
+  });
+
   const pageCouleurs = React.createElement(
     Page,
     {
@@ -775,33 +854,9 @@ export async function generatePdf(config, imagePaths, outputPath) {
       createSectionHeader(4, 'Palette de couleurs', primaire),
       React.createElement(Text, {
         style: mergeStyles(styles.sectionIntro),
-        children: 'Palette à 5 couleurs : clair, sombre, principale, secondaire, tertiaire',
+        children: 'Les 5 couleurs de la charte graphique',
       }),
-      React.createElement(
-        View,
-        { style: styles.colorRow },
-        ...colorEntries.map(([name, hex]) =>
-          React.createElement(
-            View,
-            { key: name, style: styles.imageItem },
-            React.createElement(View, {
-              style: mergeStyles(styles.colorBox, {
-                backgroundColor: hex,
-                borderWidth: 1,
-                borderColor: BORDER,
-              }),
-            }),
-            React.createElement(Text, {
-              style: styles.colorLabel,
-              children: name,
-            }),
-            React.createElement(Text, {
-              style: mergeStyles(styles.colorLabel, { fontSize: 9 }),
-              children: hex,
-            })
-          )
-        )
-      )
+      React.createElement(View, { style: styles.paletteGrid }, ...paletteCards)
     )
   );
   pages.push(pageCouleurs);
