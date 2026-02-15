@@ -535,25 +535,25 @@ function App() {
                 </fieldset>
                 <fieldset>
                   <legend>Palette de couleurs</legend>
-                  <div className="palette-grid">
+                  <div className="palette-grid palette-grid-5">
                     {[
-                      { key: 'blanc', label: 'Blanc', default: '#ffffff' },
-                      { key: 'noir', label: 'Noir', default: '#000000' },
-                      { key: 'primaire', label: 'Principale', default: '#2563eb' },
-                      { key: 'secondaire', label: 'Secondaire', default: '#64748b' },
-                      { key: 'accent', label: 'Tertiaire', default: '#f59e0b' },
-                      { key: 'fond', label: 'Fond (pages)', default: '#ffffff' },
-                      { key: 'texte', label: 'Texte (corps)', default: '#1e293b' },
-                    ].map(({ key, label, default: def }) => (
+                      { key: 'clair', label: 'Clair (fond)', default: '#f5f5dc', fallback: ['fond', 'blanc'] },
+                      { key: 'sombre', label: 'Sombre (texte)', default: '#1a1a1a', fallback: ['texte', 'noir'] },
+                      { key: 'primaire', label: 'Principale', default: '#2563eb', fallback: [] },
+                      { key: 'secondaire', label: 'Secondaire', default: '#64748b', fallback: [] },
+                      { key: 'accent', label: 'Tertiaire', default: '#f59e0b', fallback: [] },
+                    ].map(({ key, label, default: def, fallback }) => {
+                      const value = config.couleurs?.[key] ?? fallback.map((f) => config.couleurs?.[f]).find(Boolean) ?? def;
+                      return (
                       <div key={key} className="palette-item">
                         <label className="palette-swatch-wrap">
                           <span
-                            className={`palette-preview ${key === 'blanc' ? 'palette-preview-light' : ''}`}
-                            style={{ backgroundColor: config.couleurs?.[key] ?? def }}
+                            className={`palette-preview ${key === 'clair' ? 'palette-preview-light' : ''}`}
+                            style={{ backgroundColor: value }}
                           />
                           <input
                             type="color"
-                            value={config.couleurs?.[key] ?? def}
+                            value={value}
                             onChange={(e) =>
                               setConfig({
                                 ...config,
@@ -566,7 +566,7 @@ function App() {
                         <span className="palette-label">{label}</span>
                         <input
                           type="text"
-                          value={config.couleurs?.[key] ?? ''}
+                          value={config.couleurs?.[key] ?? (fallback.map((f) => config.couleurs?.[f]).find(Boolean) ?? '')}
                           onChange={(e) =>
                             setConfig({
                               ...config,
@@ -577,7 +577,8 @@ function App() {
                           placeholder={def}
                         />
                       </div>
-                    ))}
+                    );
+                    })}
                   </div>
                 </fieldset>
                 </div>

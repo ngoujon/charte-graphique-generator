@@ -91,7 +91,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Helvetica-Bold',
     flex: 1,
-    paddingBottom: SP.sm,
+    lineHeight: 1.4,
+    paddingBottom: SP.md,
+    marginBottom: 0,
     borderBottomWidth: 2,
   },
   sectionIntro: {
@@ -308,11 +310,21 @@ function findLogos(images) {
   const sombre = images.find((i) =>
     /sombre|dark|noir/i.test(i.name)
   );
+  const primaire = images.find((i) =>
+    /primaire|primary|principale/i.test(i.name)
+  );
+  const secondaire = images.find((i) =>
+    /secondaire|secondary/i.test(i.name)
+  );
   const first = images[0];
   const second = images[1];
   return {
     clair: clair || first,
     sombre: sombre || second || first,
+    primaire: primaire || sombre || second || first,
+    secondaire: secondaire || sombre || second || first,
+    hasPrimaire: !!primaire,
+    hasSecondaire: !!secondaire,
   };
 }
 
@@ -331,26 +343,24 @@ export async function generatePdf(config, imagePaths, outputPath) {
     }
   }
 
-  const { clair: logoClair, sombre: logoSombre } = findLogos(images);
+  const { clair: logoClair, sombre: logoSombre, primaire: logoPrimaire, secondaire: logoSecondaire, hasPrimaire, hasSecondaire } = findLogos(images);
   const otherImages = images.filter(
-    (i) => i !== logoClair && i !== logoSombre
+    (i) => i !== logoClair && i !== logoSombre && i !== logoPrimaire && i !== logoSecondaire
   );
 
   const primaire = colors.primaire || '#2563eb';
   const secondaire = colors.secondaire || '#64748b';
-  const fond = colors.fond || '#ffffff';
-  const texte = colors.texte || '#1e293b';
+  const fond = colors.clair || colors.fond || colors.blanc || '#f5f5dc';
+  const texte = colors.sombre || colors.texte || colors.noir || '#1a1a1a';
+  const accent = colors.accent || '#f59e0b';
 
   const colorEntries = [
-    ...Object.entries(colors),
-    ['primaire-clair', lightenHex(primaire, 0.35)],
-    ['primaire-foncé', darkenHex(primaire, 0.2)],
-    ['secondaire-clair', lightenHex(secondaire, 0.35)],
-    ['secondaire-foncé', darkenHex(secondaire, 0.2)],
-  ].filter(([name]) => {
-    const isDeclinaison = ['primaire-clair', 'primaire-foncé', 'secondaire-clair', 'secondaire-foncé'].includes(name);
-    return !isDeclinaison || (name.startsWith('primaire') && colors.primaire) || (name.startsWith('secondaire') && colors.secondaire);
-  });
+    ['clair', fond],
+    ['sombre', texte],
+    ['primaire', primaire],
+    ['secondaire', secondaire],
+    ['accent', accent],
+  ];
   const exempleTitre = typo.exempleTitre || "Titre de l'exemple";
   const exempleSousTitre = typo.exempleSousTitre || 'Sous-titre de l\'exemple';
   const exempleDescription =
@@ -571,6 +581,20 @@ export async function generatePdf(config, imagePaths, outputPath) {
       })
     : createPlaceholderLogo(texte || '#1e293b', fond || '#ffffff');
 
+  const logoPrimaireContent = logoPrimaire
+    ? React.createElement(Image, {
+        src: logoPrimaire.src,
+        style: styles.logoImg,
+      })
+    : createPlaceholderLogo(primaire, '#ffffff');
+
+  const logoSecondaireContent = logoSecondaire
+    ? React.createElement(Image, {
+        src: logoSecondaire.src,
+        style: styles.logoImg,
+      })
+    : createPlaceholderLogo(secondaire, '#ffffff');
+
   logoSectionChildren.push(
     React.createElement(
       View,
@@ -600,7 +624,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
   logoSectionChildren.push(
     React.createElement(
       View,
-      { key: 'sombre-wrap' },
+      { key: 'sombre-wrap', style: { marginBottom: 20 } },
       React.createElement(Text, {
         style: mergeStyles(styles.colorLabel, {
           marginBottom: 8,
@@ -621,6 +645,58 @@ export async function generatePdf(config, imagePaths, outputPath) {
     )
   );
 
+  logoSectionChildren.push(
+    React.createElement(
+      View,
+      { key: 'primaire-wrap', style: { marginBottom: 20 } },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, {
+          marginBottom: 8,
+          fontSize: 11,
+          fontFamily: 'Helvetica-Bold',
+        }),
+        children: hasPrimaire ? 'Logo sur fond couleur principale' : 'Logo primaire — Exemple (remplacez par votre fichier)',
+      }),
+      React.createElement(
+        View,
+        {
+          style: mergeStyles(styles.logoBox, {
+            backgroundColor: primaire,
+            borderWidth: 1,
+            borderColor: BORDER,
+          }),
+        },
+        logoPrimaireContent
+      )
+    )
+  );
+
+  logoSectionChildren.push(
+    React.createElement(
+      View,
+      { key: 'secondaire-wrap' },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, {
+          marginBottom: 8,
+          fontSize: 11,
+          fontFamily: 'Helvetica-Bold',
+        }),
+        children: hasSecondaire ? 'Logo sur fond couleur secondaire' : 'Logo secondaire — Exemple (remplacez par votre fichier)',
+      }),
+      React.createElement(
+        View,
+        {
+          style: mergeStyles(styles.logoBox, {
+            backgroundColor: secondaire,
+            borderWidth: 1,
+            borderColor: BORDER,
+          }),
+        },
+        logoSecondaireContent
+      )
+    )
+  );
+
   const pageLogo = React.createElement(
     Page,
     {
@@ -634,7 +710,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
       createSectionHeader(3, 'Logo — Déclinaisons', primaire),
       React.createElement(Text, {
         style: mergeStyles(styles.sectionIntro),
-        children: 'Versions claire et sombre pour différents contextes d\'utilisation',
+        children: 'Versions claire, sombre, sur couleur principale et sur couleur secondaire',
       }),
       React.createElement(
         View,
@@ -659,7 +735,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
       createSectionHeader(4, 'Palette de couleurs', primaire),
       React.createElement(Text, {
         style: mergeStyles(styles.sectionIntro),
-        children: 'Couleurs principales et déclinaisons clair/foncé',
+        children: 'Palette à 5 couleurs : clair, sombre, principale, secondaire, tertiaire',
       }),
       React.createElement(
         View,
@@ -936,8 +1012,6 @@ export async function generatePdf(config, imagePaths, outputPath) {
     numbersSection
   );
   pages.push(pageTypo);
-
-  const accent = colors.accent || '#f59e0b';
 
   const pageUiKit = React.createElement(
     Page,

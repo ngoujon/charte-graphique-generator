@@ -310,6 +310,23 @@ main {
   grid-column: 1 / -1;
 }
 
+.config-form .palette-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 0.6rem;
+}
+
+.config-form .palette-grid-5 {
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.25rem;
+  max-width: 100%;
+}
+
+.config-form .palette-grid-5 .palette-preview {
+  width: 64px;
+  height: 64px;
+}
+
 @media (max-width: 768px) {
   .page-all {
     padding: 1rem;
@@ -317,12 +334,15 @@ main {
   .config-form .config-fields-grid {
     grid-template-columns: 1fr;
   }
+  .config-form .palette-grid-5 {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.config-form .palette-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-  gap: 0.6rem;
+@media (max-width: 480px) {
+  .config-form .palette-grid-5 {
+    grid-template-columns: 1fr;
+  }
 }
 
 .config-form .palette-item {

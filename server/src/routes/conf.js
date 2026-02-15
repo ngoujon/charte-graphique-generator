@@ -21,11 +21,11 @@ const DEFAULT_CONF = {
     personnalite: 'Moderne, fiable, accessible',
   },
   couleurs: {
+    clair: '#f5f5dc',
+    sombre: '#1a1a1a',
     primaire: '#2563eb',
     secondaire: '#64748b',
     accent: '#f59e0b',
-    fond: '#ffffff',
-    texte: '#1e293b',
   },
   typographie: {
     titre: 'Helvetica-Bold',
@@ -46,7 +46,9 @@ confRouter.get('/', async (req, res) => {
     const confPath = path.join(confDir(), 'charte.json');
     try {
       const data = await fs.readFile(confPath, 'utf-8');
-      res.json(JSON.parse(data));
+      const parsed = JSON.parse(data);
+      if (parsed.couleurs) parsed.couleurs = normalizeCouleurs(parsed.couleurs);
+      res.json(parsed);
     } catch {
       res.json(DEFAULT_CONF);
     }
@@ -55,10 +57,23 @@ confRouter.get('/', async (req, res) => {
   }
 });
 
+function normalizeCouleurs(couleurs) {
+  if (!couleurs || typeof couleurs !== 'object') return DEFAULT_CONF.couleurs;
+  return {
+    clair: couleurs.clair ?? couleurs.fond ?? couleurs.blanc ?? DEFAULT_CONF.couleurs.clair,
+    sombre: couleurs.sombre ?? couleurs.texte ?? couleurs.noir ?? DEFAULT_CONF.couleurs.sombre,
+    primaire: couleurs.primaire ?? DEFAULT_CONF.couleurs.primaire,
+    secondaire: couleurs.secondaire ?? DEFAULT_CONF.couleurs.secondaire,
+    accent: couleurs.accent ?? DEFAULT_CONF.couleurs.accent,
+  };
+}
+
 confRouter.post('/', async (req, res) => {
   try {
     await fs.mkdir(confDir(), { recursive: true });
-    const conf = { ...DEFAULT_CONF, ...req.body, version: 1 };
+    const body = { ...req.body };
+    if (body.couleurs) body.couleurs = normalizeCouleurs(body.couleurs);
+    const conf = { ...DEFAULT_CONF, ...body, version: 1 };
     await fs.writeFile(
       path.join(confDir(), 'charte.json'),
       JSON.stringify(conf, null, 2)
@@ -74,7 +89,9 @@ confRouter.post('/import', async (req, res) => {
     const { config } = req.body;
     if (!config) return res.status(400).json({ error: 'Config requise' });
     await fs.mkdir(confDir(), { recursive: true });
-    const conf = { ...DEFAULT_CONF, ...config, version: 1 };
+    const imported = { ...config };
+    if (imported.couleurs) imported.couleurs = normalizeCouleurs(imported.couleurs);
+    const conf = { ...DEFAULT_CONF, ...imported, version: 1 };
     await fs.writeFile(
       path.join(confDir(), 'charte.json'),
       JSON.stringify(conf, null, 2)
