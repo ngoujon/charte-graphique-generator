@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   },
   typoLevelCard: {
     padding: SP.md,
-    marginBottom: SP.md,
+    marginBottom: SP.sm,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: BORDER,
@@ -899,72 +899,10 @@ export async function generatePdf(config, imagePaths, outputPath) {
       })
     );
 
-  const typoSectionChildren = [
-    typoSpecsCard,
-    React.createElement(
-      View,
-      { key: 'article', style: styles.section },
-      React.createElement(Text, {
-        style: mergeStyles(styles.sectionTitle, {
-          color: primaire,
-          borderBottomColor: primaire,
-          marginBottom: 12,
-        }),
-        children: 'Exemple d\'article',
-      }),
-      React.createElement(
-        View,
-        { style: mergeStyles(styles.articleBlock, { borderColor: BORDER, borderLeftColor: primaire }) },
-        React.createElement(Text, {
-          style: {
-            fontSize: tailleTitre,
-            fontFamily: fontTitre,
-            color: texte,
-            marginBottom: 8,
-          },
-          children: exempleTitre,
-        }),
-        React.createElement(Text, {
-          style: {
-            fontSize: tailleSousTitre,
-            fontFamily: fontCorps,
-            color: secondaire,
-            marginBottom: 12,
-          },
-          children: exempleSousTitre,
-        }),
-        React.createElement(Text, {
-          style: {
-            fontSize: tailleCorps,
-            fontFamily: fontCorps,
-            color: texte,
-            lineHeight: 1.6,
-          },
-          children: exempleDescription,
-        })
-      )
-    ),
-    React.createElement(
-      View,
-      { key: 'alphabets', style: styles.section },
-      React.createElement(Text, {
-        style: mergeStyles(styles.sectionTitle, {
-          color: primaire,
-          borderBottomColor: primaire,
-          marginBottom: 12,
-        }),
-        children: 'Alphabet',
-      }),
-      createTypoLevelCard('Titre', fontTitre, tailleTitre, texte),
-      createTypoLevelCard('Sous-titre', fontCorps, tailleSousTitre, texte),
-      createTypoLevelCard('Corps', fontCorps, tailleCorps, texte),
-    ),
-  ];
-
   const createNumbersRow = (font, size, prefix) =>
     React.createElement(
       View,
-      { key: prefix, style: mergeStyles(styles.typoLevelCard, { marginBottom: SP.md }) },
+      { key: prefix, style: mergeStyles(styles.typoLevelCard, { marginBottom: SP.sm }) },
       React.createElement(Text, {
         style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 9, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 0.5 }),
         children: `${prefix} — ${font} (${size}pt)`,
@@ -989,23 +927,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
       )
     );
 
-  const numbersSection = React.createElement(
-    View,
-    { key: 'numbers', style: styles.section },
-    React.createElement(Text, {
-      style: mergeStyles(styles.sectionTitle, {
-        color: primaire,
-        borderBottomColor: primaire,
-        marginBottom: 12,
-      }),
-      children: 'Chiffres 0-9',
-    }),
-    createNumbersRow(fontTitre, tailleTitre, 'Titre'),
-    createNumbersRow(fontCorps, tailleSousTitre, 'Sous-titre'),
-    createNumbersRow(fontCorps, tailleCorps, 'Corps'),
-  );
-
-  const pageTypo = React.createElement(
+  const pageTypo1 = React.createElement(
     Page,
     {
       key: 'typo',
@@ -1020,11 +942,113 @@ export async function generatePdf(config, imagePaths, outputPath) {
         style: mergeStyles(styles.sectionIntro),
         children: 'Hiérarchie des textes, alphabets et chiffres',
       }),
-      ...typoSectionChildren
-    ),
-    numbersSection
+      typoSpecsCard,
+      React.createElement(
+        View,
+        { key: 'article', style: mergeStyles(styles.section, { marginTop: SP.lg }) },
+        React.createElement(Text, {
+          style: mergeStyles(styles.sectionTitle, {
+            color: primaire,
+            borderBottomColor: primaire,
+            marginBottom: 12,
+          }),
+          children: 'Exemple d\'article',
+        }),
+        React.createElement(
+          View,
+          { style: mergeStyles(styles.articleBlock, { borderColor: BORDER, borderLeftColor: primaire }) },
+          React.createElement(Text, {
+            style: {
+              fontSize: tailleTitre,
+              fontFamily: fontTitre,
+              color: texte,
+              marginBottom: 8,
+            },
+            children: exempleTitre,
+          }),
+          React.createElement(Text, {
+            style: {
+              fontSize: tailleSousTitre,
+              fontFamily: fontCorps,
+              color: secondaire,
+              marginBottom: 12,
+            },
+            children: exempleSousTitre,
+          }),
+          React.createElement(Text, {
+            style: {
+              fontSize: tailleCorps,
+              fontFamily: fontCorps,
+              color: texte,
+              lineHeight: 1.6,
+            },
+            children: exempleDescription,
+          })
+        )
+      )
+    )
   );
-  pages.push(pageTypo);
+  pages.push(pageTypo1);
+
+  const pageTypo2 = React.createElement(
+    Page,
+    {
+      key: 'typo2',
+      size: 'A4',
+      style: mergeStyles(styles.page, { backgroundColor: fond }),
+    },
+    React.createElement(
+      View,
+      { style: styles.section },
+      createSectionHeader(5, 'Typographie (suite)', primaire),
+      React.createElement(
+        View,
+        { key: 'alphabets', style: { marginTop: SP.md } },
+        React.createElement(Text, {
+          style: mergeStyles(styles.sectionTitle, {
+            color: primaire,
+            borderBottomColor: primaire,
+            marginBottom: 12,
+          }),
+          children: 'Alphabet',
+        }),
+        createTypoLevelCard('Titre', fontTitre, tailleTitre, texte),
+        createTypoLevelCard('Sous-titre', fontCorps, tailleSousTitre, texte),
+        createTypoLevelCard('Corps', fontCorps, tailleCorps, texte),
+      )
+    )
+  );
+  pages.push(pageTypo2);
+
+  const pageTypo3 = React.createElement(
+    Page,
+    {
+      key: 'typo3',
+      size: 'A4',
+      style: mergeStyles(styles.page, { backgroundColor: fond }),
+    },
+    React.createElement(
+      View,
+      { style: styles.section },
+      createSectionHeader(5, 'Typographie (suite)', primaire),
+      React.createElement(
+        View,
+        { key: 'numbers', style: { marginTop: SP.md } },
+        React.createElement(Text, {
+          style: mergeStyles(styles.sectionTitle, {
+            color: primaire,
+            borderBottomColor: primaire,
+            marginBottom: 12,
+          }),
+          children: 'Chiffres 0-9',
+        }),
+        createNumbersRow(fontTitre, tailleTitre, 'Titre'),
+        createNumbersRow(fontCorps, tailleSousTitre, 'Sous-titre'),
+        createNumbersRow(fontCorps, tailleCorps, 'Corps'),
+      )
+    )
+  );
+  pages.push(pageTypo3);
 
   const createUiBlock = (title, content) =>
     React.createElement(
