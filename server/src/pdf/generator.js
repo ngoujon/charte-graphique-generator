@@ -114,6 +114,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Helvetica-Bold',
   },
+  alphabetRow: {
+    marginBottom: 8,
+    flexWrap: 'wrap',
+  },
+  articleBlock: {
+    marginTop: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 8,
+    backgroundColor: '#f8fafc',
+  },
 });
 
 function createPlaceholderLogo(bgColor, textColor) {
@@ -432,64 +444,139 @@ export async function generatePdf(config, imagePaths, outputPath) {
   );
   pages.push(pageCouleurs);
 
+  const ALPHABET_MAJ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const ALPHABET_MIN = 'abcdefghijklmnopqrstuvwxyz';
+
   const typoSectionChildren = [
     React.createElement(
       View,
-      { key: 'typo-titre', style: styles.typoExample },
+      { key: 'article', style: styles.section },
       React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, {
-          marginBottom: 4,
-          fontSize: 10,
+        style: mergeStyles(styles.sectionTitle, {
+          color: primaire,
+          borderBottomColor: primaire,
+          marginBottom: 12,
         }),
-        children: `${fontTitre} — Titre (${tailleTitre}pt)`,
+        children: 'Exemple d\'article',
+      }),
+      React.createElement(
+        View,
+        { style: mergeStyles(styles.articleBlock, { borderColor: '#e2e8f0' }) },
+        React.createElement(Text, {
+          style: {
+            fontSize: tailleTitre,
+            fontFamily: fontTitre,
+            color: texte,
+            marginBottom: 8,
+          },
+          children: exempleTitre,
+        }),
+        React.createElement(Text, {
+          style: {
+            fontSize: tailleSousTitre,
+            fontFamily: fontCorps,
+            color: secondaire,
+            marginBottom: 12,
+          },
+          children: exempleSousTitre,
+        }),
+        React.createElement(Text, {
+          style: {
+            fontSize: tailleCorps,
+            fontFamily: fontCorps,
+            color: texte,
+            lineHeight: 1.6,
+          },
+          children: exempleDescription,
+        })
+      )
+    ),
+    React.createElement(
+      View,
+      { key: 'alphabets', style: styles.section },
+      React.createElement(Text, {
+        style: mergeStyles(styles.sectionTitle, {
+          color: primaire,
+          borderBottomColor: primaire,
+          marginBottom: 12,
+        }),
+        children: 'Alphabet',
+      }),
+      React.createElement(
+        View,
+        { key: 'alphabet-titre', style: { marginBottom: 16 } },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, { marginBottom: 4, fontSize: 10 }),
+        children: `Titre — ${fontTitre} (${tailleTitre}pt)`,
       }),
       React.createElement(Text, {
         style: {
-          fontSize: tailleTitre,
+          fontSize: Math.min(tailleTitre, 14),
           fontFamily: fontTitre,
           color: texte,
         },
-        children: exempleTitre,
-      })
-    ),
-    React.createElement(
-      View,
-      { key: 'typo-soustitre', style: styles.typoExample },
-      React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, {
-          marginBottom: 4,
-          fontSize: 10,
-        }),
-        children: `${fontCorps} — Sous-titre (${tailleSousTitre}pt)`,
+        children: ALPHABET_MAJ,
       }),
       React.createElement(Text, {
         style: {
-          fontSize: tailleSousTitre,
-          fontFamily: fontCorps,
+          fontSize: Math.min(tailleTitre, 14),
+          fontFamily: fontTitre,
           color: texte,
+          marginTop: 2,
         },
-        children: exempleSousTitre,
+        children: ALPHABET_MIN,
       })
     ),
-    React.createElement(
-      View,
-      { key: 'typo-desc', style: styles.typoExample },
+      React.createElement(
+        View,
+        { key: 'alphabet-soustitre', style: { marginBottom: 16 } },
       React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, {
-          marginBottom: 4,
-          fontSize: 10,
-        }),
-        children: `${fontCorps} — Description (${tailleCorps}pt)`,
+        style: mergeStyles(styles.colorLabel, { marginBottom: 4, fontSize: 10 }),
+        children: `Sous-titre — ${fontCorps} (${tailleSousTitre}pt)`,
       }),
       React.createElement(Text, {
         style: {
-          fontSize: tailleCorps,
+          fontSize: Math.min(tailleSousTitre, 12),
           fontFamily: fontCorps,
           color: texte,
-          lineHeight: 1.5,
         },
-        children: exempleDescription,
+        children: ALPHABET_MAJ,
+      }),
+      React.createElement(Text, {
+        style: {
+          fontSize: Math.min(tailleSousTitre, 12),
+          fontFamily: fontCorps,
+          color: texte,
+          marginTop: 2,
+        },
+        children: ALPHABET_MIN,
       })
+    ),
+      React.createElement(
+        View,
+        { key: 'alphabet-desc', style: { marginBottom: 8 } },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, { marginBottom: 4, fontSize: 10 }),
+        children: `Description — ${fontCorps} (${tailleCorps}pt)`,
+      }),
+      React.createElement(Text, {
+        style: {
+          fontSize: Math.min(tailleCorps, 11),
+          fontFamily: fontCorps,
+          color: texte,
+        },
+        children: ALPHABET_MAJ,
+      }),
+      React.createElement(Text, {
+        style: {
+          fontSize: Math.min(tailleCorps, 11),
+          fontFamily: fontCorps,
+          color: texte,
+          marginTop: 2,
+        },
+        children: ALPHABET_MIN,
+      })
+    )
     ),
   ];
 
