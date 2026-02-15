@@ -1,0 +1,27 @@
+---
+description: Commit automatiquement chaque modification effectuée par Cursor
+alwaysApply: true
+---
+
+# Commit automatique après modifications
+
+Après chaque modification de fichiers effectuée dans le cadre de la tâche en cours, tu dois **toujours** :
+
+1. **Stager les changements** : `git add` des fichiers modifiés
+2. **Commiter** : `git commit` avec un message descriptif en français
+
+## Comportement attendu
+
+- Exécute `git add .` (ou les fichiers concernés) après avoir modifié des fichiers
+- Crée un commit avec un message clair décrivant les changements
+- Fais-le **à la fin de chaque tâche ou lot de modifications**, avant de répondre à l'utilisateur
+
+## Format du message de commit
+
+- Utilise l'impératif en français : "Ajoute...", "Corrige...", "Refactorise..."
+- Sois concis mais descriptif
+- Exemple : `git commit -m "Ajoute la règle de commit automatique"`
+
+## Important
+
+Ne pas oublier de committer : c'est une étape obligatoire après toute modification de code.
