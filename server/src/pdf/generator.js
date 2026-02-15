@@ -103,7 +103,35 @@ const styles = StyleSheet.create({
     borderColor: '#e2e8f0',
     borderRadius: 4,
   },
+  placeholderLogo: {
+    width: 120,
+    height: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+  },
+  placeholderLogoText: {
+    fontSize: 18,
+    fontFamily: 'Helvetica-Bold',
+  },
 });
+
+function createPlaceholderLogo(bgColor, textColor) {
+  return React.createElement(
+    View,
+    {
+      style: mergeStyles(styles.placeholderLogo, {
+        backgroundColor: bgColor,
+        borderWidth: 1,
+        borderColor: textColor,
+      }),
+    },
+    React.createElement(Text, {
+      style: mergeStyles(styles.placeholderLogoText, { color: textColor }),
+      children: 'LOGO',
+    })
+  );
+}
 
 async function imageToBase64(filePath) {
   const buffer = await fs.readFile(filePath);
@@ -215,8 +243,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
     )
   );
 
-  const sommaireItems = ['Palette de couleurs', 'Typographie (titre, sous-titre, description)', 'Chiffres 0-9'];
-  if (logoClair || logoSombre) sommaireItems.unshift('Logo');
+  const sommaireItems = ['Logo', 'Palette de couleurs', 'Typographie (titre, sous-titre, description)', 'Chiffres 0-9'];
   if (otherImages.length > 0) sommaireItems.push('Éléments graphiques');
 
   const pageSommaire = React.createElement(
@@ -267,64 +294,70 @@ export async function generatePdf(config, imagePaths, outputPath) {
   pages.push(pageSommaire);
 
   const logoSectionChildren = [];
-  if (logoClair) {
-    logoSectionChildren.push(
+
+  const logoClairContent = logoClair
+    ? React.createElement(Image, {
+        src: logoClair.src,
+        style: styles.logoImg,
+      })
+    : createPlaceholderLogo(fond || '#ffffff', texte || '#1e293b');
+
+  const logoSombreContent = logoSombre
+    ? React.createElement(Image, {
+        src: logoSombre.src,
+        style: styles.logoImg,
+      })
+    : createPlaceholderLogo(texte || '#1e293b', fond || '#ffffff');
+
+  logoSectionChildren.push(
+    React.createElement(
+      View,
+      { key: 'clair-wrap', style: { marginBottom: 20 } },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, {
+          marginBottom: 8,
+          fontSize: 11,
+          fontFamily: 'Helvetica-Bold',
+        }),
+        children: logoClair ? 'Logo clair (fond clair)' : 'Logo clair — Exemple (remplacez par votre fichier)',
+      }),
       React.createElement(
         View,
-        { key: 'clair-wrap', style: { marginBottom: 20 } },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, {
-            marginBottom: 8,
-            fontSize: 11,
-            fontFamily: 'Helvetica-Bold',
+        {
+          style: mergeStyles(styles.logoBox, {
+            backgroundColor: fond || '#ffffff',
+            borderWidth: 1,
+            borderColor: '#e2e8f0',
           }),
-          children: 'Logo clair (fond clair)',
-        }),
-        React.createElement(
-          View,
-          {
-            style: mergeStyles(styles.logoBox, {
-              backgroundColor: fond || '#ffffff',
-              borderWidth: 1,
-              borderColor: '#e2e8f0',
-            }),
-          },
-          React.createElement(Image, {
-            src: logoClair.src,
-            style: styles.logoImg,
-          })
-        )
+        },
+        logoClairContent
       )
-    );
-  }
-  if (logoSombre) {
-    logoSectionChildren.push(
+    )
+  );
+
+  logoSectionChildren.push(
+    React.createElement(
+      View,
+      { key: 'sombre-wrap' },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, {
+          marginBottom: 8,
+          fontSize: 11,
+          fontFamily: 'Helvetica-Bold',
+        }),
+        children: logoSombre ? 'Logo sombre (fond sombre)' : 'Logo sombre — Exemple (remplacez par votre fichier)',
+      }),
       React.createElement(
         View,
-        { key: 'sombre-wrap' },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, {
-            marginBottom: 8,
-            fontSize: 11,
-            fontFamily: 'Helvetica-Bold',
+        {
+          style: mergeStyles(styles.logoBox, {
+            backgroundColor: texte || '#1e293b',
           }),
-          children: 'Logo sombre (fond sombre)',
-        }),
-        React.createElement(
-          View,
-          {
-            style: mergeStyles(styles.logoBox, {
-              backgroundColor: texte || '#1e293b',
-            }),
-          },
-          React.createElement(Image, {
-            src: logoSombre.src,
-            style: styles.logoImg,
-          })
-        )
+        },
+        logoSombreContent
       )
-    );
-  }
+    )
+  );
 
   const pageLogo = React.createElement(
     Page,
@@ -341,7 +374,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
           color: primaire,
           borderBottomColor: primaire,
         }),
-        children: 'Logo',
+        children: 'Logo — Déclinaisons',
       }),
       React.createElement(
         View,
@@ -351,9 +384,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
     )
   );
 
-  if (logoSectionChildren.length > 0) {
-    pages.push(pageLogo);
-  }
+  pages.push(pageLogo);
 
   const pageCouleurs = React.createElement(
     Page,
