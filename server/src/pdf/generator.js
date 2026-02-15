@@ -264,6 +264,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginRight: SP.sm,
     marginBottom: SP.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  uiButtonSmall: {
+    paddingVertical: 4,
+    paddingHorizontal: SP.sm,
+    borderRadius: 4,
+    fontSize: 10,
   },
   uiInput: {
     borderWidth: 1,
@@ -285,6 +293,75 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginRight: 6,
     marginBottom: 6,
+  },
+  uiBlock: {
+    marginBottom: SP.lg,
+  },
+  uiBlockTitle: {
+    fontSize: 10,
+    fontFamily: 'Helvetica-Bold',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    color: MUTED,
+    marginBottom: SP.sm,
+  },
+  uiAlert: {
+    padding: SP.md,
+    borderRadius: 8,
+    marginBottom: SP.sm,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  uiLink: {
+    textDecoration: 'underline',
+    fontSize: 12,
+  },
+  uiTable: {
+    borderWidth: 1,
+    borderColor: BORDER,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  uiTableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: BORDER,
+  },
+  uiTableHeader: {
+    backgroundColor: '#f1f5f9',
+    paddingVertical: SP.sm,
+    paddingHorizontal: SP.md,
+  },
+  uiTableCell: {
+    paddingVertical: SP.sm,
+    paddingHorizontal: SP.md,
+    flex: 1,
+  },
+  uiProgress: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#e2e8f0',
+    overflow: 'hidden',
+    marginBottom: SP.sm,
+  },
+  uiProgressBar: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  uiCheckbox: {
+    width: 18,
+    height: 18,
+    borderWidth: 2,
+    borderColor: BORDER,
+    borderRadius: 4,
+    marginRight: SP.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  uiListItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SP.sm,
   },
 });
 
@@ -894,6 +971,31 @@ export async function generatePdf(config, imagePaths, outputPath) {
   );
   pages.push(pageTypo);
 
+  const createUiBlock = (title, content) =>
+    React.createElement(
+      View,
+      { key: title, style: styles.uiBlock },
+      React.createElement(Text, { style: styles.uiBlockTitle, children: title }),
+      content
+    );
+
+  const createButton = (label, options = {}) => {
+    const { bgColor, textColor = '#ffffff', border } = options;
+    return React.createElement(
+      View,
+      {
+        style: mergeStyles(styles.uiButton, {
+          backgroundColor: bgColor || primaire,
+          ...(border && { borderWidth: 1, borderColor: primaire, backgroundColor: 'transparent' }),
+        }),
+      },
+      React.createElement(Text, {
+        style: { color: border ? primaire : textColor, fontSize: 12, fontFamily: fontCorps },
+        children: label,
+      })
+    );
+  };
+
   const pageUiKit = React.createElement(
     Page,
     {
@@ -909,63 +1011,52 @@ export async function generatePdf(config, imagePaths, outputPath) {
         style: mergeStyles(styles.sectionIntro),
         children: 'Composants d\'interface utilisant la charte graphique',
       }),
-      React.createElement(
-        View,
-        { key: 'buttons', style: { marginBottom: 20 } },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, { marginBottom: 8, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
-          children: 'Boutons',
-        }),
+      createUiBlock(
+        'Boutons',
         React.createElement(
           View,
-          { style: { flexDirection: 'row', flexWrap: 'wrap' } },
+          { style: { flexDirection: 'row', flexWrap: 'wrap', gap: SP.sm } },
+          createButton('Primaire', { bgColor: primaire }),
+          createButton('Secondaire', { border: true }),
+          createButton('Accent', { bgColor: accent }),
           React.createElement(
             View,
             {
               style: mergeStyles(styles.uiButton, {
-                backgroundColor: primaire,
-              }),
-            },
-            React.createElement(Text, {
-              style: { color: '#ffffff', fontSize: 12, fontFamily: fontCorps },
-              children: 'Primaire',
-            })
-          ),
-          React.createElement(
-            View,
-            {
-              style: mergeStyles(styles.uiButton, {
-                backgroundColor: 'transparent',
+                backgroundColor: '#e2e8f0',
                 borderWidth: 1,
-                borderColor: primaire,
+                borderColor: BORDER,
+                opacity: 0.6,
               }),
             },
             React.createElement(Text, {
-              style: { color: primaire, fontSize: 12, fontFamily: fontCorps },
-              children: 'Secondaire',
-            })
-          ),
-          React.createElement(
-            View,
-            {
-              style: mergeStyles(styles.uiButton, {
-                backgroundColor: accent,
-              }),
-            },
-            React.createElement(Text, {
-              style: { color: '#ffffff', fontSize: 12, fontFamily: fontCorps },
-              children: 'Accent',
+              style: { color: secondaire, fontSize: 12, fontFamily: fontCorps },
+              children: 'Désactivé',
             })
           )
         )
       ),
-      React.createElement(
-        View,
-        { key: 'input', style: { marginBottom: 20 } },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, { marginBottom: 8, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
-          children: 'Champ de saisie',
-        }),
+      createUiBlock(
+        'Liens',
+        React.createElement(
+          View,
+          { style: { flexDirection: 'row', flexWrap: 'wrap', gap: SP.lg } },
+          React.createElement(Text, {
+            style: mergeStyles(styles.uiLink, { color: primaire }),
+            children: 'Lien principal',
+          }),
+          React.createElement(Text, {
+            style: mergeStyles(styles.uiLink, { color: secondaire }),
+            children: 'Lien secondaire',
+          }),
+          React.createElement(Text, {
+            style: mergeStyles(styles.uiLink, { color: accent }),
+            children: 'Lien accent',
+          })
+        )
+      ),
+      createUiBlock(
+        'Champ de saisie',
         React.createElement(
           View,
           {
@@ -980,61 +1071,179 @@ export async function generatePdf(config, imagePaths, outputPath) {
           })
         )
       ),
-      React.createElement(
-        View,
-        { key: 'badges', style: { marginBottom: 20 } },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, { marginBottom: 8, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
-          children: 'Étiquettes',
-        }),
+      createUiBlock(
+        'Alertes',
         React.createElement(
           View,
-          { style: { flexDirection: 'row', flexWrap: 'wrap' } },
+          null,
           React.createElement(
             View,
             {
-              style: mergeStyles(styles.uiBadge, {
-                backgroundColor: primaire,
+              style: mergeStyles(styles.uiAlert, {
+                backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                borderLeftWidth: 4,
+                borderLeftColor: '#10b981',
               }),
             },
             React.createElement(Text, {
-              style: { color: '#ffffff', fontSize: 10, fontFamily: fontCorps },
-              children: 'Primaire',
+              style: { fontSize: 11, fontFamily: fontCorps, color: texte },
+              children: 'Succès — Opération réalisée avec succès.',
             })
           ),
           React.createElement(
             View,
             {
-              style: mergeStyles(styles.uiBadge, {
-                backgroundColor: secondaire,
+              style: mergeStyles(styles.uiAlert, {
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                borderLeftWidth: 4,
+                borderLeftColor: '#ef4444',
               }),
             },
             React.createElement(Text, {
-              style: { color: '#ffffff', fontSize: 10, fontFamily: fontCorps },
-              children: 'Secondaire',
+              style: { fontSize: 11, fontFamily: fontCorps, color: texte },
+              children: 'Erreur — Une erreur s\'est produite.',
             })
           ),
           React.createElement(
             View,
             {
-              style: mergeStyles(styles.uiBadge, {
-                backgroundColor: accent,
+              style: mergeStyles(styles.uiAlert, {
+                backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                borderLeftWidth: 4,
+                borderLeftColor: accent,
               }),
             },
             React.createElement(Text, {
-              style: { color: '#ffffff', fontSize: 10, fontFamily: fontCorps },
-              children: 'Accent',
+              style: { fontSize: 11, fontFamily: fontCorps, color: texte },
+              children: 'Attention — Vérifiez les informations.',
+            })
+          ),
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiAlert, {
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderLeftWidth: 4,
+                borderLeftColor: primaire,
+              }),
+            },
+            React.createElement(Text, {
+              style: { fontSize: 11, fontFamily: fontCorps, color: texte },
+              children: 'Info — Information complémentaire.',
             })
           )
         )
       ),
-      React.createElement(
-        View,
-        { key: 'card' },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, { marginBottom: 8, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
-          children: 'Carte',
-        }),
+      createUiBlock(
+        'Étiquettes (badges)',
+        React.createElement(
+          View,
+          { style: { flexDirection: 'row', flexWrap: 'wrap', gap: SP.sm } },
+          React.createElement(
+            View,
+            { style: mergeStyles(styles.uiBadge, { backgroundColor: primaire }) },
+            React.createElement(Text, { style: { color: '#ffffff', fontSize: 10, fontFamily: fontCorps }, children: 'Primaire' })
+          ),
+          React.createElement(
+            View,
+            { style: mergeStyles(styles.uiBadge, { backgroundColor: secondaire }) },
+            React.createElement(Text, { style: { color: '#ffffff', fontSize: 10, fontFamily: fontCorps }, children: 'Secondaire' })
+          ),
+          React.createElement(
+            View,
+            { style: mergeStyles(styles.uiBadge, { backgroundColor: accent }) },
+            React.createElement(Text, { style: { color: '#ffffff', fontSize: 10, fontFamily: fontCorps }, children: 'Accent' })
+          ),
+          React.createElement(
+            View,
+            { style: mergeStyles(styles.uiBadge, { backgroundColor: 'transparent', borderWidth: 1, borderColor: BORDER }) },
+            React.createElement(Text, { style: { color: texte, fontSize: 10, fontFamily: fontCorps }, children: 'Outline' })
+          )
+        )
+      )
+    )
+  );
+  pages.push(pageUiKit);
+
+  const pageUiKit2 = React.createElement(
+    Page,
+    {
+      key: 'uikit2',
+      size: 'A4',
+      style: mergeStyles(styles.page, { backgroundColor: fond }),
+    },
+    React.createElement(
+      View,
+      { style: styles.section },
+      createSectionHeader(6, 'Kit UI (suite)', primaire),
+      createUiBlock(
+        'Barres de progression',
+        React.createElement(
+          View,
+          { style: { gap: SP.md } },
+          React.createElement(View, null,
+            React.createElement(Text, { style: mergeStyles(styles.colorLabel, { marginBottom: 4 }), children: '25%' }),
+            React.createElement(View, { style: styles.uiProgress },
+              React.createElement(View, { style: mergeStyles(styles.uiProgressBar, { backgroundColor: primaire, width: '25%' }) })
+            )
+          ),
+          React.createElement(View, null,
+            React.createElement(Text, { style: mergeStyles(styles.colorLabel, { marginBottom: 4 }), children: '60%' }),
+            React.createElement(View, { style: styles.uiProgress },
+              React.createElement(View, { style: mergeStyles(styles.uiProgressBar, { backgroundColor: secondaire, width: '60%' }) })
+            )
+          ),
+          React.createElement(View, null,
+            React.createElement(Text, { style: mergeStyles(styles.colorLabel, { marginBottom: 4 }), children: '100%' }),
+            React.createElement(View, { style: styles.uiProgress },
+              React.createElement(View, { style: mergeStyles(styles.uiProgressBar, { backgroundColor: accent, width: '100%' }) })
+            )
+          )
+        )
+      ),
+      createUiBlock(
+        'Tableau',
+        React.createElement(
+          View,
+          { style: styles.uiTable },
+          React.createElement(View, { style: mergeStyles(styles.uiTableRow, styles.uiTableHeader) },
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontFamily: 'Helvetica-Bold', fontSize: 10 }), children: 'Colonne 1' }),
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontFamily: 'Helvetica-Bold', fontSize: 10 }), children: 'Colonne 2' }),
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontFamily: 'Helvetica-Bold', fontSize: 10 }), children: 'Colonne 3' })
+          ),
+          React.createElement(View, { style: styles.uiTableRow },
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: fontCorps }), children: 'Donnée A' }),
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: fontCorps }), children: 'Donnée B' }),
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: fontCorps }), children: 'Donnée C' })
+          ),
+          React.createElement(View, { style: styles.uiTableRow },
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: fontCorps }), children: 'Donnée D' }),
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: fontCorps }), children: 'Donnée E' }),
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: fontCorps }), children: 'Donnée F' })
+          )
+        )
+      ),
+      createUiBlock(
+        'Liste à puces',
+        React.createElement(
+          View,
+          null,
+          React.createElement(View, { style: styles.uiListItem },
+            React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12 }, children: '•' }),
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: fontCorps, color: texte }, children: 'Premier élément de la liste' })
+          ),
+          React.createElement(View, { style: styles.uiListItem },
+            React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12 }, children: '•' }),
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: fontCorps, color: texte }, children: 'Deuxième élément de la liste' })
+          ),
+          React.createElement(View, { style: styles.uiListItem },
+            React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12 }, children: '•' }),
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: fontCorps, color: texte }, children: 'Troisième élément de la liste' })
+          )
+        )
+      ),
+      createUiBlock(
+        'Carte',
         React.createElement(
           View,
           {
@@ -1044,41 +1253,19 @@ export async function generatePdf(config, imagePaths, outputPath) {
             }),
           },
           React.createElement(Text, {
-            style: {
-              fontSize: tailleSousTitre,
-              fontFamily: fontTitre,
-              color: texte,
-              marginBottom: 6,
-            },
+            style: { fontSize: tailleSousTitre, fontFamily: fontTitre, color: texte, marginBottom: 6 },
             children: 'Titre de la carte',
           }),
           React.createElement(Text, {
-            style: {
-              fontSize: tailleCorps,
-              fontFamily: fontCorps,
-              color: secondaire,
-              marginBottom: 8,
-            },
-            children: 'Sous-titre ou description courte',
+            style: { fontSize: tailleCorps, fontFamily: fontCorps, color: secondaire, marginBottom: 8, lineHeight: 1.5 },
+            children: 'Sous-titre ou description courte. Ce composant peut contenir du texte et des actions.',
           }),
-          React.createElement(
-            View,
-            {
-              style: mergeStyles(styles.uiButton, {
-                backgroundColor: primaire,
-                alignSelf: 'flex-start',
-              }),
-            },
-            React.createElement(Text, {
-              style: { color: '#ffffff', fontSize: 11, fontFamily: fontCorps },
-              children: 'Action',
-            })
-          )
+          createButton('Action', { bgColor: primaire })
         )
       )
     )
   );
-  pages.push(pageUiKit);
+  pages.push(pageUiKit2);
 
   if (otherImages.length > 0) {
     const pageImages = React.createElement(
