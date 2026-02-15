@@ -12,16 +12,18 @@ header {
 }
 
 header h1 {
-  font-size: 1.75rem;
+  font-size: 1.85rem;
   font-weight: 700;
   margin: 0 0 0.5rem;
   letter-spacing: -0.02em;
+  color: var(--text);
 }
 
 header p {
   color: var(--text-muted);
   margin: 0;
   font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .toast {
@@ -60,23 +62,24 @@ nav {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 2rem;
-  background: var(--surface);
-  padding: 0.25rem;
-  border-radius: 10px;
+  background: var(--bg-subtle);
+  padding: 0.35rem;
+  border-radius: 14px;
   border: 1px solid var(--border);
 }
 
 nav button {
   flex: 1;
-  padding: 0.6rem 1rem;
+  padding: 0.7rem 1.1rem;
   border: none;
   background: transparent;
   color: var(--text-muted);
   font-family: inherit;
   font-size: 0.9rem;
-  border-radius: 8px;
+  font-weight: 500;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 nav button:hover {
@@ -87,6 +90,7 @@ nav button:hover {
 nav button.active {
   background: var(--accent);
   color: white;
+  box-shadow: 0 2px 12px var(--accent-glow);
 }
 
 main {
@@ -96,8 +100,9 @@ main {
 .panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 16px;
+  padding: 1.75rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
 }
 
 .panel h2 {
@@ -110,18 +115,47 @@ main {
   color: var(--text-muted);
   font-size: 0.875rem;
   margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  background: var(--bg-subtle);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.upload-zone:hover,
+.upload-zone:has(input:focus) {
+  border-color: var(--accent);
+  background: rgba(124, 58, 237, 0.05);
+}
+
+.upload-zone label {
+  cursor: pointer;
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.upload-zone label span {
+  color: var(--accent);
+  font-weight: 500;
 }
 
 .btn {
   display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
   font-family: inherit;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   border: none;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
 }
 
 .btn-primary {
@@ -131,22 +165,25 @@ main {
 
 .btn-primary:hover:not(:disabled) {
   background: var(--accent-hover);
+  box-shadow: 0 4px 16px var(--accent-glow);
 }
 
 .btn-secondary {
-  background: var(--surface-hover);
+  background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
 }
 
 .btn-secondary:hover {
-  background: var(--border);
+  background: var(--surface-hover);
+  border-color: var(--border-light);
 }
 
 .btn-large {
-  padding: 0.75rem 1.5rem;
+  padding: 0.85rem 1.75rem;
   font-size: 1rem;
   margin-bottom: 1.5rem;
+  border-radius: 12px;
 }
 
 .btn:disabled {
@@ -162,21 +199,24 @@ main {
 
 .config-form fieldset {
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  background: var(--bg-subtle);
 }
 
 .config-form legend {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-muted);
   padding: 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .config-form label {
   display: block;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
   font-size: 0.9rem;
 }
 
@@ -184,29 +224,93 @@ main {
   margin-bottom: 0;
 }
 
-.config-form input[type='text'],
-.config-form input[type='color'] {
-  display: block;
-  width: 100%;
-  margin-top: 0.25rem;
-  padding: 0.5rem;
-  background: var(--bg);
+.config-form .input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.config-form input[type='text'] {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 10px;
   color: var(--text);
   font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.config-form input[type='text']::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.config-form input[type='text']:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 .config-form input[type='color'] {
-  height: 36px;
-  padding: 2px;
+  width: 44px;
+  height: 44px;
+  padding: 4px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
   cursor: pointer;
+  background: var(--surface);
+  transition: border-color 0.2s, transform 0.15s;
+}
+
+.config-form input[type='color']:hover {
+  border-color: var(--border-light);
+  transform: scale(1.02);
+}
+
+.config-form input[type='color']:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.config-form .color-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.config-form .color-row:last-child {
+  margin-bottom: 0;
+}
+
+.config-form .color-row label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
 }
 
 .config-form .color-hex {
   width: 100px;
-  display: inline-block;
-  margin-left: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'SF Mono', 'Monaco', monospace;
+  font-size: 0.85rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.config-form .color-hex:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
 .file-list {
@@ -219,13 +323,20 @@ main {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem 0;
+  padding: 0.65rem 0;
   border-bottom: 1px solid var(--border);
   font-size: 0.9rem;
 }
 
 .file-list li:last-child {
   border-bottom: none;
+}
+
+.file-list li:hover {
+  background: var(--bg-subtle);
+  margin: 0 -0.5rem;
+  padding: 0.65rem 0.5rem;
+  border-radius: 8px;
 }
 
 .file-list .size {

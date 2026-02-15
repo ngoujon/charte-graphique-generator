@@ -180,6 +180,12 @@ function App() {
             <p className="hint">
               Déposez vos fichiers (logos, images) dans ce dossier. Ils seront inclus dans le PDF.
             </p>
+            <div className="upload-zone">
+              <label>
+                <input type="file" multiple accept="image/*" onChange={uploadFiles} hidden />
+                <span>Cliquez pour parcourir</span> ou glissez-déposez vos images
+              </label>
+            </div>
             <label className="btn btn-primary">
               <input type="file" multiple accept="image/*" onChange={uploadFiles} hidden />
               Ajouter des fichiers
@@ -225,55 +231,68 @@ function App() {
                 <fieldset>
                   <legend>Projet</legend>
                   <label>
-                    Nom <input
-                      value={config.projet?.nom || ''}
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          projet: { ...config.projet, nom: e.target.value },
-                        })
-                      }
-                    />
+                    Nom du projet
+                    <div className="input-wrap">
+                      <input
+                        type="text"
+                        placeholder="Ex: Mon entreprise"
+                        value={config.projet?.nom || ''}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            projet: { ...config.projet, nom: e.target.value },
+                          })
+                        }
+                      />
+                    </div>
                   </label>
                   <label>
-                    Description <input
-                      value={config.projet?.description || ''}
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          projet: { ...config.projet, description: e.target.value },
-                        })
-                      }
-                    />
+                    Description
+                    <div className="input-wrap">
+                      <input
+                        type="text"
+                        placeholder="Ex: Charte graphique 2025"
+                        value={config.projet?.description || ''}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            projet: { ...config.projet, description: e.target.value },
+                          })
+                        }
+                      />
+                    </div>
                   </label>
                 </fieldset>
                 <fieldset>
-                  <legend>Couleurs</legend>
+                  <legend>Palette de couleurs</legend>
                   {['primaire', 'secondaire', 'accent', 'fond', 'texte'].map((key) => (
-                    <label key={key}>
-                      {key}{' '}
-                      <input
-                        type="color"
-                        value={config.couleurs?.[key] || '#000'}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            couleurs: { ...config.couleurs, [key]: e.target.value },
-                          })
-                        }
-                      />
-                      <input
-                        type="text"
-                        value={config.couleurs?.[key] || ''}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            couleurs: { ...config.couleurs, [key]: e.target.value },
-                          })
-                        }
-                        className="color-hex"
-                      />
-                    </label>
+                    <div key={key} className="color-row">
+                      <label>
+                        <input
+                          type="color"
+                          value={config.couleurs?.[key] || '#000'}
+                          onChange={(e) =>
+                            setConfig({
+                              ...config,
+                              couleurs: { ...config.couleurs, [key]: e.target.value },
+                            })
+                          }
+                        />
+                        <span style={{ minWidth: 90, textTransform: 'capitalize' }}>{key}</span>
+                        <input
+                          type="text"
+                          value={config.couleurs?.[key] || ''}
+                          onChange={(e) =>
+                            setConfig({
+                              ...config,
+                              couleurs: { ...config.couleurs, [key]: e.target.value },
+                            })
+                          }
+                          className="color-hex"
+                          placeholder="#000000"
+                        />
+                      </label>
+                    </div>
                   ))}
                 </fieldset>
                 <button className="btn btn-primary" onClick={saveConfig}>
