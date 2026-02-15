@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontFamily: 'Helvetica-Bold',
-    flex: 1,
     lineHeight: 1.4,
     paddingBottom: SP.md,
     marginBottom: 0,
@@ -417,7 +416,7 @@ function createSectionHeader(num, title, primaire) {
       React.createElement(Text, { style: { color: '#fff', fontSize: 12, fontFamily: 'Helvetica-Bold' }, children: String(num) })
     ),
     React.createElement(Text, {
-      style: mergeStyles(styles.sectionTitle, { color: primaire, borderBottomColor: primaire }),
+      style: mergeStyles(styles.sectionTitle, { color: primaire, borderBottomColor: primaire, flex: 1 }),
       children: title,
     })
   );
@@ -958,7 +957,6 @@ export async function generatePdf(config, imagePaths, outputPath) {
             color: primaire,
             borderBottomColor: primaire,
             marginBottom: 12,
-            flex: 0,
           }),
           children: 'Exemple d\'article',
         }),
