@@ -1,0 +1,13 @@
+node_modules
+dist
+server/public
+.env
+.env.*
+*.log
+.DS_Store
+data/input/*
+data/output/*
+!data/input/.gitkeep
+!data/output/.gitkeep
+!data/conf/.gitkeep
+data/conf/charte.json

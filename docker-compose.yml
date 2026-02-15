@@ -1,0 +1,13 @@
+services:
+  charte-graphique:
+    build: .
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./data/input:/app/data/input
+      - ./data/output:/app/data/output
+      - ./data/conf:/app/data/conf
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      - DATA_DIR=/app/data

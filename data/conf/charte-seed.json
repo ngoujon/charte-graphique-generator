@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "projet": {
+    "nom": "Mon Projet",
+    "description": "Charte graphique - Document de charge graphique",
+    "auteur": "",
+    "date": "2025-02-15"
+  },
+  "couleurs": {
+    "primaire": "#2563eb",
+    "secondaire": "#64748b",
+    "accent": "#f59e0b",
+    "fond": "#ffffff",
+    "texte": "#1e293b"
+  },
+  "typographie": {
+    "titre": "Helvetica-Bold",
+    "corps": "Helvetica",
+    "tailleTitre": 24,
+    "tailleSousTitre": 18,
+    "tailleCorps": 12
+  },
+  "logo": null
+}
