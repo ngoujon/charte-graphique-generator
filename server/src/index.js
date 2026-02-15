@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { inputRouter } from './routes/input.js';
 import { outputRouter } from './routes/output.js';
@@ -17,8 +18,12 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// Static files (built React app)
-app.use(express.static(path.join(__dirname, '..', 'public')));
+const publicDir = path.join(__dirname, '..', 'public');
+const hasPublic = await fs.access(publicDir).then(() => true).catch(() => false);
+
+if (hasPublic) {
+  app.use(express.static(publicDir));
+}
 
 // API routes
 app.use('/api/input', inputRouter);
@@ -26,10 +31,11 @@ app.use('/api/output', outputRouter);
 app.use('/api/conf', confRouter);
 app.use('/api/generate', generateRouter);
 
-// SPA fallback
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
-});
+if (hasPublic) {
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(publicDir, 'index.html'));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Charte Graphique Generator running on http://localhost:${PORT}`);

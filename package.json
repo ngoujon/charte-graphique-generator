@@ -13,7 +13,8 @@
     "start": "cd server && npm start",
     "docker:build": "docker compose build",
     "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up --build"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

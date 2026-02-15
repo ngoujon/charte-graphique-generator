@@ -1,0 +1,20 @@
+FROM node:20-alpine
+WORKDIR /app
+
+# Install all deps (client + server + root)
+COPY package*.json ./
+COPY client/package*.json ./client/
+COPY server/package*.json ./server/
+
+RUN npm install && cd client && npm install && cd ../server && npm install
+
+# Source monté en volume, pas copié
+# On garde node_modules du build
+
+ENV NODE_ENV=development
+ENV PORT=3002
+ENV DATA_DIR=/app/data
+
+EXPOSE 3002 5173
+
+CMD ["npm", "run", "dev"]

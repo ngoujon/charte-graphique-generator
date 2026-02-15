@@ -8,7 +8,15 @@ Application React + Docker pour générer des documents PDF de charge graphique.
 2. **Configuration** : Personnalisez la charte (couleurs, typo, projet) dans l’interface ou via `data/conf/`
 3. **Output** : Générez le PDF → il est créé dans `data/output/`
 
-## Démarrer avec Docker (port 3002)
+## Développement avec Docker (hot reload)
+
+```bash
+npm run docker:dev
+```
+
+Ouvrez **http://localhost:5173** — les modifications sont reflétées en temps réel.
+
+## Production Docker (port 3002)
 
 ```bash
 docker compose up -d
@@ -16,19 +24,11 @@ docker compose up -d
 
 Puis ouvrez http://localhost:3002
 
-## Développement local
+## Développement sans Docker
 
 ```bash
-npm install
-cd server && npm install
-cd ../client && npm install
-cd ..
-
-# Terminal 1 : backend
-cd server && npm run dev
-
-# Terminal 2 : frontend
-cd client && npm run dev
+npm install && cd server && npm install && cd ../client && npm install && cd ..
+npm run dev
 ```
 
 Frontend : http://localhost:5173 (proxy API vers 3002)
