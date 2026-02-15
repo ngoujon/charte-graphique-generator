@@ -316,7 +316,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
     )
   );
 
-  const sommaireItems = ['Logo', 'Palette de couleurs', 'Typographie (titre, sous-titre, description)', 'Chiffres 0-9', 'Kit UI'];
+  const sommaireItems = ['Présentation de la marque', 'Logo', 'Palette de couleurs', 'Typographie (titre, sous-titre, description)', 'Chiffres 0-9', 'Kit UI'];
   if (otherImages.length > 0) sommaireItems.push('Éléments graphiques');
 
   const pageSommaire = React.createElement(
@@ -365,6 +365,92 @@ export async function generatePdf(config, imagePaths, outputPath) {
     )
   );
   pages.push(pageSommaire);
+
+  const marque = config.marque || {};
+  const pageMarque = React.createElement(
+    Page,
+    {
+      key: 'marque',
+      size: 'A4',
+      style: mergeStyles(styles.page, { backgroundColor: fond }),
+    },
+    React.createElement(
+      View,
+      { style: styles.section },
+      React.createElement(Text, {
+        style: mergeStyles(styles.sectionTitle, {
+          color: primaire,
+          borderBottomColor: primaire,
+        }),
+        children: 'Présentation de la marque',
+      }),
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, { marginBottom: 20 }),
+        children: 'Identité et positionnement de la marque',
+      }),
+      React.createElement(
+        View,
+        { key: 'marque-nom', style: { marginBottom: 20 } },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
+          children: 'Nom de la marque',
+        }),
+        React.createElement(Text, {
+          style: { fontSize: tailleTitre, fontFamily: fontTitre, color: primaire },
+          children: projet.nom || 'Mon Projet',
+        })
+      ),
+      marque.slogan && React.createElement(
+        View,
+        { key: 'marque-slogan', style: { marginBottom: 20 } },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
+          children: 'Slogan',
+        }),
+        React.createElement(Text, {
+          style: { fontSize: tailleSousTitre, fontFamily: fontCorps, color: secondaire, fontStyle: 'italic' },
+          children: marque.slogan,
+        })
+      ),
+      marque.mission && React.createElement(
+        View,
+        { key: 'marque-mission', style: { marginBottom: 20 } },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
+          children: 'Mission',
+        }),
+        React.createElement(Text, {
+          style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
+          children: marque.mission,
+        })
+      ),
+      marque.valeurs && React.createElement(
+        View,
+        { key: 'marque-valeurs', style: { marginBottom: 20 } },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
+          children: 'Valeurs',
+        }),
+        React.createElement(Text, {
+          style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
+          children: marque.valeurs,
+        })
+      ),
+      marque.personnalite && React.createElement(
+        View,
+        { key: 'marque-personnalite' },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
+          children: 'Personnalité de la marque',
+        }),
+        React.createElement(Text, {
+          style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
+          children: marque.personnalite,
+        })
+      )
+    )
+  );
+  pages.push(pageMarque);
 
   const logoSectionChildren = [];
 

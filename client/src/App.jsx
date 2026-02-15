@@ -264,6 +264,74 @@ function App() {
                   </label>
                 </fieldset>
                 <fieldset>
+                  <legend>Présentation de la marque</legend>
+                  <label>
+                    Slogan
+                    <div className="input-wrap">
+                      <input
+                        type="text"
+                        placeholder="Ex: Votre slogan ici"
+                        value={config.marque?.slogan || ''}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            marque: { ...config.marque, slogan: e.target.value },
+                          })
+                        }
+                      />
+                    </div>
+                  </label>
+                  <label>
+                    Mission
+                    <div className="input-wrap">
+                      <textarea
+                        rows={2}
+                        placeholder="Ex: Notre mission est de..."
+                        value={config.marque?.mission || ''}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            marque: { ...config.marque, mission: e.target.value },
+                          })
+                        }
+                        className="config-textarea"
+                      />
+                    </div>
+                  </label>
+                  <label>
+                    Valeurs
+                    <div className="input-wrap">
+                      <input
+                        type="text"
+                        placeholder="Ex: Innovation, Qualité, Proximité"
+                        value={config.marque?.valeurs || ''}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            marque: { ...config.marque, valeurs: e.target.value },
+                          })
+                        }
+                      />
+                    </div>
+                  </label>
+                  <label>
+                    Personnalité
+                    <div className="input-wrap">
+                      <input
+                        type="text"
+                        placeholder="Ex: Moderne, fiable, accessible"
+                        value={config.marque?.personnalite || ''}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            marque: { ...config.marque, personnalite: e.target.value },
+                          })
+                        }
+                      />
+                    </div>
+                  </label>
+                </fieldset>
+                <fieldset>
                   <legend>Exemples de texte (typographie)</legend>
                   <label>
                     Titre

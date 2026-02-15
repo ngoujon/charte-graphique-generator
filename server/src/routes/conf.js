@@ -14,6 +14,12 @@ const DEFAULT_CONF = {
     auteur: '',
     date: new Date().toISOString().split('T')[0],
   },
+  marque: {
+    slogan: 'Votre slogan ici',
+    mission: 'Notre mission est de...',
+    valeurs: 'Innovation, Qualité, Proximité',
+    personnalite: 'Moderne, fiable, accessible',
+  },
   couleurs: {
     primaire: '#2563eb',
     secondaire: '#64748b',

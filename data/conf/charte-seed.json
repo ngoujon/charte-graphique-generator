@@ -6,6 +6,12 @@
     "auteur": "",
     "date": "2025-02-15"
   },
+  "marque": {
+    "slogan": "Votre slogan ici",
+    "mission": "Notre mission est de...",
+    "valeurs": "Innovation, Qualité, Proximité",
+    "personnalite": "Moderne, fiable, accessible"
+  },
   "couleurs": {
     "primaire": "#2563eb",
     "secondaire": "#64748b",
