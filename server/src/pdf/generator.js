@@ -490,84 +490,53 @@ export async function generatePdf(config, imagePaths, outputPath) {
   pages.push(pageSommaire);
 
   const marque = config.marque || {};
-  const marqueCards = [
+  const marqueFields = [
+    {
+      key: 'nom',
+      label: 'Nom de la marque',
+      value: projet.nom || 'Mon Projet',
+      style: { fontSize: tailleTitre, fontFamily: fontTitre, color: primaire },
+    },
+    {
+      key: 'slogan',
+      label: 'Slogan',
+      value: marque.slogan || '',
+      style: { fontSize: tailleSousTitre, fontFamily: fontCorps, color: secondaire, fontStyle: 'italic', lineHeight: 1.5 },
+    },
+    {
+      key: 'mission',
+      label: 'Mission',
+      value: marque.mission || '',
+      style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
+    },
+    {
+      key: 'valeurs',
+      label: 'Valeurs',
+      value: marque.valeurs || '',
+      style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
+    },
+    {
+      key: 'personnalite',
+      label: 'Personnalité',
+      value: marque.personnalite || '',
+      style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
+    },
+  ];
+
+  const marqueCards = marqueFields.map(({ key, label, value, style }) =>
     React.createElement(
       View,
-      { key: 'marque-nom', style: styles.marqueCard },
+      { key: `marque-${key}`, style: styles.marqueCard },
       React.createElement(Text, {
         style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 10, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase' }),
-        children: 'Nom de la marque',
+        children: label,
       }),
       React.createElement(Text, {
-        style: { fontSize: tailleTitre, fontFamily: fontTitre, color: primaire },
-        children: projet.nom || 'Mon Projet',
+        style: style,
+        children: value || '—',
       })
-    ),
-  ];
-  if (marque.slogan) {
-    marqueCards.push(
-      React.createElement(
-        View,
-        { key: 'marque-slogan', style: styles.marqueCard },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 10, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase' }),
-          children: 'Slogan',
-        }),
-        React.createElement(Text, {
-          style: { fontSize: tailleSousTitre, fontFamily: fontCorps, color: secondaire, fontStyle: 'italic', lineHeight: 1.5 },
-          children: marque.slogan,
-        })
-      )
-    );
-  }
-  if (marque.mission) {
-    marqueCards.push(
-      React.createElement(
-        View,
-        { key: 'marque-mission', style: styles.marqueCard },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 10, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase' }),
-          children: 'Mission',
-        }),
-        React.createElement(Text, {
-          style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
-          children: marque.mission,
-        })
-      )
-    );
-  }
-  if (marque.valeurs) {
-    marqueCards.push(
-      React.createElement(
-        View,
-        { key: 'marque-valeurs', style: styles.marqueCard },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 10, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase' }),
-          children: 'Valeurs',
-        }),
-        React.createElement(Text, {
-          style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
-          children: marque.valeurs,
-        })
-      )
-    );
-  }
-  if (marque.personnalite) {
-    marqueCards.push(
-      React.createElement(
-        View,
-        { key: 'marque-personnalite', style: styles.marqueCard },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 10, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase' }),
-          children: 'Personnalité',
-        }),
-        React.createElement(Text, {
-          style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
-          children: marque.personnalite,
-        })
-      )
-    );
-  }
+    )
+  );
 
   const pageMarque = React.createElement(
     Page,
