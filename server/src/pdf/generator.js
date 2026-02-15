@@ -592,19 +592,79 @@ export async function generatePdf(config, imagePaths, outputPath) {
     }),
     React.createElement(
       View,
-      { style: styles.numbersRow },
-      ...'0123456789'.split('').map((n) =>
-        React.createElement(
-          View,
-          { key: n, style: styles.numberBox },
-          React.createElement(Text, {
-            style: {
-              fontSize: 18,
-              fontFamily: fontCorps,
-              color: texte,
-            },
-            children: n,
-          })
+      { key: 'numbers-titre', style: { marginBottom: 16 } },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 10 }),
+        children: `Titre — ${fontTitre} (${tailleTitre}pt)`,
+      }),
+      React.createElement(
+        View,
+        { style: styles.numbersRow },
+        ...'0123456789'.split('').map((n) =>
+          React.createElement(
+            View,
+            { key: `t-${n}`, style: styles.numberBox },
+            React.createElement(Text, {
+              style: {
+                fontSize: Math.min(tailleTitre, 18),
+                fontFamily: fontTitre,
+                color: texte,
+              },
+              children: n,
+            })
+          )
+        )
+      )
+    ),
+    React.createElement(
+      View,
+      { key: 'numbers-soustitre', style: { marginBottom: 16 } },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 10 }),
+        children: `Sous-titre — ${fontCorps} (${tailleSousTitre}pt)`,
+      }),
+      React.createElement(
+        View,
+        { style: styles.numbersRow },
+        ...'0123456789'.split('').map((n) =>
+          React.createElement(
+            View,
+            { key: `s-${n}`, style: styles.numberBox },
+            React.createElement(Text, {
+              style: {
+                fontSize: Math.min(tailleSousTitre, 16),
+                fontFamily: fontCorps,
+                color: texte,
+              },
+              children: n,
+            })
+          )
+        )
+      )
+    ),
+    React.createElement(
+      View,
+      { key: 'numbers-desc' },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 10 }),
+        children: `Description — ${fontCorps} (${tailleCorps}pt)`,
+      }),
+      React.createElement(
+        View,
+        { style: styles.numbersRow },
+        ...'0123456789'.split('').map((n) =>
+          React.createElement(
+            View,
+            { key: `d-${n}`, style: styles.numberBox },
+            React.createElement(Text, {
+              style: {
+                fontSize: Math.min(tailleCorps, 14),
+                fontFamily: fontCorps,
+                color: texte,
+              },
+              children: n,
+            })
+          )
         )
       )
     )
