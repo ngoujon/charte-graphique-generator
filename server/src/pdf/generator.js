@@ -183,20 +183,55 @@ const styles = StyleSheet.create({
   typoExample: {
     marginBottom: SP.md,
   },
+  typoSpecsCard: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SP.lg,
+    padding: SP.lg,
+    marginBottom: SP.lg,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: BORDER,
+    backgroundColor: '#fafbfc',
+  },
+  typoSpecItem: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: SP.sm,
+  },
+  typoSpecLabel: {
+    fontSize: 9,
+    fontFamily: 'Helvetica-Bold',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    color: MUTED,
+  },
+  typoSpecValue: {
+    fontSize: 12,
+    fontFamily: 'Helvetica-Bold',
+  },
   numbersRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: SP.sm,
-    marginTop: SP.md,
+    marginTop: SP.sm,
   },
   numberBox: {
-    width: 36,
-    height: 36,
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: BORDER,
-    borderRadius: 4,
+    borderRadius: 8,
+  },
+  typoLevelCard: {
+    padding: SP.md,
+    marginBottom: SP.md,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: BORDER,
+    backgroundColor: '#fafbfc',
   },
   placeholderLogo: {
     width: 120,
@@ -215,11 +250,13 @@ const styles = StyleSheet.create({
   },
   articleBlock: {
     marginTop: SP.md,
-    padding: SP.md,
+    padding: SP.lg,
+    paddingLeft: SP.xl + 4,
     borderWidth: 1,
     borderColor: BORDER,
     borderRadius: 8,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#fafbfc',
+    borderLeftWidth: 4,
   },
   uiButton: {
     paddingVertical: SP.sm,
@@ -695,7 +732,43 @@ export async function generatePdf(config, imagePaths, outputPath) {
   const ALPHABET_MAJ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const ALPHABET_MIN = 'abcdefghijklmnopqrstuvwxyz';
 
+  const typoSpecsCard = React.createElement(
+    View,
+    { key: 'typo-specs', style: styles.typoSpecsCard },
+    React.createElement(View, { style: styles.typoSpecItem },
+      React.createElement(Text, { style: styles.typoSpecLabel, children: 'Titre' }),
+      React.createElement(Text, { style: mergeStyles(styles.typoSpecValue, { color: primaire }), children: `${fontTitre} · ${tailleTitre}pt` })
+    ),
+    React.createElement(View, { style: styles.typoSpecItem },
+      React.createElement(Text, { style: styles.typoSpecLabel, children: 'Sous-titre' }),
+      React.createElement(Text, { style: mergeStyles(styles.typoSpecValue, { color: primaire }), children: `${fontCorps} · ${tailleSousTitre}pt` })
+    ),
+    React.createElement(View, { style: styles.typoSpecItem },
+      React.createElement(Text, { style: styles.typoSpecLabel, children: 'Corps' }),
+      React.createElement(Text, { style: mergeStyles(styles.typoSpecValue, { color: primaire }), children: `${fontCorps} · ${tailleCorps}pt` })
+    )
+  );
+
+  const createTypoLevelCard = (label, font, size, color) =>
+    React.createElement(
+      View,
+      { key: label, style: styles.typoLevelCard },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 9, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 0.5 }),
+        children: `${label} — ${font} (${size}pt)`,
+      }),
+      React.createElement(Text, {
+        style: { fontSize: Math.min(size, 14), fontFamily: font, color, lineHeight: 1.4 },
+        children: ALPHABET_MAJ,
+      }),
+      React.createElement(Text, {
+        style: { fontSize: Math.min(size, 14), fontFamily: font, color, marginTop: 4, lineHeight: 1.4 },
+        children: ALPHABET_MIN,
+      })
+    );
+
   const typoSectionChildren = [
+    typoSpecsCard,
     React.createElement(
       View,
       { key: 'article', style: styles.section },
@@ -709,7 +782,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
       }),
       React.createElement(
         View,
-        { style: mergeStyles(styles.articleBlock, { borderColor: BORDER }) },
+        { style: mergeStyles(styles.articleBlock, { borderColor: BORDER, borderLeftColor: primaire }) },
         React.createElement(Text, {
           style: {
             fontSize: tailleTitre,
@@ -750,83 +823,39 @@ export async function generatePdf(config, imagePaths, outputPath) {
         }),
         children: 'Alphabet',
       }),
-      React.createElement(
-        View,
-        { key: 'alphabet-titre', style: { marginBottom: 16 } },
-      React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, { marginBottom: 4, fontSize: 10 }),
-        children: `Titre — ${fontTitre} (${tailleTitre}pt)`,
-      }),
-      React.createElement(Text, {
-        style: {
-          fontSize: Math.min(tailleTitre, 14),
-          fontFamily: fontTitre,
-          color: texte,
-        },
-        children: ALPHABET_MAJ,
-      }),
-      React.createElement(Text, {
-        style: {
-          fontSize: Math.min(tailleTitre, 14),
-          fontFamily: fontTitre,
-          color: texte,
-          marginTop: 2,
-        },
-        children: ALPHABET_MIN,
-      })
-    ),
-      React.createElement(
-        View,
-        { key: 'alphabet-soustitre', style: { marginBottom: 16 } },
-      React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, { marginBottom: 4, fontSize: 10 }),
-        children: `Sous-titre — ${fontCorps} (${tailleSousTitre}pt)`,
-      }),
-      React.createElement(Text, {
-        style: {
-          fontSize: Math.min(tailleSousTitre, 12),
-          fontFamily: fontCorps,
-          color: texte,
-        },
-        children: ALPHABET_MAJ,
-      }),
-      React.createElement(Text, {
-        style: {
-          fontSize: Math.min(tailleSousTitre, 12),
-          fontFamily: fontCorps,
-          color: texte,
-          marginTop: 2,
-        },
-        children: ALPHABET_MIN,
-      })
-    ),
-      React.createElement(
-        View,
-        { key: 'alphabet-desc', style: { marginBottom: 8 } },
-      React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, { marginBottom: 4, fontSize: 10 }),
-        children: `Description — ${fontCorps} (${tailleCorps}pt)`,
-      }),
-      React.createElement(Text, {
-        style: {
-          fontSize: Math.min(tailleCorps, 11),
-          fontFamily: fontCorps,
-          color: texte,
-        },
-        children: ALPHABET_MAJ,
-      }),
-      React.createElement(Text, {
-        style: {
-          fontSize: Math.min(tailleCorps, 11),
-          fontFamily: fontCorps,
-          color: texte,
-          marginTop: 2,
-        },
-        children: ALPHABET_MIN,
-      })
-    )
+      createTypoLevelCard('Titre', fontTitre, tailleTitre, texte),
+      createTypoLevelCard('Sous-titre', fontCorps, tailleSousTitre, texte),
+      createTypoLevelCard('Corps', fontCorps, tailleCorps, texte),
     ),
   ];
+
+  const createNumbersRow = (font, size, prefix) =>
+    React.createElement(
+      View,
+      { key: prefix, style: mergeStyles(styles.typoLevelCard, { marginBottom: SP.md }) },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 9, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 0.5 }),
+        children: `${prefix} — ${font} (${size}pt)`,
+      }),
+      React.createElement(
+        View,
+        { style: styles.numbersRow },
+        ...'0123456789'.split('').map((n) =>
+          React.createElement(
+            View,
+            { key: `${prefix}-${n}`, style: styles.numberBox },
+            React.createElement(Text, {
+              style: {
+                fontSize: Math.min(size, 18),
+                fontFamily: font,
+                color: texte,
+              },
+              children: n,
+            })
+          )
+        )
+      )
+    );
 
   const numbersSection = React.createElement(
     View,
@@ -835,87 +864,13 @@ export async function generatePdf(config, imagePaths, outputPath) {
       style: mergeStyles(styles.sectionTitle, {
         color: primaire,
         borderBottomColor: primaire,
+        marginBottom: 12,
       }),
       children: 'Chiffres 0-9',
     }),
-    React.createElement(
-      View,
-      { key: 'numbers-titre', style: { marginBottom: 16 } },
-      React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 10 }),
-        children: `Titre — ${fontTitre} (${tailleTitre}pt)`,
-      }),
-      React.createElement(
-        View,
-        { style: styles.numbersRow },
-        ...'0123456789'.split('').map((n) =>
-          React.createElement(
-            View,
-            { key: `t-${n}`, style: styles.numberBox },
-            React.createElement(Text, {
-              style: {
-                fontSize: Math.min(tailleTitre, 18),
-                fontFamily: fontTitre,
-                color: texte,
-              },
-              children: n,
-            })
-          )
-        )
-      )
-    ),
-    React.createElement(
-      View,
-      { key: 'numbers-soustitre', style: { marginBottom: 16 } },
-      React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 10 }),
-        children: `Sous-titre — ${fontCorps} (${tailleSousTitre}pt)`,
-      }),
-      React.createElement(
-        View,
-        { style: styles.numbersRow },
-        ...'0123456789'.split('').map((n) =>
-          React.createElement(
-            View,
-            { key: `s-${n}`, style: styles.numberBox },
-            React.createElement(Text, {
-              style: {
-                fontSize: Math.min(tailleSousTitre, 16),
-                fontFamily: fontCorps,
-                color: texte,
-              },
-              children: n,
-            })
-          )
-        )
-      )
-    ),
-    React.createElement(
-      View,
-      { key: 'numbers-desc' },
-      React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 10 }),
-        children: `Description — ${fontCorps} (${tailleCorps}pt)`,
-      }),
-      React.createElement(
-        View,
-        { style: styles.numbersRow },
-        ...'0123456789'.split('').map((n) =>
-          React.createElement(
-            View,
-            { key: `d-${n}`, style: styles.numberBox },
-            React.createElement(Text, {
-              style: {
-                fontSize: Math.min(tailleCorps, 14),
-                fontFamily: fontCorps,
-                color: texte,
-              },
-              children: n,
-            })
-          )
-        )
-      )
-    )
+    createNumbersRow(fontTitre, tailleTitre, 'Titre'),
+    createNumbersRow(fontCorps, tailleSousTitre, 'Sous-titre'),
+    createNumbersRow(fontCorps, tailleCorps, 'Corps'),
   );
 
   const pageTypo = React.createElement(
