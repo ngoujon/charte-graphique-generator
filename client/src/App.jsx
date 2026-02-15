@@ -537,7 +537,7 @@ function App() {
                   <legend>Palette de couleurs</legend>
                   <div className="palette-grid palette-grid-5">
                     {[
-                      { key: 'clair', label: 'Clair (fond)', default: '#f5f5dc', fallback: ['fond', 'blanc'] },
+                      { key: 'clair', label: 'Clair (fond)', default: '#ffffff', fallback: ['fond', 'blanc'] },
                       { key: 'sombre', label: 'Sombre (texte)', default: '#1a1a1a', fallback: ['texte', 'noir'] },
                       { key: 'primaire', label: 'Principale', default: '#2563eb', fallback: [] },
                       { key: 'secondaire', label: 'Secondaire', default: '#64748b', fallback: [] },

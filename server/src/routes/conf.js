@@ -21,7 +21,7 @@ const DEFAULT_CONF = {
     personnalite: 'Moderne, fiable, accessible',
   },
   couleurs: {
-    clair: '#f5f5dc',
+    clair: '#ffffff',
     sombre: '#1a1a1a',
     primaire: '#2563eb',
     secondaire: '#64748b',

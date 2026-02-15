@@ -488,7 +488,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
 
   const primaire = colors.primaire || '#2563eb';
   const secondaire = colors.secondaire || '#64748b';
-  const fond = colors.clair || colors.fond || colors.blanc || '#f5f5dc';
+  const fond = colors.clair || colors.fond || colors.blanc || '#ffffff';
   const texte = colors.sombre || colors.texte || colors.noir || '#1a1a1a';
   const accent = colors.accent || '#f59e0b';
 
