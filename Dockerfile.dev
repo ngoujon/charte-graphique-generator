@@ -15,6 +15,6 @@ ENV NODE_ENV=development
 ENV PORT=3002
 ENV DATA_DIR=/app/data
 
-EXPOSE 3002 5173
+EXPOSE 3002
 
 CMD ["npm", "run", "dev"]

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:client": "cd client && npm run dev",
-    "dev:server": "cd server && npm run dev",
+    "dev:server": "cd server && PORT=3003 npm run dev",
     "build": "npm run build:client && mkdir -p server/public && cp -r client/dist/* server/public/ && npm run build:server",
     "build:client": "cd client && npm run build",
     "build:server": "cd server && npm run build",

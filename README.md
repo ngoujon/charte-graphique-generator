@@ -14,7 +14,7 @@ Application React + Docker pour générer des documents PDF de charge graphique.
 npm run docker:dev
 ```
 
-Ouvrez **http://localhost:5173** — les modifications sont reflétées en temps réel.
+Ouvrez **http://localhost:3002** — les modifications sont reflétées en temps réel.
 
 ## Production Docker (port 3002)
 
@@ -31,7 +31,7 @@ npm install && cd server && npm install && cd ../client && npm install && cd ..
 npm run dev
 ```
 
-Frontend : http://localhost:5173 (proxy API vers 3002)
+Frontend : http://localhost:3002 (API sur 3003 en dev)
 
 ## Import / Export de configuration
 

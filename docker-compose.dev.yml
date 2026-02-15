@@ -5,7 +5,6 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "3002:3002"
-      - "5173:5173"
     volumes:
       - ./client:/app/client
       - client_node_modules:/app/client/node_modules
@@ -15,7 +14,7 @@ services:
       - ./package.json:/app/package.json
     environment:
       - NODE_ENV=development
-      - PORT=3002
+      - PORT=3003
       - DATA_DIR=/app/data
     command: npm run dev
 
