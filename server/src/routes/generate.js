@@ -28,7 +28,7 @@ generateRouter.post('/', async (req, res) => {
     const inputFiles = await fs.readdir(inputDir).catch(() => []);
     const images = inputFiles
       .filter((f) => /\.(png|jpg|jpeg|svg|webp)$/i.test(f))
-      .map((name) => path.join(inputDir(), name));
+      .map((name) => path.join(inputDir, name));
 
     await fs.mkdir(outputDir, { recursive: true });
     const filename = `charte-graphique-${Date.now()}.pdf`;

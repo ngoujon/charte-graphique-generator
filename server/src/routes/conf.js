@@ -27,6 +27,10 @@ const DEFAULT_CONF = {
     tailleTitre: 24,
     tailleSousTitre: 18,
     tailleCorps: 12,
+    exempleTitre: "Titre de l'exemple",
+    exempleSousTitre: "Sous-titre de l'exemple",
+    exempleDescription:
+      'Description ou corps de texte. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   },
   logo: null,
 };

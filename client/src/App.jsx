@@ -178,7 +178,7 @@ function App() {
           <section className="panel">
             <h2>Dossier Input</h2>
             <p className="hint">
-              Déposez vos fichiers (logos, images) dans ce dossier. Ils seront inclus dans le PDF.
+              Déposez vos fichiers (logos, images) dans ce dossier. Pour les logos : nommez « logo-clair » ou « clair » (fond clair) et « logo-sombre » ou « sombre » (fond sombre).
             </p>
             <div className="upload-zone">
               <label>
@@ -259,6 +259,67 @@ function App() {
                             projet: { ...config.projet, description: e.target.value },
                           })
                         }
+                      />
+                    </div>
+                  </label>
+                </fieldset>
+                <fieldset>
+                  <legend>Exemples de texte (typographie)</legend>
+                  <label>
+                    Titre
+                    <div className="input-wrap">
+                      <input
+                        type="text"
+                        placeholder="Ex: Titre de l'exemple"
+                        value={config.typographie?.exempleTitre || ''}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            typographie: {
+                              ...config.typographie,
+                              exempleTitre: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                  </label>
+                  <label>
+                    Sous-titre
+                    <div className="input-wrap">
+                      <input
+                        type="text"
+                        placeholder="Ex: Sous-titre de l'exemple"
+                        value={config.typographie?.exempleSousTitre || ''}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            typographie: {
+                              ...config.typographie,
+                              exempleSousTitre: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                  </label>
+                  <label>
+                    Description
+                    <div className="input-wrap">
+                      <textarea
+                        rows={3}
+                        placeholder="Ex: Corps de texte..."
+                        value={config.typographie?.exempleDescription || ''}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            typographie: {
+                              ...config.typographie,
+                              exempleDescription: e.target.value,
+                            },
+                          })
+                        }
+                        className="config-textarea"
                       />
                     </div>
                   </label>

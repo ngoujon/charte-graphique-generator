@@ -71,6 +71,38 @@ const styles = StyleSheet.create({
     height: 100,
     objectFit: 'contain',
   },
+  logoBox: {
+    width: 160,
+    height: 120,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  logoImg: {
+    maxWidth: 140,
+    maxHeight: 90,
+    objectFit: 'contain',
+  },
+  typoExample: {
+    marginBottom: 16,
+  },
+  numbersRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: 12,
+  },
+  numberBox: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 4,
+  },
 });
 
 async function imageToBase64(filePath) {
@@ -91,6 +123,21 @@ function mergeStyles(...args) {
   return Object.assign({}, ...args.filter(Boolean));
 }
 
+function findLogos(images) {
+  const clair = images.find((i) =>
+    /clair|light|claire/i.test(i.name)
+  );
+  const sombre = images.find((i) =>
+    /sombre|dark|noir/i.test(i.name)
+  );
+  const first = images[0];
+  const second = images[1];
+  return {
+    clair: clair || first,
+    sombre: sombre || second || first,
+  };
+}
+
 export async function generatePdf(config, imagePaths, outputPath) {
   const colors = config.couleurs || {};
   const projet = config.projet || {};
@@ -108,10 +155,27 @@ export async function generatePdf(config, imagePaths, outputPath) {
     }
   }
 
+  const { clair: logoClair, sombre: logoSombre } = findLogos(images);
+  const otherImages = images.filter(
+    (i) => i !== logoClair && i !== logoSombre
+  );
+
   const primaire = colors.primaire || '#2563eb';
   const secondaire = colors.secondaire || '#64748b';
   const fond = colors.fond || '#ffffff';
   const texte = colors.texte || '#1e293b';
+
+  const exempleTitre = typo.exempleTitre || "Titre de l'exemple";
+  const exempleSousTitre = typo.exempleSousTitre || 'Sous-titre de l\'exemple';
+  const exempleDescription =
+    typo.exempleDescription ||
+    'Description ou corps de texte. Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+
+  const tailleTitre = typo.tailleTitre || 24;
+  const tailleSousTitre = typo.tailleSousTitre || 18;
+  const tailleCorps = typo.tailleCorps || 12;
+  const fontTitre = typo.titre || 'Helvetica-Bold';
+  const fontCorps = typo.corps || 'Helvetica';
 
   const coverChildren = [
     React.createElement(Text, {
@@ -137,10 +201,170 @@ export async function generatePdf(config, imagePaths, outputPath) {
     );
   }
 
-  const page2Children = [
+  const pages = [];
+
+  pages.push(
+    React.createElement(
+      Page,
+      {
+        key: 'cover',
+        size: 'A4',
+        style: mergeStyles(styles.page, { backgroundColor: fond }),
+      },
+      React.createElement(View, { style: styles.cover }, ...coverChildren)
+    )
+  );
+
+  const sommaireItems = ['Palette de couleurs', 'Typographie (titre, sous-titre, description)', 'Chiffres 0-9'];
+  if (logoClair || logoSombre) sommaireItems.unshift('Logo');
+  if (otherImages.length > 0) sommaireItems.push('Éléments graphiques');
+
+  const pageSommaire = React.createElement(
+    Page,
+    {
+      key: 'sommaire',
+      size: 'A4',
+      style: mergeStyles(styles.page, { backgroundColor: fond }),
+    },
     React.createElement(
       View,
-      { key: 'colors', style: styles.section },
+      { style: styles.section },
+      React.createElement(Text, {
+        style: mergeStyles(styles.sectionTitle, {
+          color: primaire,
+          borderBottomColor: primaire,
+        }),
+        children: 'Sommaire — Aperçu de la charte',
+      }),
+      ...sommaireItems.map((item, i) =>
+        React.createElement(
+          View,
+          {
+            key: i,
+            style: {
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 12,
+            },
+          },
+          React.createElement(View, {
+            style: {
+              width: 6,
+              height: 6,
+              borderRadius: 3,
+              backgroundColor: primaire,
+              marginRight: 12,
+            },
+          }),
+          React.createElement(Text, {
+            style: { fontSize: 14, color: texte, fontFamily: fontCorps },
+            children: item,
+          })
+        )
+      )
+    )
+  );
+  pages.push(pageSommaire);
+
+  const logoSectionChildren = [];
+  if (logoClair) {
+    logoSectionChildren.push(
+      React.createElement(
+        View,
+        { key: 'clair-wrap', style: { marginBottom: 20 } },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, {
+            marginBottom: 8,
+            fontSize: 11,
+            fontFamily: 'Helvetica-Bold',
+          }),
+          children: 'Logo clair (fond clair)',
+        }),
+        React.createElement(
+          View,
+          {
+            style: mergeStyles(styles.logoBox, {
+              backgroundColor: fond || '#ffffff',
+              borderWidth: 1,
+              borderColor: '#e2e8f0',
+            }),
+          },
+          React.createElement(Image, {
+            src: logoClair.src,
+            style: styles.logoImg,
+          })
+        )
+      )
+    );
+  }
+  if (logoSombre) {
+    logoSectionChildren.push(
+      React.createElement(
+        View,
+        { key: 'sombre-wrap' },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, {
+            marginBottom: 8,
+            fontSize: 11,
+            fontFamily: 'Helvetica-Bold',
+          }),
+          children: 'Logo sombre (fond sombre)',
+        }),
+        React.createElement(
+          View,
+          {
+            style: mergeStyles(styles.logoBox, {
+              backgroundColor: texte || '#1e293b',
+            }),
+          },
+          React.createElement(Image, {
+            src: logoSombre.src,
+            style: styles.logoImg,
+          })
+        )
+      )
+    );
+  }
+
+  const pageLogo = React.createElement(
+    Page,
+    {
+      key: 'logo',
+      size: 'A4',
+      style: mergeStyles(styles.page, { backgroundColor: fond }),
+    },
+    React.createElement(
+      View,
+      { style: styles.section },
+      React.createElement(Text, {
+        style: mergeStyles(styles.sectionTitle, {
+          color: primaire,
+          borderBottomColor: primaire,
+        }),
+        children: 'Logo',
+      }),
+      React.createElement(
+        View,
+        { style: { flexDirection: 'row', flexWrap: 'wrap', gap: 32 } },
+        ...logoSectionChildren
+      )
+    )
+  );
+
+  if (logoSectionChildren.length > 0) {
+    pages.push(pageLogo);
+  }
+
+  const pageCouleurs = React.createElement(
+    Page,
+    {
+      key: 'couleurs',
+      size: 'A4',
+      style: mergeStyles(styles.page, { backgroundColor: fond }),
+    },
+    React.createElement(
+      View,
+      { style: styles.section },
       React.createElement(Text, {
         style: mergeStyles(styles.sectionTitle, {
           color: primaire,
@@ -173,10 +397,111 @@ export async function generatePdf(config, imagePaths, outputPath) {
           )
         )
       )
+    )
+  );
+  pages.push(pageCouleurs);
+
+  const typoSectionChildren = [
+    React.createElement(
+      View,
+      { key: 'typo-titre', style: styles.typoExample },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, {
+          marginBottom: 4,
+          fontSize: 10,
+        }),
+        children: `${fontTitre} — Titre (${tailleTitre}pt)`,
+      }),
+      React.createElement(Text, {
+        style: {
+          fontSize: tailleTitre,
+          fontFamily: fontTitre,
+          color: texte,
+        },
+        children: exempleTitre,
+      })
     ),
     React.createElement(
       View,
-      { key: 'typo', style: styles.section },
+      { key: 'typo-soustitre', style: styles.typoExample },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, {
+          marginBottom: 4,
+          fontSize: 10,
+        }),
+        children: `${fontCorps} — Sous-titre (${tailleSousTitre}pt)`,
+      }),
+      React.createElement(Text, {
+        style: {
+          fontSize: tailleSousTitre,
+          fontFamily: fontCorps,
+          color: texte,
+        },
+        children: exempleSousTitre,
+      })
+    ),
+    React.createElement(
+      View,
+      { key: 'typo-desc', style: styles.typoExample },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, {
+          marginBottom: 4,
+          fontSize: 10,
+        }),
+        children: `${fontCorps} — Description (${tailleCorps}pt)`,
+      }),
+      React.createElement(Text, {
+        style: {
+          fontSize: tailleCorps,
+          fontFamily: fontCorps,
+          color: texte,
+          lineHeight: 1.5,
+        },
+        children: exempleDescription,
+      })
+    ),
+  ];
+
+  const numbersSection = React.createElement(
+    View,
+    { key: 'numbers', style: styles.section },
+    React.createElement(Text, {
+      style: mergeStyles(styles.sectionTitle, {
+        color: primaire,
+        borderBottomColor: primaire,
+      }),
+      children: 'Chiffres 0-9',
+    }),
+    React.createElement(
+      View,
+      { style: styles.numbersRow },
+      ...'0123456789'.split('').map((n) =>
+        React.createElement(
+          View,
+          { key: n, style: styles.numberBox },
+          React.createElement(Text, {
+            style: {
+              fontSize: 18,
+              fontFamily: fontCorps,
+              color: texte,
+            },
+            children: n,
+          })
+        )
+      )
+    )
+  );
+
+  const pageTypo = React.createElement(
+    Page,
+    {
+      key: 'typo',
+      size: 'A4',
+      style: mergeStyles(styles.page, { backgroundColor: fond }),
+    },
+    React.createElement(
+      View,
+      { style: styles.section },
       React.createElement(Text, {
         style: mergeStyles(styles.sectionTitle, {
           color: primaire,
@@ -184,22 +509,23 @@ export async function generatePdf(config, imagePaths, outputPath) {
         }),
         children: 'Typographie',
       }),
-      React.createElement(Text, {
-        style: { fontSize: typo.tailleCorps || 12, color: texte },
-        children: `Titre : ${typo.titre || 'Helvetica-Bold'} (${typo.tailleTitre || 24}pt)`,
-      }),
-      React.createElement(Text, {
-        style: { fontSize: typo.tailleCorps || 12, marginTop: 4, color: texte },
-        children: `Corps : ${typo.corps || 'Helvetica'} (${typo.tailleCorps || 12}pt)`,
-      })
+      ...typoSectionChildren
     ),
-  ];
+    numbersSection
+  );
+  pages.push(pageTypo);
 
-  if (images.length > 0) {
-    page2Children.push(
+  if (otherImages.length > 0) {
+    const pageImages = React.createElement(
+      Page,
+      {
+        key: 'images',
+        size: 'A4',
+        style: mergeStyles(styles.page, { backgroundColor: fond }),
+      },
       React.createElement(
         View,
-        { key: 'images', style: styles.section },
+        { style: styles.section },
         React.createElement(Text, {
           style: mergeStyles(styles.sectionTitle, {
             color: primaire,
@@ -210,7 +536,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
         React.createElement(
           View,
           { style: styles.imageGrid },
-          ...images.map((img, i) =>
+          ...otherImages.map((img, i) =>
             React.createElement(
               View,
               { key: i, style: styles.imageItem },
@@ -224,23 +550,11 @@ export async function generatePdf(config, imagePaths, outputPath) {
         )
       )
     );
+    pages.push(pageImages);
   }
 
   const CharteDocument = () =>
-    React.createElement(
-      Document,
-      null,
-      React.createElement(
-        Page,
-        { size: 'A4', style: mergeStyles(styles.page, { backgroundColor: fond }) },
-        React.createElement(View, { style: styles.cover }, ...coverChildren)
-      ),
-      React.createElement(
-        Page,
-        { size: 'A4', style: mergeStyles(styles.page, { backgroundColor: fond }) },
-        ...page2Children
-      )
-    );
+    React.createElement(Document, null, ...pages);
 
   await renderToFile(React.createElement(CharteDocument), outputPath);
 }
