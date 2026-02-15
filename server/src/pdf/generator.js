@@ -151,6 +151,30 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: SP.sm,
   },
+  logoGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SP.lg,
+    marginTop: SP.md,
+  },
+  logoGridItem: {
+    width: 245,
+    alignItems: 'center',
+  },
+  logoBoxCompact: {
+    width: 220,
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SP.sm,
+    borderRadius: 8,
+    marginBottom: SP.xs,
+  },
+  logoImgCompact: {
+    maxWidth: 200,
+    maxHeight: 80,
+    objectFit: 'contain',
+  },
   logoImg: {
     maxWidth: 140,
     maxHeight: 90,
@@ -567,132 +591,69 @@ export async function generatePdf(config, imagePaths, outputPath) {
 
   const logoSectionChildren = [];
 
-  const logoClairContent = logoClair
-    ? React.createElement(Image, {
-        src: logoClair.src,
-        style: styles.logoImg,
-      })
-    : createPlaceholderLogo(fond || '#ffffff', texte || '#1e293b');
+  const logoImgStyle = styles.logoImgCompact;
+  const logoBoxStyle = styles.logoBoxCompact;
 
-  const logoSombreContent = logoSombre
-    ? React.createElement(Image, {
-        src: logoSombre.src,
-        style: styles.logoImg,
-      })
-    : createPlaceholderLogo(texte || '#1e293b', fond || '#ffffff');
+  const logoVariants = [
+    {
+      key: 'clair',
+      label: logoClair ? 'Logo clair (fond clair)' : 'Logo clair — Exemple',
+      bgColor: fond || '#ffffff',
+      border: true,
+      content: logoClair
+        ? React.createElement(Image, { src: logoClair.src, style: logoImgStyle })
+        : createPlaceholderLogo(fond || '#ffffff', texte || '#1e293b'),
+    },
+    {
+      key: 'sombre',
+      label: logoSombre ? 'Logo sombre (fond sombre)' : 'Logo sombre — Exemple',
+      bgColor: texte || '#1e293b',
+      border: false,
+      content: logoSombre
+        ? React.createElement(Image, { src: logoSombre.src, style: logoImgStyle })
+        : createPlaceholderLogo(texte || '#1e293b', fond || '#ffffff'),
+    },
+    {
+      key: 'primaire',
+      label: hasPrimaire ? 'Sur couleur principale' : 'Logo primaire — Exemple',
+      bgColor: primaire,
+      border: true,
+      content: logoPrimaire
+        ? React.createElement(Image, { src: logoPrimaire.src, style: logoImgStyle })
+        : createPlaceholderLogo(primaire, '#ffffff'),
+    },
+    {
+      key: 'secondaire',
+      label: hasSecondaire ? 'Sur couleur secondaire' : 'Logo secondaire — Exemple',
+      bgColor: secondaire,
+      border: true,
+      content: logoSecondaire
+        ? React.createElement(Image, { src: logoSecondaire.src, style: logoImgStyle })
+        : createPlaceholderLogo(secondaire, '#ffffff'),
+    },
+  ];
 
-  const logoPrimaireContent = logoPrimaire
-    ? React.createElement(Image, {
-        src: logoPrimaire.src,
-        style: styles.logoImg,
-      })
-    : createPlaceholderLogo(primaire, '#ffffff');
-
-  const logoSecondaireContent = logoSecondaire
-    ? React.createElement(Image, {
-        src: logoSecondaire.src,
-        style: styles.logoImg,
-      })
-    : createPlaceholderLogo(secondaire, '#ffffff');
-
-  logoSectionChildren.push(
+  const logoGridItems = logoVariants.map(({ key, label, bgColor, border, content }) =>
     React.createElement(
       View,
-      { key: 'clair-wrap', style: { marginBottom: 20 } },
+      { key: `${key}-wrap`, style: styles.logoGridItem },
       React.createElement(Text, {
         style: mergeStyles(styles.colorLabel, {
-          marginBottom: 8,
-          fontSize: 11,
+          marginBottom: SP.sm,
+          fontSize: 10,
           fontFamily: 'Helvetica-Bold',
         }),
-        children: logoClair ? 'Logo clair (fond clair)' : 'Logo clair — Exemple (remplacez par votre fichier)',
+        children: label,
       }),
       React.createElement(
         View,
         {
-          style: mergeStyles(styles.logoBox, {
-            backgroundColor: fond || '#ffffff',
-            borderWidth: 1,
-            borderColor: BORDER,
+          style: mergeStyles(logoBoxStyle, {
+            backgroundColor: bgColor,
+            ...(border && { borderWidth: 1, borderColor: BORDER }),
           }),
         },
-        logoClairContent
-      )
-    )
-  );
-
-  logoSectionChildren.push(
-    React.createElement(
-      View,
-      { key: 'sombre-wrap', style: { marginBottom: 20 } },
-      React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, {
-          marginBottom: 8,
-          fontSize: 11,
-          fontFamily: 'Helvetica-Bold',
-        }),
-        children: logoSombre ? 'Logo sombre (fond sombre)' : 'Logo sombre — Exemple (remplacez par votre fichier)',
-      }),
-      React.createElement(
-        View,
-        {
-          style: mergeStyles(styles.logoBox, {
-            backgroundColor: texte || '#1e293b',
-          }),
-        },
-        logoSombreContent
-      )
-    )
-  );
-
-  logoSectionChildren.push(
-    React.createElement(
-      View,
-      { key: 'primaire-wrap', style: { marginBottom: 20 } },
-      React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, {
-          marginBottom: 8,
-          fontSize: 11,
-          fontFamily: 'Helvetica-Bold',
-        }),
-        children: hasPrimaire ? 'Logo sur fond couleur principale' : 'Logo primaire — Exemple (remplacez par votre fichier)',
-      }),
-      React.createElement(
-        View,
-        {
-          style: mergeStyles(styles.logoBox, {
-            backgroundColor: primaire,
-            borderWidth: 1,
-            borderColor: BORDER,
-          }),
-        },
-        logoPrimaireContent
-      )
-    )
-  );
-
-  logoSectionChildren.push(
-    React.createElement(
-      View,
-      { key: 'secondaire-wrap' },
-      React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, {
-          marginBottom: 8,
-          fontSize: 11,
-          fontFamily: 'Helvetica-Bold',
-        }),
-        children: hasSecondaire ? 'Logo sur fond couleur secondaire' : 'Logo secondaire — Exemple (remplacez par votre fichier)',
-      }),
-      React.createElement(
-        View,
-        {
-          style: mergeStyles(styles.logoBox, {
-            backgroundColor: secondaire,
-            borderWidth: 1,
-            borderColor: BORDER,
-          }),
-        },
-        logoSecondaireContent
+        content
       )
     )
   );
@@ -712,11 +673,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
         style: mergeStyles(styles.sectionIntro),
         children: 'Versions claire, sombre, sur couleur principale et sur couleur secondaire',
       }),
-      React.createElement(
-        View,
-        { style: { flexDirection: 'row', flexWrap: 'wrap', gap: SP.xl } },
-        ...logoSectionChildren
-      )
+      React.createElement(View, { style: styles.logoGrid }, ...logoGridItems)
     )
   );
 
