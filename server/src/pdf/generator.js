@@ -286,12 +286,19 @@ const styles = StyleSheet.create({
   articleBlock: {
     marginTop: SP.md,
     padding: SP.lg,
-    paddingLeft: SP.xl + 4,
     borderWidth: 1,
     borderColor: BORDER,
     borderRadius: 8,
     backgroundColor: '#fafbfc',
-    borderLeftWidth: 4,
+  },
+  articleBlockWithAccent: {
+    flexDirection: 'row',
+    marginTop: SP.md,
+  },
+  articleBlockAccentBar: {
+    width: 4,
+    marginRight: SP.md,
+    borderRadius: 2,
   },
   uiButton: {
     paddingVertical: SP.sm,
@@ -951,39 +958,47 @@ export async function generatePdf(config, imagePaths, outputPath) {
             color: primaire,
             borderBottomColor: primaire,
             marginBottom: 12,
+            flex: 0,
           }),
           children: 'Exemple d\'article',
         }),
         React.createElement(
           View,
-          { style: mergeStyles(styles.articleBlock, { borderColor: BORDER, borderLeftColor: primaire }) },
-          React.createElement(Text, {
-            style: {
-              fontSize: tailleTitre,
-              fontFamily: fontTitre,
-              color: texte,
-              marginBottom: 8,
-            },
-            children: exempleTitre,
+          { style: styles.articleBlockWithAccent },
+          React.createElement(View, {
+            style: mergeStyles(styles.articleBlockAccentBar, { backgroundColor: primaire }),
           }),
-          React.createElement(Text, {
-            style: {
-              fontSize: tailleSousTitre,
-              fontFamily: fontCorps,
-              color: secondaire,
-              marginBottom: 12,
-            },
-            children: exempleSousTitre,
-          }),
-          React.createElement(Text, {
-            style: {
-              fontSize: tailleCorps,
-              fontFamily: fontCorps,
-              color: texte,
-              lineHeight: 1.6,
-            },
-            children: exempleDescription,
-          })
+          React.createElement(
+            View,
+            { style: mergeStyles(styles.articleBlock, { flex: 1 }) },
+            React.createElement(Text, {
+              style: {
+                fontSize: tailleTitre,
+                fontFamily: fontTitre,
+                color: texte,
+                marginBottom: 8,
+              },
+              children: exempleTitre,
+            }),
+            React.createElement(Text, {
+              style: {
+                fontSize: tailleSousTitre,
+                fontFamily: fontCorps,
+                color: secondaire,
+                marginBottom: 12,
+              },
+              children: exempleSousTitre,
+            }),
+            React.createElement(Text, {
+              style: {
+                fontSize: tailleCorps,
+                fontFamily: fontCorps,
+                color: texte,
+                lineHeight: 1.6,
+              },
+              children: exempleDescription,
+            })
+          )
         )
       )
     )
