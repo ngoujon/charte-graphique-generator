@@ -126,6 +126,34 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#f8fafc',
   },
+  uiButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  uiInput: {
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 6,
+    padding: 10,
+    fontSize: 12,
+  },
+  uiCard: {
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 12,
+  },
+  uiBadge: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    marginRight: 6,
+    marginBottom: 6,
+  },
 });
 
 function createPlaceholderLogo(bgColor, textColor) {
@@ -255,7 +283,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
     )
   );
 
-  const sommaireItems = ['Logo', 'Palette de couleurs', 'Typographie (titre, sous-titre, description)', 'Chiffres 0-9'];
+  const sommaireItems = ['Logo', 'Palette de couleurs', 'Typographie (titre, sous-titre, description)', 'Chiffres 0-9', 'Kit UI'];
   if (otherImages.length > 0) sommaireItems.push('Éléments graphiques');
 
   const pageSommaire = React.createElement(
@@ -692,6 +720,200 @@ export async function generatePdf(config, imagePaths, outputPath) {
     numbersSection
   );
   pages.push(pageTypo);
+
+  const accent = colors.accent || '#f59e0b';
+
+  const pageUiKit = React.createElement(
+    Page,
+    {
+      key: 'uikit',
+      size: 'A4',
+      style: mergeStyles(styles.page, { backgroundColor: fond }),
+    },
+    React.createElement(
+      View,
+      { style: styles.section },
+      React.createElement(Text, {
+        style: mergeStyles(styles.sectionTitle, {
+          color: primaire,
+          borderBottomColor: primaire,
+        }),
+        children: 'Kit UI',
+      }),
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, { marginBottom: 16 }),
+        children: 'Composants d\'interface utilisant la charte graphique',
+      }),
+      React.createElement(
+        View,
+        { key: 'buttons', style: { marginBottom: 20 } },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, { marginBottom: 8, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
+          children: 'Boutons',
+        }),
+        React.createElement(
+          View,
+          { style: { flexDirection: 'row', flexWrap: 'wrap' } },
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiButton, {
+                backgroundColor: primaire,
+              }),
+            },
+            React.createElement(Text, {
+              style: { color: '#ffffff', fontSize: 12, fontFamily: fontCorps },
+              children: 'Primaire',
+            })
+          ),
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiButton, {
+                backgroundColor: 'transparent',
+                borderWidth: 1,
+                borderColor: primaire,
+              }),
+            },
+            React.createElement(Text, {
+              style: { color: primaire, fontSize: 12, fontFamily: fontCorps },
+              children: 'Secondaire',
+            })
+          ),
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiButton, {
+                backgroundColor: accent,
+              }),
+            },
+            React.createElement(Text, {
+              style: { color: '#ffffff', fontSize: 12, fontFamily: fontCorps },
+              children: 'Accent',
+            })
+          )
+        )
+      ),
+      React.createElement(
+        View,
+        { key: 'input', style: { marginBottom: 20 } },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, { marginBottom: 8, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
+          children: 'Champ de saisie',
+        }),
+        React.createElement(
+          View,
+          {
+            style: mergeStyles(styles.uiInput, {
+              borderColor: '#e2e8f0',
+              backgroundColor: fond,
+            }),
+          },
+          React.createElement(Text, {
+            style: { color: secondaire, fontSize: 12, fontFamily: fontCorps },
+            children: 'Placeholder...',
+          })
+        )
+      ),
+      React.createElement(
+        View,
+        { key: 'badges', style: { marginBottom: 20 } },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, { marginBottom: 8, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
+          children: 'Badges',
+        }),
+        React.createElement(
+          View,
+          { style: { flexDirection: 'row', flexWrap: 'wrap' } },
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiBadge, {
+                backgroundColor: primaire,
+              }),
+            },
+            React.createElement(Text, {
+              style: { color: '#ffffff', fontSize: 10, fontFamily: fontCorps },
+              children: 'Primaire',
+            })
+          ),
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiBadge, {
+                backgroundColor: secondaire,
+              }),
+            },
+            React.createElement(Text, {
+              style: { color: '#ffffff', fontSize: 10, fontFamily: fontCorps },
+              children: 'Secondaire',
+            })
+          ),
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiBadge, {
+                backgroundColor: accent,
+              }),
+            },
+            React.createElement(Text, {
+              style: { color: '#ffffff', fontSize: 10, fontFamily: fontCorps },
+              children: 'Accent',
+            })
+          )
+        )
+      ),
+      React.createElement(
+        View,
+        { key: 'card' },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, { marginBottom: 8, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
+          children: 'Carte',
+        }),
+        React.createElement(
+          View,
+          {
+            style: mergeStyles(styles.uiCard, {
+              borderColor: '#e2e8f0',
+              backgroundColor: fond,
+            }),
+          },
+          React.createElement(Text, {
+            style: {
+              fontSize: tailleSousTitre,
+              fontFamily: fontTitre,
+              color: texte,
+              marginBottom: 6,
+            },
+            children: 'Titre de la carte',
+          }),
+          React.createElement(Text, {
+            style: {
+              fontSize: tailleCorps,
+              fontFamily: fontCorps,
+              color: secondaire,
+              marginBottom: 8,
+            },
+            children: 'Sous-titre ou description courte',
+          }),
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiButton, {
+                backgroundColor: primaire,
+                alignSelf: 'flex-start',
+              }),
+            },
+            React.createElement(Text, {
+              style: { color: '#ffffff', fontSize: 11, fontFamily: fontCorps },
+              children: 'Action',
+            })
+          )
+        )
+      )
+    )
+  );
+  pages.push(pageUiKit);
 
   if (otherImages.length > 0) {
     const pageImages = React.createElement(
