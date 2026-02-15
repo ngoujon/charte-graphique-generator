@@ -191,6 +191,31 @@ function mergeStyles(...args) {
   return Object.assign({}, ...args.filter(Boolean));
 }
 
+function hexToRgb(hex) {
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return m ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) } : null;
+}
+
+function rgbToHex(r, g, b) {
+  return '#' + [r, g, b].map((x) => Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, '0')).join('');
+}
+
+function lightenHex(hex, amount = 0.2) {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return hex;
+  return rgbToHex(
+    rgb.r + (255 - rgb.r) * amount,
+    rgb.g + (255 - rgb.g) * amount,
+    rgb.b + (255 - rgb.b) * amount
+  );
+}
+
+function darkenHex(hex, amount = 0.2) {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return hex;
+  return rgbToHex(rgb.r * (1 - amount), rgb.g * (1 - amount), rgb.b * (1 - amount));
+}
+
 function findLogos(images) {
   const clair = images.find((i) =>
     /clair|light|claire/i.test(i.name)
@@ -210,8 +235,6 @@ export async function generatePdf(config, imagePaths, outputPath) {
   const colors = config.couleurs || {};
   const projet = config.projet || {};
   const typo = config.typographie || {};
-
-  const colorEntries = Object.entries(colors);
 
   const images = [];
   for (const p of imagePaths) {
@@ -233,6 +256,16 @@ export async function generatePdf(config, imagePaths, outputPath) {
   const fond = colors.fond || '#ffffff';
   const texte = colors.texte || '#1e293b';
 
+  const colorEntries = [
+    ...Object.entries(colors),
+    ['primaire-clair', lightenHex(primaire, 0.35)],
+    ['primaire-foncé', darkenHex(primaire, 0.2)],
+    ['secondaire-clair', lightenHex(secondaire, 0.35)],
+    ['secondaire-foncé', darkenHex(secondaire, 0.2)],
+  ].filter(([name]) => {
+    const isDeclinaison = ['primaire-clair', 'primaire-foncé', 'secondaire-clair', 'secondaire-foncé'].includes(name);
+    return !isDeclinaison || (name.startsWith('primaire') && colors.primaire) || (name.startsWith('secondaire') && colors.secondaire);
+  });
   const exempleTitre = typo.exempleTitre || "Titre de l'exemple";
   const exempleSousTitre = typo.exempleSousTitre || 'Sous-titre de l\'exemple';
   const exempleDescription =
