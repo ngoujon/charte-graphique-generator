@@ -31,7 +31,7 @@ import {
 import fs from 'fs/promises';
 import path from 'path';
 
-const SP = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 };
+const SP = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 };
 const BORDER = '#cbd5e1';
 const MUTED = '#64748b';
 
@@ -45,24 +45,69 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  coverAccent: {
+    width: 60,
+    height: 4,
+    marginBottom: SP.lg,
+    borderRadius: 2,
+  },
   title: {
-    fontSize: 32,
-    marginBottom: SP.md,
+    fontSize: 36,
+    marginBottom: SP.sm,
     fontFamily: 'Helvetica-Bold',
+    letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     color: MUTED,
+    maxWidth: 400,
+    textAlign: 'center',
+    lineHeight: 1.5,
+  },
+  coverBadge: {
+    marginTop: SP.xl,
+    paddingVertical: SP.sm,
+    paddingHorizontal: SP.md,
+    borderRadius: 20,
+    borderWidth: 1,
   },
   section: {
     marginBottom: SP.lg,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SP.lg,
+  },
+  sectionNumber: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: SP.md,
+  },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: 'Helvetica-Bold',
-    marginBottom: SP.md,
-    borderBottomWidth: 2,
+    flex: 1,
     paddingBottom: SP.sm,
+    borderBottomWidth: 2,
+  },
+  sectionIntro: {
+    fontSize: 11,
+    color: MUTED,
+    marginTop: SP.sm,
+    marginBottom: SP.lg,
+    lineHeight: 1.5,
+  },
+  marqueCard: {
+    padding: SP.lg,
+    marginBottom: SP.md,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: BORDER,
+    backgroundColor: '#fafbfc',
   },
   colorRow: {
     flexDirection: 'row',
@@ -71,10 +116,10 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   colorBox: {
-    width: 80,
-    height: 40,
-    borderRadius: 4,
-    marginBottom: SP.xs,
+    width: 88,
+    height: 48,
+    borderRadius: 6,
+    marginBottom: SP.sm,
   },
   colorLabel: {
     fontSize: 10,
@@ -179,6 +224,22 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
 });
+
+function createSectionHeader(num, title, primaire) {
+  return React.createElement(
+    View,
+    { style: styles.sectionHeader },
+    React.createElement(
+      View,
+      { style: mergeStyles(styles.sectionNumber, { backgroundColor: primaire }) },
+      React.createElement(Text, { style: { color: '#fff', fontSize: 12, fontFamily: 'Helvetica-Bold' }, children: String(num) })
+    ),
+    React.createElement(Text, {
+      style: mergeStyles(styles.sectionTitle, { color: primaire, borderBottomColor: primaire }),
+      children: title,
+    })
+  );
+}
 
 function createPlaceholderLogo(bgColor, textColor) {
   return React.createElement(
@@ -303,6 +364,10 @@ export async function generatePdf(config, imagePaths, outputPath) {
   const fontCorps = typo.corps || 'Helvetica';
 
   const coverChildren = [
+    React.createElement(View, {
+      key: 'accent',
+      style: mergeStyles(styles.coverAccent, { backgroundColor: primaire }),
+    }),
     React.createElement(Text, {
       key: 'title',
       style: mergeStyles(styles.title, {
@@ -315,16 +380,20 @@ export async function generatePdf(config, imagePaths, outputPath) {
       style: mergeStyles(styles.subtitle, { color: secondaire }),
       children: projet.description || 'Document de charge graphique',
     }),
-  ];
-  if (projet.date) {
-    coverChildren.push(
+    React.createElement(
+      View,
+      {
+        key: 'badge',
+        style: mergeStyles(styles.coverBadge, {
+          borderColor: primaire,
+        }),
+      },
       React.createElement(Text, {
-        key: 'date',
-        style: mergeStyles(styles.subtitle, { marginTop: 8 }),
-        children: projet.date,
+        style: { fontSize: 11, color: primaire, fontFamily: 'Helvetica-Bold' },
+        children: projet.date ? `Document · ${projet.date}` : 'Charte graphique',
       })
-    );
-  }
+    ),
+  ];
 
   const pages = [];
 
@@ -353,15 +422,9 @@ export async function generatePdf(config, imagePaths, outputPath) {
     React.createElement(
       View,
       { style: styles.section },
+      createSectionHeader(1, 'Sommaire', primaire),
       React.createElement(Text, {
-        style: mergeStyles(styles.sectionTitle, {
-          color: primaire,
-          borderBottomColor: primaire,
-        }),
-        children: 'Sommaire — Aperçu de la charte',
-      }),
-      React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, { marginBottom: SP.lg, lineHeight: 1.5 }),
+        style: mergeStyles(styles.sectionIntro),
         children: 'Ce document applique les 13 principes du design graphique : alignement, contraste, équilibre, hiérarchie, couleur, espace blanc, proportion, répétition, rythme, mouvement, mise en valeur, proximité et unité.',
       }),
       ...sommaireItems.map((item, i) =>
@@ -372,20 +435,18 @@ export async function generatePdf(config, imagePaths, outputPath) {
             style: {
               flexDirection: 'row',
               alignItems: 'center',
-              marginBottom: 12,
+              marginBottom: SP.md,
+              paddingVertical: SP.sm,
+              borderBottomWidth: 1,
+              borderBottomColor: '#f1f5f9',
             },
           },
-          React.createElement(View, {
-            style: {
-              width: 6,
-              height: 6,
-              borderRadius: 3,
-              backgroundColor: primaire,
-              marginRight: 12,
-            },
+          React.createElement(Text, {
+            style: { fontSize: 11, color: primaire, fontFamily: 'Helvetica-Bold', width: 24 },
+            children: `${String(i + 2).padStart(2, '0')}`,
           }),
           React.createElement(Text, {
-            style: { fontSize: 14, color: texte, fontFamily: fontCorps },
+            style: { fontSize: 14, color: texte, fontFamily: fontCorps, flex: 1 },
             children: item,
           })
         )
@@ -395,6 +456,85 @@ export async function generatePdf(config, imagePaths, outputPath) {
   pages.push(pageSommaire);
 
   const marque = config.marque || {};
+  const marqueCards = [
+    React.createElement(
+      View,
+      { key: 'marque-nom', style: styles.marqueCard },
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 10, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase' }),
+        children: 'Nom de la marque',
+      }),
+      React.createElement(Text, {
+        style: { fontSize: tailleTitre, fontFamily: fontTitre, color: primaire },
+        children: projet.nom || 'Mon Projet',
+      })
+    ),
+  ];
+  if (marque.slogan) {
+    marqueCards.push(
+      React.createElement(
+        View,
+        { key: 'marque-slogan', style: styles.marqueCard },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 10, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase' }),
+          children: 'Slogan',
+        }),
+        React.createElement(Text, {
+          style: { fontSize: tailleSousTitre, fontFamily: fontCorps, color: secondaire, fontStyle: 'italic', lineHeight: 1.5 },
+          children: marque.slogan,
+        })
+      )
+    );
+  }
+  if (marque.mission) {
+    marqueCards.push(
+      React.createElement(
+        View,
+        { key: 'marque-mission', style: styles.marqueCard },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 10, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase' }),
+          children: 'Mission',
+        }),
+        React.createElement(Text, {
+          style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
+          children: marque.mission,
+        })
+      )
+    );
+  }
+  if (marque.valeurs) {
+    marqueCards.push(
+      React.createElement(
+        View,
+        { key: 'marque-valeurs', style: styles.marqueCard },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 10, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase' }),
+          children: 'Valeurs',
+        }),
+        React.createElement(Text, {
+          style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
+          children: marque.valeurs,
+        })
+      )
+    );
+  }
+  if (marque.personnalite) {
+    marqueCards.push(
+      React.createElement(
+        View,
+        { key: 'marque-personnalite', style: styles.marqueCard },
+        React.createElement(Text, {
+          style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 10, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase' }),
+          children: 'Personnalité',
+        }),
+        React.createElement(Text, {
+          style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
+          children: marque.personnalite,
+        })
+      )
+    );
+  }
+
   const pageMarque = React.createElement(
     Page,
     {
@@ -405,77 +545,12 @@ export async function generatePdf(config, imagePaths, outputPath) {
     React.createElement(
       View,
       { style: styles.section },
+      createSectionHeader(2, 'Présentation de la marque', primaire),
       React.createElement(Text, {
-        style: mergeStyles(styles.sectionTitle, {
-          color: primaire,
-          borderBottomColor: primaire,
-        }),
-        children: 'Présentation de la marque',
-      }),
-      React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, { marginBottom: 20 }),
+        style: mergeStyles(styles.sectionIntro),
         children: 'Identité et positionnement de la marque',
       }),
-      React.createElement(
-        View,
-        { key: 'marque-nom', style: { marginBottom: 20 } },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
-          children: 'Nom de la marque',
-        }),
-        React.createElement(Text, {
-          style: { fontSize: tailleTitre, fontFamily: fontTitre, color: primaire },
-          children: projet.nom || 'Mon Projet',
-        })
-      ),
-      marque.slogan && React.createElement(
-        View,
-        { key: 'marque-slogan', style: { marginBottom: 20 } },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
-          children: 'Slogan',
-        }),
-        React.createElement(Text, {
-          style: { fontSize: tailleSousTitre, fontFamily: fontCorps, color: secondaire, fontStyle: 'italic' },
-          children: marque.slogan,
-        })
-      ),
-      marque.mission && React.createElement(
-        View,
-        { key: 'marque-mission', style: { marginBottom: 20 } },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
-          children: 'Mission',
-        }),
-        React.createElement(Text, {
-          style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
-          children: marque.mission,
-        })
-      ),
-      marque.valeurs && React.createElement(
-        View,
-        { key: 'marque-valeurs', style: { marginBottom: 20 } },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
-          children: 'Valeurs',
-        }),
-        React.createElement(Text, {
-          style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
-          children: marque.valeurs,
-        })
-      ),
-      marque.personnalite && React.createElement(
-        View,
-        { key: 'marque-personnalite' },
-        React.createElement(Text, {
-          style: mergeStyles(styles.colorLabel, { marginBottom: 6, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
-          children: 'Personnalité de la marque',
-        }),
-        React.createElement(Text, {
-          style: { fontSize: tailleCorps, fontFamily: fontCorps, color: texte, lineHeight: 1.6 },
-          children: marque.personnalite,
-        })
-      )
+      ...marqueCards
     )
   );
   pages.push(pageMarque);
@@ -556,16 +631,14 @@ export async function generatePdf(config, imagePaths, outputPath) {
     React.createElement(
       View,
       { style: styles.section },
+      createSectionHeader(3, 'Logo — Déclinaisons', primaire),
       React.createElement(Text, {
-        style: mergeStyles(styles.sectionTitle, {
-          color: primaire,
-          borderBottomColor: primaire,
-        }),
-        children: 'Logo — Déclinaisons',
+        style: mergeStyles(styles.sectionIntro),
+        children: 'Versions claire et sombre pour différents contextes d\'utilisation',
       }),
       React.createElement(
         View,
-        { style: { flexDirection: 'row', flexWrap: 'wrap', gap: 32 } },
+        { style: { flexDirection: 'row', flexWrap: 'wrap', gap: SP.xl } },
         ...logoSectionChildren
       )
     )
@@ -583,12 +656,10 @@ export async function generatePdf(config, imagePaths, outputPath) {
     React.createElement(
       View,
       { style: styles.section },
+      createSectionHeader(4, 'Palette de couleurs', primaire),
       React.createElement(Text, {
-        style: mergeStyles(styles.sectionTitle, {
-          color: primaire,
-          borderBottomColor: primaire,
-        }),
-        children: 'Palette de couleurs',
+        style: mergeStyles(styles.sectionIntro),
+        children: 'Couleurs principales et déclinaisons clair/foncé',
       }),
       React.createElement(
         View,
@@ -855,12 +926,10 @@ export async function generatePdf(config, imagePaths, outputPath) {
     React.createElement(
       View,
       { style: styles.section },
+      createSectionHeader(5, 'Typographie', primaire),
       React.createElement(Text, {
-        style: mergeStyles(styles.sectionTitle, {
-          color: primaire,
-          borderBottomColor: primaire,
-        }),
-        children: 'Typographie',
+        style: mergeStyles(styles.sectionIntro),
+        children: 'Hiérarchie des textes, alphabets et chiffres',
       }),
       ...typoSectionChildren
     ),
@@ -880,15 +949,9 @@ export async function generatePdf(config, imagePaths, outputPath) {
     React.createElement(
       View,
       { style: styles.section },
+      createSectionHeader(6, 'Kit UI', primaire),
       React.createElement(Text, {
-        style: mergeStyles(styles.sectionTitle, {
-          color: primaire,
-          borderBottomColor: primaire,
-        }),
-        children: 'Kit UI',
-      }),
-      React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, { marginBottom: 16 }),
+        style: mergeStyles(styles.sectionIntro),
         children: 'Composants d\'interface utilisant la charte graphique',
       }),
       React.createElement(
@@ -1073,12 +1136,10 @@ export async function generatePdf(config, imagePaths, outputPath) {
       React.createElement(
         View,
         { style: styles.section },
+        createSectionHeader(7, 'Éléments graphiques', primaire),
         React.createElement(Text, {
-          style: mergeStyles(styles.sectionTitle, {
-            color: primaire,
-            borderBottomColor: primaire,
-          }),
-          children: 'Éléments graphiques (dossier input)',
+          style: mergeStyles(styles.sectionIntro),
+          children: 'Fichiers du dossier input',
         }),
         React.createElement(
           View,
