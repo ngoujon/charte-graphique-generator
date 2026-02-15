@@ -484,6 +484,11 @@ main {
   background: rgba(239, 68, 68, 0.1);
 }
 
+.btn-icon-restore:hover {
+  color: var(--success);
+  background: rgba(16, 185, 129, 0.1);
+}
+
 .empty {
   color: var(--text-muted);
   font-size: 0.9rem;

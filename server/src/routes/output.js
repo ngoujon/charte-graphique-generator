@@ -5,6 +5,7 @@ import { getDataDir } from '../index.js';
 
 export const outputRouter = Router();
 const outputDir = () => path.join(getDataDir(), 'output');
+const trashDir = () => path.join(getDataDir(), 'trash');
 
 outputRouter.get('/files', async (req, res) => {
   try {
@@ -29,4 +30,74 @@ outputRouter.get('/files/:name', (req, res) => {
   res.sendFile(filePath, (err) => {
     if (err) res.status(404).json({ error: 'Fichier introuvable' });
   });
+});
+
+outputRouter.delete('/files/:name', async (req, res) => {
+  try {
+    const name = decodeURIComponent(req.params.name);
+    if (!name.endsWith('.pdf')) {
+      return res.status(400).json({ error: 'Seuls les PDF peuvent être supprimés' });
+    }
+    const srcPath = path.join(outputDir(), name);
+    await fs.access(srcPath);
+    await fs.mkdir(trashDir(), { recursive: true });
+    const destPath = path.join(trashDir(), name);
+    await fs.rename(srcPath, destPath);
+    res.json({ moved: name });
+  } catch (err) {
+    if (err.code === 'ENOENT') return res.status(404).json({ error: 'Fichier introuvable' });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+outputRouter.get('/trash/files', async (req, res) => {
+  try {
+    await fs.mkdir(trashDir(), { recursive: true });
+    const files = await fs.readdir(trashDir());
+    const details = await Promise.all(
+      files
+        .filter((f) => f.endsWith('.pdf'))
+        .map(async (name) => {
+          const stat = await fs.stat(path.join(trashDir(), name));
+          return { name, size: stat.size, modified: stat.mtime };
+        })
+    );
+    res.json(details.sort((a, b) => new Date(b.modified) - new Date(a.modified)));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+outputRouter.get('/trash/files/:name', (req, res) => {
+  const filePath = path.join(trashDir(), decodeURIComponent(req.params.name));
+  res.sendFile(filePath, (err) => {
+    if (err) res.status(404).json({ error: 'Fichier introuvable' });
+  });
+});
+
+outputRouter.post('/trash/files/:name/restore', async (req, res) => {
+  try {
+    const name = decodeURIComponent(req.params.name);
+    const srcPath = path.join(trashDir(), name);
+    await fs.access(srcPath);
+    const destPath = path.join(outputDir(), name);
+    await fs.mkdir(outputDir(), { recursive: true });
+    await fs.rename(srcPath, destPath);
+    res.json({ restored: name });
+  } catch (err) {
+    if (err.code === 'ENOENT') return res.status(404).json({ error: 'Fichier introuvable' });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+outputRouter.delete('/trash/files/:name', async (req, res) => {
+  try {
+    const name = decodeURIComponent(req.params.name);
+    const filePath = path.join(trashDir(), name);
+    await fs.unlink(filePath);
+    res.json({ deleted: name });
+  } catch (err) {
+    if (err.code === 'ENOENT') return res.status(404).json({ error: 'Fichier introuvable' });
+    res.status(500).json({ error: err.message });
+  }
 });

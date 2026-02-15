@@ -33,13 +33,13 @@ function useApi(path, options = {}) {
 }
 
 function App() {
-  const [activeTab, setActiveTab] = useState('input');
   const [config, setConfig] = useState(null);
   const [generating, setGenerating] = useState(false);
   const [message, setMessage] = useState(null);
 
   const { data: inputFiles, refetch: refetchInput } = useApi('/input/files');
   const { data: outputFiles, refetch: refetchOutput } = useApi('/output/files');
+  const { data: trashFiles, refetch: refetchTrash } = useApi('/output/trash/files');
   const { data: confData, refetch: refetchConf } = useApi('/conf');
 
   useEffect(() => {
@@ -145,6 +145,47 @@ function App() {
     }
   };
 
+  const deleteOutputFile = async (name) => {
+    try {
+      await fetch(`${API}/output/files/${encodeURIComponent(name)}`, {
+        method: 'DELETE',
+      });
+      refetchOutput();
+      refetchTrash();
+      setMessage({ type: 'success', text: 'PDF déplacé dans la corbeille' });
+      setTimeout(() => setMessage(null), 2000);
+    } catch (e) {
+      setMessage({ type: 'error', text: e.message });
+    }
+  };
+
+  const restoreTrashFile = async (name) => {
+    try {
+      await fetch(`${API}/output/trash/files/${encodeURIComponent(name)}/restore`, {
+        method: 'POST',
+      });
+      refetchOutput();
+      refetchTrash();
+      setMessage({ type: 'success', text: 'PDF restauré' });
+      setTimeout(() => setMessage(null), 2000);
+    } catch (e) {
+      setMessage({ type: 'error', text: e.message });
+    }
+  };
+
+  const permanentlyDeleteTrashFile = async (name) => {
+    try {
+      await fetch(`${API}/output/trash/files/${encodeURIComponent(name)}`, {
+        method: 'DELETE',
+      });
+      refetchTrash();
+      setMessage({ type: 'success', text: 'PDF supprimé définitivement' });
+      setTimeout(() => setMessage(null), 2000);
+    } catch (e) {
+      setMessage({ type: 'error', text: e.message });
+    }
+  };
+
   const formatSize = (bytes) =>
     bytes < 1024 ? `${bytes} o` : `${(bytes / 1024).toFixed(1)} Ko`;
 
@@ -152,33 +193,18 @@ function App() {
     <div className="app">
       <header>
         <h1>Charte Graphique Generator</h1>
-        <p>Générez des documents PDF de charge graphique à partir du dossier entrée</p>
+        <p>data/input → data/output • data/trash • data/conf</p>
       </header>
 
       {message && (
         <div className={`toast toast-${message.type}`}>{message.text}</div>
       )}
 
-      <nav>
-        {['input', 'config', 'output'].map((tab) => (
-          <button
-            key={tab}
-            className={activeTab === tab ? 'active' : ''}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab === 'input' && '📁 Entrée'}
-            {tab === 'config' && '⚙️ Configuration'}
-            {tab === 'output' && '📄 Sortie'}
-          </button>
-        ))}
-      </nav>
-
-      <main>
-        {activeTab === 'input' && (
-          <section className="panel">
+      <main className="page-all">
+        <section className="panel">
             <h2>Dossier Entrée</h2>
             <p className="hint">
-              Déposez vos fichiers (logos, images) dans ce dossier. Pour les logos : nommez « logo-clair » ou « clair » (fond clair) et « logo-sombre » ou « sombre » (fond sombre).
+              Logos : clair, sombre, primaire, secondaire (dans le nom du fichier)
             </p>
             <div className="upload-zone">
               <label>
@@ -208,26 +234,33 @@ function App() {
             {(!inputFiles || inputFiles.length === 0) && (
               <p className="empty">Aucun fichier. Ajoutez des images pour la charte.</p>
             )}
-          </section>
-        )}
+        </section>
 
-        {activeTab === 'config' && (
-          <section className="panel">
+        <section className="panel">
             <h2>Configuration (conf)</h2>
             <p className="hint">
-              Personnalisez la charte. Exportez/importez pour réutiliser une config plus tard.
+              Importez/exportez pour réutiliser une config.
             </p>
             <div className="config-actions">
-              <label className="btn btn-secondary">
+              <label className="btn btn-secondary btn-icon-only" title="Importer config">
                 <input type="file" accept=".json" onChange={importConfig} hidden />
-                Importer config
+                <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
               </label>
-              <button className="btn btn-secondary" onClick={exportConfig}>
-                Exporter config
+              <button className="btn btn-secondary btn-icon-only" onClick={exportConfig} title="Exporter config">
+                <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
               </button>
             </div>
             {config && (
               <div className="config-form">
+                <div className="config-fields-grid">
                 <fieldset>
                   <legend>Projet</legend>
                   <label>
@@ -262,6 +295,21 @@ function App() {
                       />
                     </div>
                   </label>
+                  <label>
+                    Date
+                    <div className="input-wrap">
+                      <input
+                        type="date"
+                        value={config.projet?.date || ''}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            projet: { ...config.projet, date: e.target.value },
+                          })
+                        }
+                      />
+                    </div>
+                  </label>
                 </fieldset>
                 <fieldset>
                   <legend>Présentation de la marque</legend>
@@ -285,7 +333,7 @@ function App() {
                     Mission
                     <div className="input-wrap">
                       <textarea
-                        rows={2}
+                        rows={1}
                         placeholder="Ex: Notre mission est de..."
                         value={config.marque?.mission || ''}
                         onChange={(e) =>
@@ -332,9 +380,102 @@ function App() {
                   </label>
                 </fieldset>
                 <fieldset>
-                  <legend>Exemples de texte (typographie)</legend>
+                  <legend>Typographie</legend>
                   <label>
-                    Titre
+                    Police titre
+                    <div className="input-wrap">
+                      <select
+                        value={config.typographie?.titre || 'Helvetica-Bold'}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            typographie: { ...config.typographie, titre: e.target.value },
+                          })
+                        }
+                      >
+                        <option value="Helvetica-Bold">Helvetica-Bold</option>
+                        <option value="Helvetica">Helvetica</option>
+                        <option value="Times-Bold">Times-Bold</option>
+                        <option value="Times-Roman">Times-Roman</option>
+                        <option value="Courier-Bold">Courier-Bold</option>
+                        <option value="Courier">Courier</option>
+                      </select>
+                    </div>
+                  </label>
+                  <label>
+                    Police corps
+                    <div className="input-wrap">
+                      <select
+                        value={config.typographie?.corps || 'Helvetica'}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            typographie: { ...config.typographie, corps: e.target.value },
+                          })
+                        }
+                      >
+                        <option value="Helvetica">Helvetica</option>
+                        <option value="Helvetica-Bold">Helvetica-Bold</option>
+                        <option value="Times-Roman">Times-Roman</option>
+                        <option value="Times-Bold">Times-Bold</option>
+                        <option value="Courier">Courier</option>
+                        <option value="Courier-Bold">Courier-Bold</option>
+                      </select>
+                    </div>
+                  </label>
+                  <label>
+                    Taille titre (pt)
+                    <div className="input-wrap">
+                      <input
+                        type="number"
+                        min={8}
+                        max={72}
+                        value={config.typographie?.tailleTitre ?? 24}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            typographie: { ...config.typographie, tailleTitre: parseInt(e.target.value, 10) || 24 },
+                          })
+                        }
+                      />
+                    </div>
+                  </label>
+                  <label>
+                    Taille sous-titre (pt)
+                    <div className="input-wrap">
+                      <input
+                        type="number"
+                        min={8}
+                        max={48}
+                        value={config.typographie?.tailleSousTitre ?? 18}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            typographie: { ...config.typographie, tailleSousTitre: parseInt(e.target.value, 10) || 18 },
+                          })
+                        }
+                      />
+                    </div>
+                  </label>
+                  <label>
+                    Taille corps (pt)
+                    <div className="input-wrap">
+                      <input
+                        type="number"
+                        min={8}
+                        max={24}
+                        value={config.typographie?.tailleCorps ?? 12}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            typographie: { ...config.typographie, tailleCorps: parseInt(e.target.value, 10) || 12 },
+                          })
+                        }
+                      />
+                    </div>
+                  </label>
+                  <label>
+                    Exemple titre
                     <div className="input-wrap">
                       <input
                         type="text"
@@ -353,7 +494,7 @@ function App() {
                     </div>
                   </label>
                   <label>
-                    Sous-titre
+                    Exemple sous-titre
                     <div className="input-wrap">
                       <input
                         type="text"
@@ -372,10 +513,10 @@ function App() {
                     </div>
                   </label>
                   <label>
-                    Description
+                    Exemple description
                     <div className="input-wrap">
                       <textarea
-                        rows={3}
+                        rows={2}
                         placeholder="Ex: Corps de texte..."
                         value={config.typographie?.exempleDescription || ''}
                         onChange={(e) =>
@@ -394,23 +535,38 @@ function App() {
                 </fieldset>
                 <fieldset>
                   <legend>Palette de couleurs</legend>
-                  {['primaire', 'secondaire', 'accent', 'fond', 'texte'].map((key) => (
-                    <div key={key} className="color-row">
-                      <label>
-                        <input
-                          type="color"
-                          value={config.couleurs?.[key] || '#000'}
-                          onChange={(e) =>
-                            setConfig({
-                              ...config,
-                              couleurs: { ...config.couleurs, [key]: e.target.value },
-                            })
-                          }
-                        />
-                        <span style={{ minWidth: 90, textTransform: 'capitalize' }}>{key}</span>
+                  <div className="palette-grid">
+                    {[
+                      { key: 'blanc', label: 'Blanc', default: '#ffffff' },
+                      { key: 'noir', label: 'Noir', default: '#000000' },
+                      { key: 'primaire', label: 'Principale', default: '#2563eb' },
+                      { key: 'secondaire', label: 'Secondaire', default: '#64748b' },
+                      { key: 'accent', label: 'Tertiaire', default: '#f59e0b' },
+                      { key: 'fond', label: 'Fond (pages)', default: '#ffffff' },
+                      { key: 'texte', label: 'Texte (corps)', default: '#1e293b' },
+                    ].map(({ key, label, default: def }) => (
+                      <div key={key} className="palette-item">
+                        <label className="palette-swatch-wrap">
+                          <span
+                            className={`palette-preview ${key === 'blanc' ? 'palette-preview-light' : ''}`}
+                            style={{ backgroundColor: config.couleurs?.[key] ?? def }}
+                          />
+                          <input
+                            type="color"
+                            value={config.couleurs?.[key] ?? def}
+                            onChange={(e) =>
+                              setConfig({
+                                ...config,
+                                couleurs: { ...config.couleurs, [key]: e.target.value },
+                              })
+                            }
+                            className="palette-swatch-input"
+                          />
+                        </label>
+                        <span className="palette-label">{label}</span>
                         <input
                           type="text"
-                          value={config.couleurs?.[key] || ''}
+                          value={config.couleurs?.[key] ?? ''}
                           onChange={(e) =>
                             setConfig({
                               ...config,
@@ -418,31 +574,53 @@ function App() {
                             })
                           }
                           className="color-hex"
-                          placeholder="#000000"
+                          placeholder={def}
                         />
-                      </label>
-                    </div>
-                  ))}
+                      </div>
+                    ))}
+                  </div>
                 </fieldset>
-                <button className="btn btn-primary" onClick={saveConfig}>
-                  Enregistrer la configuration
-                </button>
+                </div>
+                <div className="config-form-footer">
+                  <button className="btn btn-primary" onClick={saveConfig}>
+                    Enregistrer la configuration
+                  </button>
+                </div>
               </div>
             )}
-          </section>
-        )}
+        </section>
 
-        {activeTab === 'output' && (
-          <section className="panel">
+        <section className="panel">
             <h2>Dossier Sortie</h2>
             <p className="hint">PDFs générés à partir de l'entrée et de la configuration.</p>
-            <button
-              className="btn btn-primary btn-large"
-              onClick={generatePdf}
-              disabled={generating}
-            >
-              {generating ? 'Génération…' : 'Générer le PDF'}
-            </button>
+            <div className="output-actions">
+              <button
+                className="btn btn-primary btn-large"
+                onClick={generatePdf}
+                disabled={generating}
+                title="Générer le PDF"
+              >
+                <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                  <polyline points="10 9 9 9 8 9" />
+                </svg>
+                {generating ? 'Génération…' : 'Générer le PDF'}
+              </button>
+              <button
+                className="btn btn-secondary btn-icon-only"
+                onClick={() => refetchOutput()}
+                title="Rafraîchir la liste"
+              >
+                <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="23 4 23 10 17 10" />
+                  <polyline points="1 20 1 14 7 14" />
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                </svg>
+              </button>
+            </div>
             <ul className="file-list">
               {(outputFiles || []).map((f) => (
                 <li key={f.name}>
@@ -450,22 +628,66 @@ function App() {
                     {f.name}
                   </a>
                   <span className="size">{formatSize(f.size)}</span>
+                  <button
+                    className="btn-icon"
+                    onClick={() => deleteOutputFile(f.name)}
+                    title="Supprimer (déplacer dans la corbeille)"
+                  >
+                    🗑
+                  </button>
                 </li>
               ))}
             </ul>
             {(!outputFiles || outputFiles.length === 0) && (
               <p className="empty">Aucun PDF. Cliquez sur "Générer le PDF" pour en créer un.</p>
             )}
-          </section>
-        )}
-      </main>
+        </section>
 
-      <footer>
-        <p>
-          <code>data/input</code> → fichiers sources • <code>data/output</code> → PDF générés •{' '}
-          <code>data/conf</code> → configuration (import/export)
-        </p>
-      </footer>
+        <section className="panel panel-trash">
+            <h2>Corbeille</h2>
+            <p className="hint">PDFs supprimés. Restaurez ou supprimez définitivement.</p>
+            <div className="output-actions">
+              <button
+                className="btn btn-secondary btn-icon-only"
+                onClick={() => refetchTrash()}
+                title="Rafraîchir la liste"
+              >
+                <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="23 4 23 10 17 10" />
+                  <polyline points="1 20 1 14 7 14" />
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                </svg>
+              </button>
+            </div>
+            <ul className="file-list">
+              {(trashFiles || []).map((f) => (
+                <li key={f.name}>
+                  <a href={`${API}/output/trash/files/${encodeURIComponent(f.name)}`} target="_blank" rel="noreferrer">
+                    {f.name}
+                  </a>
+                  <span className="size">{formatSize(f.size)}</span>
+                  <button
+                    className="btn-icon btn-icon-restore"
+                    onClick={() => restoreTrashFile(f.name)}
+                    title="Restaurer"
+                  >
+                    ↩
+                  </button>
+                  <button
+                    className="btn-icon"
+                    onClick={() => permanentlyDeleteTrashFile(f.name)}
+                    title="Supprimer définitivement"
+                  >
+                    ✕
+                  </button>
+                </li>
+              ))}
+            </ul>
+            {(!trashFiles || trashFiles.length === 0) && (
+              <p className="empty">Corbeille vide.</p>
+            )}
+        </section>
+      </main>
     </div>
   );
 }
