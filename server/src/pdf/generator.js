@@ -1,3 +1,23 @@
+/**
+ * Générateur de charte graphique
+ * Respecte les 13 principes du design graphique (Figma)
+ * https://www.figma.com/fr-fr/resource-library/principes-du-design-graphique/
+ *
+ * 1. Alignement - Grille 8px, alignement cohérent
+ * 2. Contraste - Hiérarchie visuelle par taille/couleur
+ * 3. Équilibre - Répartition symétrique des éléments
+ * 4. Hiérarchie - Titre > sous-titre > corps
+ * 5. Couleur - Palette de la charte
+ * 6. Espace blanc - Marges, padding, respiration
+ * 7. Proportion - Ratios cohérents (1.5)
+ * 8. Répétition - Espacements, grille, styles
+ * 9. Rythme - Espacement régulier (8, 16, 24, 32)
+ * 10. Mouvement - Ordre de lecture (Z)
+ * 11. Mise en valeur - Points focaux
+ * 12. Proximité - Regroupement par thème
+ * 13. Unité - Cohérence globale
+ */
+
 import React from 'react';
 import {
   Document,
@@ -11,9 +31,13 @@ import {
 import fs from 'fs/promises';
 import path from 'path';
 
+const SP = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32 };
+const BORDER = '#cbd5e1';
+const MUTED = '#64748b';
+
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
+    padding: SP.xl,
     fontFamily: 'Helvetica',
   },
   cover: {
@@ -23,44 +47,44 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    marginBottom: 16,
+    marginBottom: SP.md,
     fontFamily: 'Helvetica-Bold',
   },
   subtitle: {
     fontSize: 16,
-    color: '#64748b',
+    color: MUTED,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: SP.lg,
   },
   sectionTitle: {
     fontSize: 18,
     fontFamily: 'Helvetica-Bold',
-    marginBottom: 12,
+    marginBottom: SP.md,
     borderBottomWidth: 2,
-    paddingBottom: 4,
+    paddingBottom: SP.sm,
   },
   colorRow: {
     flexDirection: 'row',
-    gap: 16,
-    marginBottom: 12,
+    gap: SP.md,
+    marginBottom: SP.sm,
     flexWrap: 'wrap',
   },
   colorBox: {
     width: 80,
     height: 40,
     borderRadius: 4,
-    marginBottom: 4,
+    marginBottom: SP.xs,
   },
   colorLabel: {
     fontSize: 10,
-    color: '#64748b',
+    color: MUTED,
   },
   imageGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 16,
-    marginTop: 12,
+    gap: SP.md,
+    marginTop: SP.md,
   },
   imageItem: {
     width: 120,
@@ -76,9 +100,9 @@ const styles = StyleSheet.create({
     height: 120,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
+    padding: SP.md,
     borderRadius: 8,
-    marginBottom: 8,
+    marginBottom: SP.sm,
   },
   logoImg: {
     maxWidth: 140,
@@ -86,13 +110,13 @@ const styles = StyleSheet.create({
     objectFit: 'contain',
   },
   typoExample: {
-    marginBottom: 16,
+    marginBottom: SP.md,
   },
   numbersRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
-    marginTop: 12,
+    gap: SP.sm,
+    marginTop: SP.md,
   },
   numberBox: {
     width: 36,
@@ -100,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: BORDER,
     borderRadius: 4,
   },
   placeholderLogo: {
@@ -115,40 +139,40 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica-Bold',
   },
   alphabetRow: {
-    marginBottom: 8,
+    marginBottom: SP.sm,
     flexWrap: 'wrap',
   },
   articleBlock: {
-    marginTop: 16,
-    padding: 16,
+    marginTop: SP.md,
+    padding: SP.md,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: BORDER,
     borderRadius: 8,
     backgroundColor: '#f8fafc',
   },
   uiButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: SP.sm,
+    paddingHorizontal: SP.md,
     borderRadius: 6,
-    marginRight: 8,
-    marginBottom: 8,
+    marginRight: SP.sm,
+    marginBottom: SP.sm,
   },
   uiInput: {
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: BORDER,
     borderRadius: 6,
     padding: 10,
     fontSize: 12,
   },
   uiCard: {
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: BORDER,
     borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
+    padding: SP.md,
+    marginBottom: SP.md,
   },
   uiBadge: {
-    paddingVertical: 4,
+    paddingVertical: SP.xs,
     paddingHorizontal: 10,
     borderRadius: 12,
     marginRight: 6,
@@ -336,6 +360,10 @@ export async function generatePdf(config, imagePaths, outputPath) {
         }),
         children: 'Sommaire — Aperçu de la charte',
       }),
+      React.createElement(Text, {
+        style: mergeStyles(styles.colorLabel, { marginBottom: SP.lg, lineHeight: 1.5 }),
+        children: 'Ce document applique les 13 principes du design graphique : alignement, contraste, équilibre, hiérarchie, couleur, espace blanc, proportion, répétition, rythme, mouvement, mise en valeur, proximité et unité.',
+      }),
       ...sommaireItems.map((item, i) =>
         React.createElement(
           View,
@@ -486,7 +514,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
           style: mergeStyles(styles.logoBox, {
             backgroundColor: fond || '#ffffff',
             borderWidth: 1,
-            borderColor: '#e2e8f0',
+            borderColor: BORDER,
           }),
         },
         logoClairContent
@@ -573,7 +601,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
               style: mergeStyles(styles.colorBox, {
                 backgroundColor: hex,
                 borderWidth: 1,
-                borderColor: '#e2e8f0',
+                borderColor: BORDER,
               }),
             }),
             React.createElement(Text, {
@@ -608,7 +636,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
       }),
       React.createElement(
         View,
-        { style: mergeStyles(styles.articleBlock, { borderColor: '#e2e8f0' }) },
+        { style: mergeStyles(styles.articleBlock, { borderColor: BORDER }) },
         React.createElement(Text, {
           style: {
             fontSize: tailleTitre,
@@ -924,7 +952,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
           View,
           {
             style: mergeStyles(styles.uiInput, {
-              borderColor: '#e2e8f0',
+              borderColor: BORDER,
               backgroundColor: fond,
             }),
           },
@@ -993,7 +1021,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
           View,
           {
             style: mergeStyles(styles.uiCard, {
-              borderColor: '#e2e8f0',
+              borderColor: BORDER,
               backgroundColor: fond,
             }),
           },
