@@ -54,6 +54,6 @@ inputRouter.delete('/files/:name', async (req, res) => {
 inputRouter.get('/files/:name', (req, res) => {
   const filePath = path.join(inputDir(), req.params.name);
   res.sendFile(filePath, (err) => {
-    if (err) res.status(404).json({ error: 'File not found' });
+    if (err) res.status(404).json({ error: 'Fichier introuvable' });
   });
 });

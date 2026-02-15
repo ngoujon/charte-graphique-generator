@@ -1021,7 +1021,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
           },
           React.createElement(Text, {
             style: { color: secondaire, fontSize: 12, fontFamily: fontCorps },
-            children: 'Placeholder...',
+            children: 'Exemple de saisie…',
           })
         )
       ),
@@ -1030,7 +1030,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
         { key: 'badges', style: { marginBottom: 20 } },
         React.createElement(Text, {
           style: mergeStyles(styles.colorLabel, { marginBottom: 8, fontSize: 11, fontFamily: 'Helvetica-Bold' }),
-          children: 'Badges',
+          children: 'Étiquettes',
         }),
         React.createElement(
           View,
@@ -1139,7 +1139,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
         createSectionHeader(7, 'Éléments graphiques', primaire),
         React.createElement(Text, {
           style: mergeStyles(styles.sectionIntro),
-          children: 'Fichiers du dossier input',
+          children: 'Fichiers du dossier entrée',
         }),
         React.createElement(
           View,

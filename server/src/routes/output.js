@@ -27,6 +27,6 @@ outputRouter.get('/files', async (req, res) => {
 outputRouter.get('/files/:name', (req, res) => {
   const filePath = path.join(outputDir(), req.params.name);
   res.sendFile(filePath, (err) => {
-    if (err) res.status(404).json({ error: 'File not found' });
+    if (err) res.status(404).json({ error: 'Fichier introuvable' });
   });
 });

@@ -152,7 +152,7 @@ function App() {
     <div className="app">
       <header>
         <h1>Charte Graphique Generator</h1>
-        <p>Générez des documents PDF de charge graphique à partir du dossier input</p>
+        <p>Générez des documents PDF de charge graphique à partir du dossier entrée</p>
       </header>
 
       {message && (
@@ -166,9 +166,9 @@ function App() {
             className={activeTab === tab ? 'active' : ''}
             onClick={() => setActiveTab(tab)}
           >
-            {tab === 'input' && '📁 Input'}
+            {tab === 'input' && '📁 Entrée'}
             {tab === 'config' && '⚙️ Configuration'}
-            {tab === 'output' && '📄 Output'}
+            {tab === 'output' && '📄 Sortie'}
           </button>
         ))}
       </nav>
@@ -176,7 +176,7 @@ function App() {
       <main>
         {activeTab === 'input' && (
           <section className="panel">
-            <h2>Dossier Input</h2>
+            <h2>Dossier Entrée</h2>
             <p className="hint">
               Déposez vos fichiers (logos, images) dans ce dossier. Pour les logos : nommez « logo-clair » ou « clair » (fond clair) et « logo-sombre » ou « sombre » (fond sombre).
             </p>
@@ -434,8 +434,8 @@ function App() {
 
         {activeTab === 'output' && (
           <section className="panel">
-            <h2>Dossier Output</h2>
-            <p className="hint">PDFs générés à partir de input + configuration.</p>
+            <h2>Dossier Sortie</h2>
+            <p className="hint">PDFs générés à partir de l'entrée et de la configuration.</p>
             <button
               className="btn btn-primary btn-large"
               onClick={generatePdf}
@@ -462,7 +462,7 @@ function App() {
 
       <footer>
         <p>
-          <code>data/input</code> → fichiers sources • <code>data/output</code> → PDFs •{' '}
+          <code>data/input</code> → fichiers sources • <code>data/output</code> → PDF générés •{' '}
           <code>data/conf</code> → configuration (import/export)
         </p>
       </footer>
