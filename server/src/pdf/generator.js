@@ -130,10 +130,6 @@ const styles = StyleSheet.create({
   },
   paletteCard: {
     width: 165,
-    borderRadius: 6,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: BORDER,
     backgroundColor: '#ffffff',
   },
   paletteCardSwatch: {
@@ -141,7 +137,7 @@ const styles = StyleSheet.create({
   },
   paletteCardSwatchBorder: {
     borderWidth: 1,
-    borderColor: BORDER,
+    borderColor: 'rgba(0,0,0,0.06)',
   },
   paletteCardBody: {
     padding: SP.sm,
