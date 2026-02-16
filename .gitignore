@@ -1,13 +1,36 @@
+# Dependencies
 node_modules
+
+# Build outputs
 dist
 server/public
+client/dist
+
+# Environment
 .env
 .env.*
+!.env.example
+
+# Logs
 *.log
+npm-debug.log*
+
+# OS
 .DS_Store
+Thumbs.db
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Data (générés par l'app)
 data/input/*
 data/output/*
+data/trash/*
+data/conf/charte.json
 !data/input/.gitkeep
 !data/output/.gitkeep
+!data/trash/.gitkeep
 !data/conf/.gitkeep
-data/conf/charte.json
