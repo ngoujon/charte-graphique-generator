@@ -128,34 +128,24 @@ const styles = StyleSheet.create({
     gap: SP.lg,
     marginTop: SP.xl,
   },
-  paletteCardWrapper: {
-    padding: 4,
-    borderRadius: 14,
-    backgroundColor: '#e2e8f0',
-  },
   paletteCard: {
     width: 165,
-    borderRadius: 12,
+    borderRadius: 6,
     overflow: 'hidden',
-    borderWidth: 2,
-    borderTopColor: '#e2e8f0',
-    borderLeftColor: '#e2e8f0',
-    borderRightColor: '#94a3b8',
-    borderBottomColor: '#94a3b8',
+    borderWidth: 1,
+    borderColor: BORDER,
     backgroundColor: '#ffffff',
   },
   paletteCardSwatch: {
-    height: 110,
+    height: 100,
   },
   paletteCardSwatchBorder: {
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.08)',
+    borderColor: BORDER,
   },
   paletteCardBody: {
-    padding: SP.md,
-    backgroundColor: '#f8fafc',
-    borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
+    padding: SP.sm,
+    backgroundColor: '#ffffff',
   },
   paletteCardName: {
     fontSize: 11,
@@ -835,7 +825,7 @@ export async function generatePdf(config, imagePaths, outputPath) {
     const luminance = getHexLuminance(hex);
     const isLight = luminance > 0.6;
     const swatchBorder = isLight ? styles.paletteCardSwatchBorder : {};
-    const card = React.createElement(
+    return React.createElement(
       View,
       { key: key, style: styles.paletteCard },
       React.createElement(View, {
@@ -856,11 +846,6 @@ export async function generatePdf(config, imagePaths, outputPath) {
           children: hex,
         })
       )
-    );
-    return React.createElement(
-      View,
-      { key: key, style: styles.paletteCardWrapper },
-      card
     );
   });
 
