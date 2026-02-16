@@ -1,12 +1,50 @@
 # Charte Graphique Generator
 
-Application React + Docker pour générer des documents PDF de charge graphique.
+Application React + Docker pour générer des documents PDF de charge graphique (charte graphique).
 
 ## Fonctionnement
 
-1. **Input** : Déposez vos fichiers (logos, images) dans `data/input/`
-2. **Configuration** : Personnalisez la charte (couleurs, typo, projet) dans l’interface ou via `data/conf/`
-3. **Output** : Générez le PDF → il est créé dans `data/output/`
+1. **Entrée** : Déposez vos fichiers (logos, images) dans le dossier entrée
+2. **Configuration** : Personnalisez la charte (couleurs, typographie, projet, marque) dans l’interface
+3. **Sortie** : Générez le PDF → il est créé dans le dossier sortie
+
+L’interface affiche tout sur une seule page (entrée, configuration, sortie) pour un contrôle sans navigation.
+
+## Contenu du PDF généré
+
+- Couverture avec nom du projet
+- Présentation de la marque (slogan, mission, valeurs, personnalité)
+- **Logo — 4 déclinaisons** : clair, sombre, sur couleur principale, sur couleur secondaire
+- Palette de couleurs (blanc, noir, principale, secondaire, tertiaire + déclinaisons)
+- Typographie (exemple d’article, alphabets, chiffres 0–9)
+- Kit UI (boutons, champs, badges, cartes)
+
+Le document applique les 13 principes du design graphique (alignement, contraste, équilibre, hiérarchie, etc.).
+
+## Logos — Nommage des fichiers
+
+Pour que vos logos soient reconnus automatiquement, nommez vos fichiers ainsi :
+
+| Déclinaison | Exemples de noms |
+|-------------|------------------|
+| Fond clair | `logo-clair`, `clair`, `light`, `claire` |
+| Fond sombre | `logo-sombre`, `sombre`, `dark`, `noir` |
+| Sur couleur principale | `logo-primaire`, `primaire`, `primary`, `principale` |
+| Sur couleur secondaire | `logo-secondaire`, `secondaire`, `secondary` |
+
+Si vous ne fournissez que clair et sombre, les versions primaire et secondaire utiliseront le logo sombre par défaut.
+
+## Configuration
+
+- **Projet** : nom, description, auteur, date
+- **Marque** : slogan, mission, valeurs, personnalité
+- **Palette** : blanc, noir, couleur principale, secondaire, tertiaire
+- **Typographie** : polices (titre, corps), tailles, exemples de texte
+
+## Import / Export
+
+- **Exporter** : sauvegarde la config actuelle en JSON (réutilisable)
+- **Importer** : charge une config précédemment exportée
 
 ## Développement avec Docker (hot reload)
 
@@ -33,18 +71,18 @@ npm run dev
 
 Frontend : http://localhost:3002 (API sur 3003 en dev)
 
-## Import / Export de configuration
-
-- **Exporter** : sauvegarde la config actuelle en JSON (seed réutilisable)
-- **Importer** : charge une config précédemment exportée
-
-Cela permet de réutiliser une charte graphique sur un autre projet en important le fichier de configuration.
-
 ## Structure des dossiers
 
 ```
 data/
 ├── input/   # Fichiers sources (images, logos)
 ├── output/  # PDFs générés
-└── conf/    # Configuration (charte.json, charte-seed.json)
+└── conf/    # Configuration (charte.json)
 ```
+
+## Stack technique
+
+- **Frontend** : React (Vite)
+- **Backend** : Express
+- **PDF** : @react-pdf/renderer
+- **Conteneur** : Docker

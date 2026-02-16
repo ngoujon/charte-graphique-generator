@@ -21,12 +21,13 @@
 body {
   margin: 0;
   font-family: 'DM Sans', system-ui, sans-serif;
-  background: linear-gradient(165deg, var(--bg) 0%, var(--bg-subtle) 50%, var(--bg) 100%);
+  background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
 #root {
-  min-height: 100vh;
+  height: 100vh;
 }
