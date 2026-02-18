@@ -1143,17 +1143,20 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     );
 
   const createButton = (label, options = {}) => {
-    const { bgColor, textColor = '#ffffff', border } = options;
+    const { bgColor, textColor = '#ffffff', border, borderColor } = options;
+    const isOutline = border || borderColor;
+    const outlineColor = borderColor || primaire;
+    const outlineTextColor = borderColor === BORDER ? texte : outlineColor;
     return React.createElement(
       View,
       {
         style: mergeStyles(styles.uiButton, {
-          backgroundColor: bgColor || primaire,
-          ...(border && { borderWidth: 1, borderColor: primaire, backgroundColor: 'transparent' }),
+          backgroundColor: isOutline ? 'transparent' : (bgColor || primaire),
+          ...(isOutline && { borderWidth: 1, borderColor: outlineColor }),
         }),
       },
       React.createElement(Text, {
-        style: { color: border ? primaire : textColor, fontSize: 12, fontFamily: fontSecondaire },
+        style: { color: isOutline ? outlineTextColor : textColor, fontSize: 12, fontFamily: fontSecondaire },
         children: label,
       })
     );
@@ -1181,7 +1184,8 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           View,
           { style: { flexDirection: 'row', flexWrap: 'wrap', gap: SP.sm } },
           createButton('Primaire', { bgColor: primaire }),
-          createButton('Secondaire', { border: true }),
+          createButton('Secondaire', { bgColor: secondaire }),
+          createButton('Contour', { borderColor: BORDER }),
           React.createElement(
             View,
             {
@@ -1438,7 +1442,13 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             style: { fontSize: TYPO_SIZES.corps, fontFamily: fontSecondaire, color: secondaire, marginBottom: 8, lineHeight: 1.5 },
             children: 'Sous-titre ou description courte. Ce composant peut contenir du texte et des actions.',
           }),
-          createButton('Action', { bgColor: primaire })
+          React.createElement(
+            View,
+            { style: { flexDirection: 'row', justifyContent: 'flex-end', gap: SP.sm, flexWrap: 'wrap' } },
+            createButton('Action', { bgColor: primaire }),
+            createButton('Secondaire', { bgColor: secondaire }),
+            createButton('Contour', { borderColor: secondaire })
+          )
         )
       )
     ),
