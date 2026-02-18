@@ -1677,33 +1677,21 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
   }
 
   const aboutQwebtyPageNum = otherImages.length > 0 ? 12 : 11;
-  const aboutLogoContent = qwebtyLogoSrc
-    ? React.createElement(
-        View,
-        { style: { alignItems: 'flex-start' } },
-        React.createElement(Image, { src: qwebtyLogoSrc, style: mergeStyles(styles.qwebtyLogoImg, { height: 40 }) })
-      )
-    : React.createElement(
-        View,
-        { style: { alignItems: 'flex-start' } },
-        React.createElement(Text, {
-          style: { fontSize: 14, fontFamily: 'Helvetica-Bold', color: MUTED, letterSpacing: 1 },
-          children: QWEBTY.name,
-        })
-      );
-
   const aboutSectionNum = otherImages.length > 0 ? 8 : 7;
   const aboutContent = React.createElement(
     View,
     { style: styles.section },
     createSectionHeader(aboutSectionNum, 'À propos de Qwebty'),
-    React.createElement(View, { style: styles.aboutHeader }, aboutLogoContent),
     React.createElement(
       View,
       { style: styles.aboutMain },
       React.createElement(Text, {
         style: styles.aboutText,
         children: "Qwebty est une activité spécialisée dans la création de solutions digitales sur mesure pour les entrepreneurs, indépendants et petites entreprises. J'accompagne mes clients dans la conception, le développement et l'optimisation de leur présence en ligne, avec une approche personnalisée.\n\nMon objectif est simple : transformer les idées en outils digitaux performants, modernes et adaptés aux besoins réels de chaque projet. Que ce soit pour la création d'un site vitrine, d'une plateforme web, d'une application spécifique ou l'amélioration d'un outil existant, j'interviens à chaque étape avec rigueur et engagement.\n\nEn tant qu'interlocuteur unique, je privilégie une relation directe, transparente et réactive. Chaque projet bénéficie d'une attention particulière, d'une écoute attentive et d'un accompagnement sur mesure. Je m'attache à proposer des solutions claires, efficaces et évolutives, en tenant compte des objectifs, des contraintes et du budget.\n\nQwebty, c'est avant tout une volonté d'apporter des solutions concrètes, fiables et durables pour aider les professionnels à développer leur activité grâce au digital.",
+      }),
+      React.createElement(Text, {
+        style: { fontSize: 12, fontFamily: 'Helvetica', color: texte, marginTop: SP.lg, marginBottom: 0, textAlign: 'right' },
+        children: 'ngoujon',
       })
     )
   );
