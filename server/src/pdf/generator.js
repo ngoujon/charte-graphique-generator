@@ -864,8 +864,15 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     )
   );
 
-  const sommaireItems = ['Présentation de la marque', 'Logo', 'Palette de couleurs', 'Typographie (principale, secondaire, tertiaire)', 'Kit UI'];
-  if (otherImages.length > 0) sommaireItems.push('Éléments graphiques');
+  const sommaireItems = [
+    { label: 'Présentation de la marque', page: 3 },
+    { label: 'Logo', page: 4 },
+    { label: 'Palette de couleurs', page: 5 },
+    { label: 'Typographie (principale, secondaire, tertiaire)', page: 6 },
+    { label: 'Kit UI', page: 9 },
+  ];
+  if (otherImages.length > 0) sommaireItems.push({ label: 'Éléments graphiques', page: 11 });
+  sommaireItems.push({ label: 'À propos de Qwebty', page: totalPagesCount });
 
   const pageSommaire = React.createElement(
     Page,
@@ -895,11 +902,11 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             },
             React.createElement(Text, {
               style: { fontSize: 11, color: qwebtyAccent, fontFamily: 'Helvetica-Bold', width: 24 },
-              children: `${String(i + 2).padStart(2, '0')}`,
+              children: `${String(item.page).padStart(2, '0')}`,
             }),
             React.createElement(Text, {
               style: { fontSize: 14, color: texte, fontFamily: 'Helvetica-Bold', flex: 1 },
-              children: item,
+              children: item.label,
             })
           )
         )
@@ -1685,17 +1692,15 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         })
       );
 
+  const aboutSectionNum = otherImages.length > 0 ? 8 : 7;
   const aboutContent = React.createElement(
     View,
-    { style: styles.aboutPage },
+    { style: styles.section },
+    createSectionHeader(aboutSectionNum, 'À propos de Qwebty'),
     React.createElement(View, { style: styles.aboutHeader }, aboutLogoContent),
     React.createElement(
       View,
       { style: styles.aboutMain },
-      React.createElement(Text, {
-        style: styles.aboutTitle,
-        children: 'À propos de Qwebty',
-      }),
       React.createElement(Text, {
         style: styles.aboutText,
         children: "Qwebty est une activité spécialisée dans la création de solutions digitales sur mesure pour les entrepreneurs, indépendants et petites entreprises. J'accompagne mes clients dans la conception, le développement et l'optimisation de leur présence en ligne, avec une approche personnalisée.\n\nMon objectif est simple : transformer les idées en outils digitaux performants, modernes et adaptés aux besoins réels de chaque projet. Que ce soit pour la création d'un site vitrine, d'une plateforme web, d'une application spécifique ou l'amélioration d'un outil existant, j'interviens à chaque étape avec rigueur et engagement.\n\nEn tant qu'interlocuteur unique, je privilégie une relation directe, transparente et réactive. Chaque projet bénéficie d'une attention particulière, d'une écoute attentive et d'un accompagnement sur mesure. Je m'attache à proposer des solutions claires, efficaces et évolutives, en tenant compte des objectifs, des contraintes et du budget.\n\nQwebty, c'est avant tout une volonté d'apporter des solutions concrètes, fiables et durables pour aider les professionnels à développer leur activité grâce au digital.",
