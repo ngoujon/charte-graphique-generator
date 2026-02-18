@@ -312,8 +312,8 @@ function App() {
             <p>data/input → data/output • data/trash • data/conf</p>
           </div>
         </div>
-        <a href="https://qwebty.com" target="_blank" rel="noreferrer" className="qwebty-link">
-          qwebty.com
+        <a href="http://www.qwebty.com" target="_blank" rel="noreferrer" className="qwebty-link">
+          www.qwebty.com
         </a>
       </header>
 
@@ -878,7 +878,7 @@ function App() {
       <footer className="app-footer">
         <img src="/qwebty-logo.png" alt="Qwebty" className="qwebty-logo-footer" />
         <span className="app-footer-brand">Qwebty</span>
-        <a href="https://qwebty.com" target="_blank" rel="noreferrer">qwebty.com</a>
+        <a href="http://www.qwebty.com" target="_blank" rel="noreferrer">www.qwebty.com</a>
         <span className="app-footer-tagline">Document généré par Qwebty</span>
       </footer>
     </div>
