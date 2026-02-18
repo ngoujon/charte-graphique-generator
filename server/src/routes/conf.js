@@ -154,15 +154,21 @@ confRouter.post('/import', async (req, res) => {
   }
 });
 
+function refToFilename(ref) {
+  const s = (ref || '').trim().replace(/[/\\:*?"<>|]/g, '-').replace(/\s+/g, '-') || 'sans-ref';
+  return `conf-charte-graphique-${s}`;
+}
+
 confRouter.get('/export', async (req, res) => {
   try {
     const confPath = path.join(confDir(), 'charte.json');
     const data = await fs.readFile(confPath, 'utf-8');
     const config = JSON.parse(data);
-    res.setHeader('Content-Disposition', 'attachment; filename=charte-config.json');
+    const ref = config?.projet?.reference || '';
+    res.setHeader('Content-Disposition', `attachment; filename="${refToFilename(ref)}.json"`);
     res.json(config);
   } catch {
-    res.setHeader('Content-Disposition', 'attachment; filename=charte-config.json');
+    res.setHeader('Content-Disposition', 'attachment; filename="conf-charte-graphique-sans-ref.json"');
     res.json(DEFAULT_CONF);
   }
 });
@@ -170,10 +176,13 @@ confRouter.get('/export', async (req, res) => {
 confRouter.get('/export/full', async (req, res) => {
   try {
     const zip = new JSZip();
+    let configRef = '';
 
     const confPath = path.join(confDir(), 'charte.json');
     try {
       const configData = await fs.readFile(confPath, 'utf-8');
+      const config = JSON.parse(configData);
+      configRef = config?.projet?.reference || '';
       zip.file('charte.json', configData);
     } catch {
       zip.file('charte.json', JSON.stringify(DEFAULT_CONF, null, 2));
@@ -203,7 +212,7 @@ confRouter.get('/export/full', async (req, res) => {
 
     const blob = await zip.generateAsync({ type: 'nodebuffer' });
     res.setHeader('Content-Type', 'application/zip');
-    res.setHeader('Content-Disposition', 'attachment; filename=charte-complete.zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${refToFilename(configRef)}.zip"`);
     res.send(blob);
   } catch (err) {
     res.status(500).json({ error: err.message });
