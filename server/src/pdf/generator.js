@@ -103,13 +103,8 @@ const styles = StyleSheet.create({
     marginBottom: SP.lg,
     lineHeight: 1.5,
   },
-  marqueCard: {
-    padding: SP.lg,
-    marginBottom: SP.md,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: BORDER,
-    backgroundColor: QWEBTY.colors.borderLight || '#faf5ff',
+  marqueItem: {
+    marginBottom: SP.lg,
   },
   colorRow: {
     flexDirection: 'row',
@@ -807,12 +802,12 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     },
   ];
 
-  const marqueCards = marqueFields.map(({ key, label, value, style }) =>
+  const marqueItems = marqueFields.map(({ key, label, value, style }) =>
     React.createElement(
       View,
-      { key: `marque-${key}`, style: styles.marqueCard },
+      { key: `marque-${key}`, style: styles.marqueItem },
       React.createElement(Text, {
-        style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 10, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase' }),
+        style: { marginBottom: SP.xs, fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#64748b', textTransform: 'uppercase' },
         children: label,
       }),
       React.createElement(Text, {
@@ -838,7 +833,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           style: mergeStyles(styles.sectionIntro),
           children: 'Identité et positionnement de la marque',
         }),
-        ...marqueCards
+        ...marqueItems
       ),
       3,
       totalPagesCount,
