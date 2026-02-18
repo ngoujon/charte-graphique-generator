@@ -641,6 +641,24 @@ main {
   text-decoration: underline;
 }
 
+.file-list-output .file-name {
+  color: white;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-list-output .btn-icon .btn-icon-svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.file-list-output .btn-icon-preview:hover {
+  color: var(--accent);
+  background: rgba(124, 58, 237, 0.15);
+}
+
 .btn-icon {
   background: transparent;
   border: none;

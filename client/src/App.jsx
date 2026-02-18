@@ -400,12 +400,20 @@ function App() {
                 </svg>
               </button>
             </div>
-            <ul className="file-list">
+            <ul className="file-list file-list-output">
               {(outputFiles || []).map((f) => (
                 <li key={f.name}>
-                  <a href={`${API}/output/files/${encodeURIComponent(f.name)}`} target="_blank" rel="noreferrer">
-                    {f.name}
-                  </a>
+                  <button
+                    className="btn-icon btn-icon-preview"
+                    onClick={() => window.open(`${API}/output/files/${encodeURIComponent(f.name)}`, '_blank', 'noopener,noreferrer')}
+                    title="Aperçu (ouvrir le PDF)"
+                  >
+                    <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </button>
+                  <span className="file-name">{f.name}</span>
                   <span className="size">{formatSize(f.size)}</span>
                   <button
                     className="btn-icon"
