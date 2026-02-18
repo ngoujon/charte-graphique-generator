@@ -671,6 +671,11 @@ main {
   background: rgba(124, 58, 237, 0.15);
 }
 
+.btn-show-more {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+}
+
 .btn-icon {
   background: transparent;
   border: none;

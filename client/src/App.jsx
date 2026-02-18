@@ -37,6 +37,7 @@ function App() {
   const [generating, setGenerating] = useState(false);
   const [message, setMessage] = useState(null);
   const [showTrash, setShowTrash] = useState(false);
+  const [showAllOutput, setShowAllOutput] = useState(false);
 
   const { data: inputFiles, refetch: refetchInput } = useApi('/input/files');
   const { data: outputFiles, refetch: refetchOutput } = useApi('/output/files');
@@ -401,7 +402,7 @@ function App() {
               </button>
             </div>
             <ul className="file-list file-list-output">
-              {(outputFiles || []).map((f) => (
+              {((outputFiles || []).slice(0, showAllOutput ? undefined : 3)).map((f) => (
                 <li key={f.name}>
                   <button
                     className="btn-icon btn-icon-preview"
@@ -425,6 +426,14 @@ function App() {
                 </li>
               ))}
             </ul>
+            {(outputFiles?.length ?? 0) > 3 && (
+              <button
+                className="btn btn-secondary btn-show-more"
+                onClick={() => setShowAllOutput((v) => !v)}
+              >
+                {showAllOutput ? 'Voir moins' : `Voir plus (${outputFiles.length - 3} autre${outputFiles.length - 3 > 1 ? 's' : ''})`}
+              </button>
+            )}
             {(!outputFiles || outputFiles.length === 0) && (
               <p className="empty">Aucun PDF. Cliquez sur "Générer le PDF" pour en créer un.</p>
             )}
