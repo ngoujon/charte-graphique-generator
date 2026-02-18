@@ -15,7 +15,7 @@ L'interface affiche tout sur une seule page (entrée, configuration, sortie) pou
 - Couverture avec nom du projet
 - Présentation de la marque (slogan, mission, valeurs, personnalité)
 - **Logo — 4 déclinaisons** : clair, sombre, sur couleur principale, sur couleur secondaire
-- Palette de couleurs (blanc, noir, principale, secondaire, tertiaire + déclinaisons)
+- Palette de couleurs (blanc, noir, principale, secondaire + déclinaisons)
 - Typographie (exemple d'article, alphabets, chiffres 0–9)
 - Kit UI (boutons, champs, badges, cartes)
 
@@ -38,7 +38,7 @@ Si vous ne fournissez que clair et sombre, les versions primaire et secondaire u
 
 - **Projet** : nom, description, auteur, date
 - **Marque** : slogan, mission, valeurs, personnalité
-- **Palette** : blanc, noir, couleur principale, secondaire, tertiaire
+- **Palette** : blanc, noir, couleur principale, secondaire
 - **Typographie** : polices (titre, corps), tailles, exemples de texte
 
 ## Import / Export

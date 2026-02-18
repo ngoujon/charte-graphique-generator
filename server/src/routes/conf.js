@@ -25,7 +25,6 @@ const DEFAULT_CONF = {
     sombre: '#1a1a1a',
     primaire: '#2563eb',
     secondaire: '#64748b',
-    accent: '#f59e0b',
   },
   typographie: {
     titre: 'Helvetica-Bold',
@@ -64,7 +63,6 @@ function normalizeCouleurs(couleurs) {
     sombre: couleurs.sombre ?? couleurs.texte ?? couleurs.noir ?? DEFAULT_CONF.couleurs.sombre,
     primaire: couleurs.primaire ?? DEFAULT_CONF.couleurs.primaire,
     secondaire: couleurs.secondaire ?? DEFAULT_CONF.couleurs.secondaire,
-    accent: couleurs.accent ?? DEFAULT_CONF.couleurs.accent,
   };
 }
 

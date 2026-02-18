@@ -606,14 +606,12 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
   const secondaire = colors.secondaire || '#64748b';
   const fond = colors.clair || colors.fond || colors.blanc || '#ffffff';
   const texte = colors.sombre || colors.texte || colors.noir || '#1a1a1a';
-  const accent = colors.accent || '#f59e0b';
 
   const colorEntries = [
     ['clair', fond],
     ['sombre', texte],
     ['primaire', primaire],
     ['secondaire', secondaire],
-    ['accent', accent],
   ];
   const exempleTitre = typo.exempleTitre || "Titre de l'exemple";
   const exempleSousTitre = typo.exempleSousTitre || 'Sous-titre de l\'exemple';
@@ -928,7 +926,6 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     sombre: 'Texte',
     primaire: 'Principale',
     secondaire: 'Secondaire',
-    accent: 'Tertiaire',
   };
 
   const paletteCards = colorEntries.map(([key, hex]) => {
@@ -974,7 +971,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         createSectionHeader(4, 'Palette de couleurs'),
         React.createElement(Text, {
           style: mergeStyles(styles.sectionIntro),
-          children: 'Les 5 couleurs de la charte graphique',
+          children: 'Les 4 couleurs de la charte graphique',
         }),
         React.createElement(View, { style: styles.paletteGrid }, ...paletteCards)
       ),
@@ -1244,7 +1241,6 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           { style: { flexDirection: 'row', flexWrap: 'wrap', gap: SP.sm } },
           createButton('Primaire', { bgColor: primaire }),
           createButton('Secondaire', { border: true }),
-          createButton('Accent', { bgColor: accent }),
           React.createElement(
             View,
             {
@@ -1274,10 +1270,6 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           React.createElement(Text, {
             style: mergeStyles(styles.uiLink, { color: secondaire }),
             children: 'Lien secondaire',
-          }),
-          React.createElement(Text, {
-            style: mergeStyles(styles.uiLink, { color: accent }),
-            children: 'Lien accent',
           })
         )
       ),
@@ -1334,9 +1326,9 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             View,
             {
               style: mergeStyles(styles.uiAlert, {
-                backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                backgroundColor: 'rgba(100, 116, 139, 0.15)',
                 borderLeftWidth: 4,
-                borderLeftColor: accent,
+                borderLeftColor: secondaire,
               }),
             },
             React.createElement(Text, {
@@ -1374,11 +1366,6 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             View,
             { style: mergeStyles(styles.uiBadge, { backgroundColor: secondaire }) },
             React.createElement(Text, { style: { color: '#ffffff', fontSize: 10, fontFamily: fontCorps }, children: 'Secondaire' })
-          ),
-          React.createElement(
-            View,
-            { style: mergeStyles(styles.uiBadge, { backgroundColor: accent }) },
-            React.createElement(Text, { style: { color: '#ffffff', fontSize: 10, fontFamily: fontCorps }, children: 'Accent' })
           ),
           React.createElement(
             View,
@@ -1427,7 +1414,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           React.createElement(View, null,
             React.createElement(Text, { style: mergeStyles(styles.colorLabel, { marginBottom: 4 }), children: '100%' }),
             React.createElement(View, { style: styles.uiProgress },
-              React.createElement(View, { style: mergeStyles(styles.uiProgressBar, { backgroundColor: accent, width: '100%' }) })
+              React.createElement(View, { style: mergeStyles(styles.uiProgressBar, { backgroundColor: secondaire, width: '100%' }) })
             )
           )
         )

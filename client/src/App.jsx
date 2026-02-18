@@ -742,13 +742,12 @@ function App() {
                   <p className="hint" style={{ marginTop: '-0.5rem', marginBottom: '0.75rem' }}>
                     Sélecteur RGB ou saisie hex (#ff0000) / RGB (rgb(255,0,0))
                   </p>
-                  <div className="palette-grid palette-grid-5">
+                  <div className="palette-grid palette-grid-4">
                     {[
                       { key: 'clair', label: 'Clair (fond)', default: '#ffffff', fallback: ['fond', 'blanc'] },
                       { key: 'sombre', label: 'Sombre (texte)', default: '#1a1a1a', fallback: ['texte', 'noir'] },
                       { key: 'primaire', label: 'Principale', default: '#2563eb', fallback: [] },
                       { key: 'secondaire', label: 'Secondaire', default: '#64748b', fallback: [] },
-                      { key: 'accent', label: 'Tertiaire', default: '#f59e0b', fallback: [] },
                     ].map(({ key, label, default: def, fallback }) => {
                       const rawValue = config.couleurs?.[key] ?? fallback.map((f) => config.couleurs?.[f]).find(Boolean) ?? '';
                       const displayValue = rawValue || def;

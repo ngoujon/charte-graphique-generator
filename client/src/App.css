@@ -466,13 +466,13 @@ main {
   gap: 0.6rem;
 }
 
-.config-form .palette-grid-5 {
-  grid-template-columns: repeat(5, 1fr);
+.config-form .palette-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.25rem;
   max-width: 100%;
 }
 
-.config-form .palette-grid-5 .palette-preview {
+.config-form .palette-grid-4 .palette-preview {
   width: 64px;
   height: 64px;
 }
@@ -493,7 +493,7 @@ main {
   .config-form .config-fields-grid {
     column-count: 2;
   }
-  .config-form .palette-grid-5 {
+  .config-form .palette-grid-4 {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -502,7 +502,7 @@ main {
   .config-form .config-fields-grid {
     column-count: 1;
   }
-  .config-form .palette-grid-5 {
+  .config-form .palette-grid-4 {
     grid-template-columns: 1fr;
   }
 }
