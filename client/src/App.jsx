@@ -29,7 +29,7 @@ function useApi(path, options = {}) {
 
   useEffect(() => {
     if (!options?.method || options.method === 'GET') fetchData();
-  }, [path]);
+  }, [path, fetchData]);
 
   return { data, loading, error, refetch: fetchData };
 }
@@ -46,8 +46,10 @@ function App() {
   const { data: inputFiles, refetch: refetchInput } = useApi('/input/files');
   const { data: outputFiles, refetch: refetchOutput } = useApi('/output/files');
   const { data: trashFiles, refetch: refetchTrash } = useApi('/output/trash/files');
-  const { data: confData, refetch: refetchConf } = useApi('/conf');
+  const { data: confData, loading: confLoading, error: confError, refetch: refetchConf } = useApi('/conf');
   const { data: customFonts = [], refetch: refetchFonts } = useApi('/fonts/list');
+  const displayConfig = config ?? confData;
+
   useEffect(() => {
     if (confData) setConfig(confData);
   }, [confData]);
@@ -385,9 +387,11 @@ function App() {
 
   const handleHexChange = (key, inputValue) => {
     const hex = parseColorInput(inputValue);
+    const base = config ?? confData;
+    if (!base) return;
     setConfig({
-      ...config,
-      couleurs: { ...config.couleurs, [key]: hex || inputValue },
+      ...base,
+      couleurs: { ...base.couleurs, [key]: hex || inputValue },
     });
   };
 
@@ -672,7 +676,15 @@ function App() {
                 </svg>
               </button>
             </div>
-            {config && (
+            {confLoading && !displayConfig && (
+              <p className="empty">Chargement de la configuration…</p>
+            )}
+            {confError && !displayConfig && (
+              <p className="empty" style={{ color: 'var(--error)' }}>
+                Erreur : {confError}. <button type="button" className="btn btn-secondary" onClick={() => refetchConf()}>Réessayer</button>
+              </p>
+            )}
+            {displayConfig && (
               <div className="config-form">
                 <div className="config-fields-grid">
                 <fieldset>
@@ -683,11 +695,11 @@ function App() {
                       <input
                         type="text"
                         placeholder="Ex: Mon entreprise"
-                        value={config.projet?.nom || ''}
+                        value={displayConfig.projet?.nom || ''}
                         onChange={(e) =>
                           setConfig({
-                            ...config,
-                            projet: { ...config.projet, nom: e.target.value },
+                            ...displayConfig,
+                            projet: { ...displayConfig.projet, nom: e.target.value },
                           })
                         }
                       />
@@ -699,11 +711,11 @@ function App() {
                       <input
                         type="text"
                         placeholder="Ex: Charte graphique 2025"
-                        value={config.projet?.description || ''}
+                        value={displayConfig.projet?.description || ''}
                         onChange={(e) =>
                           setConfig({
-                            ...config,
-                            projet: { ...config.projet, description: e.target.value },
+                            ...displayConfig,
+                            projet: { ...displayConfig.projet, description: e.target.value },
                           })
                         }
                       />
@@ -715,11 +727,11 @@ function App() {
                       <input
                         type="text"
                         placeholder="Ex: CHG-2025-001"
-                        value={config.projet?.reference || ''}
+                        value={displayConfig.projet?.reference || ''}
                         onChange={(e) =>
                           setConfig({
-                            ...config,
-                            projet: { ...config.projet, reference: e.target.value },
+                            ...displayConfig,
+                            projet: { ...displayConfig.projet, reference: e.target.value },
                           })
                         }
                       />
@@ -730,11 +742,11 @@ function App() {
                     <div className="input-wrap">
                       <input
                         type="date"
-                        value={config.projet?.date || ''}
+                        value={displayConfig.projet?.date || ''}
                         onChange={(e) =>
                           setConfig({
-                            ...config,
-                            projet: { ...config.projet, date: e.target.value },
+                            ...displayConfig,
+                            projet: { ...displayConfig.projet, date: e.target.value },
                           })
                         }
                       />
@@ -749,11 +761,11 @@ function App() {
                       <input
                         type="text"
                         placeholder="Ex: Votre slogan ici"
-                        value={config.marque?.slogan || ''}
+                        value={displayConfig.marque?.slogan || ''}
                         onChange={(e) =>
                           setConfig({
-                            ...config,
-                            marque: { ...config.marque, slogan: e.target.value },
+                            ...displayConfig,
+                            marque: { ...displayConfig.marque, slogan: e.target.value },
                           })
                         }
                       />
@@ -765,11 +777,11 @@ function App() {
                       <textarea
                         rows={1}
                         placeholder="Ex: Notre mission est de..."
-                        value={config.marque?.mission || ''}
+                        value={displayConfig.marque?.mission || ''}
                         onChange={(e) =>
                           setConfig({
-                            ...config,
-                            marque: { ...config.marque, mission: e.target.value },
+                            ...displayConfig,
+                            marque: { ...displayConfig.marque, mission: e.target.value },
                           })
                         }
                         className="config-textarea"
@@ -782,11 +794,11 @@ function App() {
                       <input
                         type="text"
                         placeholder="Ex: Innovation, Qualité, Proximité"
-                        value={config.marque?.valeurs || ''}
+                        value={displayConfig.marque?.valeurs || ''}
                         onChange={(e) =>
                           setConfig({
-                            ...config,
-                            marque: { ...config.marque, valeurs: e.target.value },
+                            ...displayConfig,
+                            marque: { ...displayConfig.marque, valeurs: e.target.value },
                           })
                         }
                       />
@@ -798,11 +810,11 @@ function App() {
                       <input
                         type="text"
                         placeholder="Ex: Moderne, fiable, accessible"
-                        value={config.marque?.personnalite || ''}
+                        value={displayConfig.marque?.personnalite || ''}
                         onChange={(e) =>
                           setConfig({
-                            ...config,
-                            marque: { ...config.marque, personnalite: e.target.value },
+                            ...displayConfig,
+                            marque: { ...displayConfig.marque, personnalite: e.target.value },
                           })
                         }
                       />
@@ -814,11 +826,11 @@ function App() {
                       <textarea
                         rows={3}
                         placeholder="Présentez vos recherches, études, analyses..."
-                        value={config.marque?.recherche || ''}
+                        value={displayConfig.marque?.recherche || ''}
                         onChange={(e) =>
                           setConfig({
-                            ...config,
-                            marque: { ...config.marque, recherche: e.target.value },
+                            ...displayConfig,
+                            marque: { ...displayConfig.marque, recherche: e.target.value },
                           })
                         }
                         className="config-textarea"
@@ -835,11 +847,11 @@ function App() {
                     Police principale
                     <div className="input-wrap">
                       <FontSelect
-                        value={config.typographie?.principale || 'Helvetica'}
+                        value={displayConfig.typographie?.principale || 'Helvetica'}
                         onChange={(v) =>
                           setConfig({
-                            ...config,
-                            typographie: { ...config.typographie, principale: v },
+                            ...displayConfig,
+                            typographie: { ...displayConfig.typographie, principale: v },
                           })
                         }
                         customFonts={customFonts}
@@ -850,11 +862,11 @@ function App() {
                     Police secondaire
                     <div className="input-wrap">
                       <FontSelect
-                        value={config.typographie?.secondaire || 'Times-Roman'}
+                        value={displayConfig.typographie?.secondaire || 'Times-Roman'}
                         onChange={(v) =>
                           setConfig({
-                            ...config,
-                            typographie: { ...config.typographie, secondaire: v },
+                            ...displayConfig,
+                            typographie: { ...displayConfig.typographie, secondaire: v },
                           })
                         }
                         customFonts={customFonts}
@@ -865,11 +877,11 @@ function App() {
                     Police tertiaire
                     <div className="input-wrap">
                       <FontSelect
-                        value={config.typographie?.tertiaire || 'Courier'}
+                        value={displayConfig.typographie?.tertiaire || 'Courier'}
                         onChange={(v) =>
                           setConfig({
-                            ...config,
-                            typographie: { ...config.typographie, tertiaire: v },
+                            ...displayConfig,
+                            typographie: { ...displayConfig.typographie, tertiaire: v },
                           })
                         }
                         customFonts={customFonts}
@@ -908,7 +920,7 @@ function App() {
                       { key: 'primaire', label: 'Principale', default: '#2563eb', fallback: [] },
                       { key: 'secondaire', label: 'Secondaire', default: '#64748b', fallback: [] },
                     ].map(({ key, label, default: def, fallback }) => {
-                      const rawValue = config.couleurs?.[key] ?? fallback.map((f) => config.couleurs?.[f]).find(Boolean) ?? '';
+                      const rawValue = displayConfig.couleurs?.[key] ?? fallback.map((f) => displayConfig.couleurs?.[f]).find(Boolean) ?? '';
                       const displayValue = rawValue || def;
                       const isValidHex = /^#[0-9a-fA-F]{6}$|^#[0-9a-fA-F]{3}$/.test(displayValue);
                       const pickerValue = isValidHex ? displayValue : def;
@@ -924,8 +936,8 @@ function App() {
                             value={pickerValue}
                             onChange={(e) =>
                               setConfig({
-                                ...config,
-                                couleurs: { ...config.couleurs, [key]: e.target.value },
+                                ...displayConfig,
+                                couleurs: { ...displayConfig.couleurs, [key]: e.target.value },
                               })
                             }
                             className="palette-swatch-input"
@@ -955,23 +967,23 @@ function App() {
                     <LogoDropZone
                       type="clair"
                       label="Logo sur fond clair"
-                      bgColor={config?.couleurs?.clair || config?.couleurs?.fond || '#ffffff'}
+                      bgColor={displayConfig?.couleurs?.clair || displayConfig?.couleurs?.fond || '#ffffff'}
                     />
                     <LogoDropZone
                       type="sombre"
                       label="Logo sur fond sombre"
-                      bgColor={config?.couleurs?.sombre || config?.couleurs?.texte || '#1a1a1a'}
+                      bgColor={displayConfig?.couleurs?.sombre || displayConfig?.couleurs?.texte || '#1a1a1a'}
                       isDark
                     />
                     <LogoDropZone
                       type="primaire"
                       label="Logo sur couleur principale"
-                      bgColor={config?.couleurs?.primaire || '#2563eb'}
+                      bgColor={displayConfig?.couleurs?.primaire || '#2563eb'}
                     />
                     <LogoDropZone
                       type="secondaire"
                       label="Logo sur couleur secondaire"
-                      bgColor={config?.couleurs?.secondaire || '#64748b'}
+                      bgColor={displayConfig?.couleurs?.secondaire || '#64748b'}
                     />
                   </div>
                 </fieldset>
