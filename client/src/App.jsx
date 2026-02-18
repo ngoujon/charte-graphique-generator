@@ -45,6 +45,7 @@ function App() {
   const { data: outputFiles, refetch: refetchOutput } = useApi('/output/files');
   const { data: trashFiles, refetch: refetchTrash } = useApi('/output/trash/files');
   const { data: confData, refetch: refetchConf } = useApi('/conf');
+  const { data: customFonts = [], refetch: refetchFonts } = useApi('/fonts/list');
 
   useEffect(() => {
     if (confData) setConfig(confData);
@@ -322,6 +323,24 @@ function App() {
       ...config,
       couleurs: { ...config.couleurs, [key]: hex || inputValue },
     });
+  };
+
+  const uploadFont = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    const form = new FormData();
+    form.append('font', file);
+    try {
+      const res = await fetch(`${API}/fonts/upload`, { method: 'POST', body: form });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'upload');
+      refetchFonts();
+      setMessage({ type: 'success', text: 'Police ajoutée' });
+      setTimeout(() => setMessage(null), 2000);
+    } catch (err) {
+      setMessage({ type: 'error', text: err.message });
+    }
   };
 
   return (
@@ -610,6 +629,18 @@ function App() {
                   <p className="hint" style={{ marginTop: '-0.5rem', marginBottom: '0.75rem' }}>
                     Police principale, secondaire et tertiaire. Pour chacune : alphabet, chiffres et exemple (titre gras, sous-titre thin, corps regular).
                   </p>
+                  <div className="typo-font-upload">
+                    <label className="font-upload-label">
+                      <span className="font-upload-text">Ajouter une police</span>
+                      <span className="font-upload-hint">.ttf, .otf, .woff</span>
+                      <input
+                        type="file"
+                        accept=".ttf,.otf,.woff"
+                        onChange={uploadFont}
+                        className="font-upload-input"
+                      />
+                    </label>
+                  </div>
                   <div className="typo-font-block">
                     <h4>Police principale</h4>
                     <FontSelect
@@ -622,6 +653,7 @@ function App() {
                         })
                       }
                       placeholder="Rechercher une police..."
+                      customFonts={customFonts}
                     />
                   </div>
                   <div className="typo-font-block">
@@ -636,6 +668,7 @@ function App() {
                         })
                       }
                       placeholder="Rechercher une police..."
+                      customFonts={customFonts}
                     />
                   </div>
                   <div className="typo-font-block">
@@ -650,6 +683,7 @@ function App() {
                         })
                       }
                       placeholder="Rechercher une police..."
+                      customFonts={customFonts}
                     />
                   </div>
                 </fieldset>

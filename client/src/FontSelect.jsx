@@ -1,25 +1,36 @@
 import { useState, useRef, useEffect } from 'react';
 
-const FONT_FAMILIES = [
+const API = '/api';
+
+const BUILTIN_FONTS = [
   { id: 'Helvetica', label: 'Helvetica', regular: 'Helvetica', bold: 'Helvetica-Bold', thin: 'Helvetica-Oblique' },
   { id: 'Times-Roman', label: 'Times Roman', regular: 'Times-Roman', bold: 'Times-Bold', thin: 'Times-Italic' },
   { id: 'Courier', label: 'Courier', regular: 'Courier', bold: 'Courier-Bold', thin: 'Courier-Oblique' },
 ];
 
-export function FontSelect({ value, onChange, label, placeholder = 'Rechercher une police...' }) {
+export function FontSelect({ value, onChange, label, placeholder = 'Rechercher une police...', customFonts = [] }) {
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
-  const selectedFont = FONT_FAMILIES.find((f) => f.id === value);
-  const displayValue = selectedFont?.label ?? (value || '');
+  const customAsFamily = customFonts.map((f) => ({
+    id: f.id,
+    label: f.label,
+    regular: f.id,
+    bold: f.id,
+    thin: f.id,
+  }));
+  const allFonts = [...BUILTIN_FONTS, ...customAsFamily];
+
+  const selectedFont = allFonts.find((f) => f.id === value);
+  const displayValue = selectedFont?.label ?? (value?.replace?.(/^custom:/, '').replace(/-[0-9]+$/, '').replace(/-/g, ' ') ?? value ?? '');
   const filteredFonts = search.trim()
-    ? FONT_FAMILIES.filter(
+    ? allFonts.filter(
         (f) =>
           f.label.toLowerCase().includes(search.toLowerCase()) ||
           f.id.toLowerCase().includes(search.toLowerCase())
       )
-    : FONT_FAMILIES;
+    : allFonts;
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -98,4 +109,4 @@ export function FontSelect({ value, onChange, label, placeholder = 'Rechercher u
   );
 }
 
-export { FONT_FAMILIES };
+export { BUILTIN_FONTS };

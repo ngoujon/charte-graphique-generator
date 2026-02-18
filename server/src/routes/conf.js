@@ -66,7 +66,9 @@ function normalizeTypographie(typo) {
   const validFonts = ['Helvetica', 'Times-Roman', 'Courier'];
   const toBaseFont = (v) => {
     if (!v) return null;
-    const base = String(v).replace(/-Bold|-Oblique|-Italic|-BoldOblique|-BoldItalic/g, '');
+    const s = String(v).trim();
+    if (s.startsWith('custom:')) return s;
+    const base = s.replace(/-Bold|-Oblique|-Italic|-BoldOblique|-BoldItalic/g, '');
     return validFonts.includes(base) ? base : null;
   };
   const getFont = (v, fallback) => toBaseFont(v) ?? fallback;

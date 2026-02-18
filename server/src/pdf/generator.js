@@ -26,6 +26,7 @@ import {
   View,
   Image,
   StyleSheet,
+  Font,
   renderToFile,
 } from '@react-pdf/renderer';
 import fs from 'fs/promises';
@@ -37,11 +38,13 @@ const BORDER = '#e2e8f0';
 const CARD_BG = '#f8fafc';
 const MUTED = QWEBTY.colors.texteMuted || '#64748b';
 
-const FONT_FAMILIES = {
+const BUILTIN_FONT_FAMILIES = {
   Helvetica: { regular: 'Helvetica', bold: 'Helvetica-Bold', thin: 'Helvetica-Oblique' },
   'Times-Roman': { regular: 'Times-Roman', bold: 'Times-Bold', thin: 'Times-Italic' },
   Courier: { regular: 'Courier', bold: 'Courier-Bold', thin: 'Courier-Oblique' },
 };
+
+const FONT_FORMATS = { '.ttf': 'truetype', '.otf': 'truetype', '.woff': 'woff' };
 
 const TYPO_SIZES = { titre: 24, sousTitre: 18, corps: 12 };
 const EXEMPLE_TITRE = "Titre de l'exemple";
@@ -694,10 +697,11 @@ function findLogos(images) {
   };
 }
 
-export async function generatePdf(config, imagePaths, outputPath, logoPath = null) {
+export async function generatePdf(config, imagePaths, outputPath, logoPath = null, dataDir = null) {
   const colors = config.couleurs || {};
   const projet = config.projet || {};
   const typo = config.typographie || {};
+  const fontsDir = dataDir ? path.join(dataDir, 'fonts') : null;
 
   let qwebtyLogoSrc = null;
   if (logoPath) {
@@ -738,7 +742,38 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
   const fontPrincipale = typo.principale || 'Helvetica';
   const fontSecondaire = typo.secondaire || 'Times-Roman';
   const fontTertiaire = typo.tertiaire || 'Courier';
-  const getFontVariants = (base) => FONT_FAMILIES[base] || FONT_FAMILIES.Helvetica;
+
+  const FONT_FAMILIES = { ...BUILTIN_FONT_FAMILIES };
+
+  if (fontsDir) {
+    const usedCustom = [fontPrincipale, fontSecondaire, fontTertiaire].filter((f) => f?.startsWith('custom:'));
+    try {
+      const fontFiles = await fs.readdir(fontsDir).catch(() => []);
+      for (const fontKey of usedCustom) {
+        const suffix = fontKey.replace('custom:', '');
+        const file = fontFiles.find((f) => path.basename(f, path.extname(f)) === suffix);
+        if (file) {
+          const ext = path.extname(file).toLowerCase();
+          const fontFormat = FONT_FORMATS[ext] || 'truetype';
+          const fontPath = path.resolve(path.join(fontsDir, file));
+          try {
+            Font.register({
+              family: fontKey,
+              src: fontPath,
+              format: fontFormat,
+            });
+            FONT_FAMILIES[fontKey] = { regular: fontKey, bold: fontKey, thin: fontKey };
+          } catch (e) {
+            console.warn(`Police non enregistrée ${fontKey}:`, e.message);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Répertoire polices inaccessible:', e.message);
+    }
+  }
+
+  const getFontVariants = (base) => FONT_FAMILIES[base] || BUILTIN_FONT_FAMILIES.Helvetica;
 
   const dateGen = projet.date || new Date().toISOString().slice(0, 10);
   const totalPagesCount = 12 + (otherImages.length > 0 ? 1 : 0);
@@ -1105,13 +1140,20 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
   const CHARS_SPECIAUX = '0123456789!@#$%^&*()_';
 
   const FONT_DISPLAY_NAMES = { Helvetica: 'Helvetica', 'Times-Roman': 'Times Roman', Courier: 'Courier' };
+  const getFontDisplayName = (fontKey) => {
+    if (FONT_DISPLAY_NAMES[fontKey]) return FONT_DISPLAY_NAMES[fontKey];
+    if (fontKey?.startsWith('custom:')) {
+      return fontKey.replace('custom:', '').replace(/-[0-9]+$/, '').replace(/-/g, ' ');
+    }
+    return fontKey || '';
+  };
   const LABEL_TYPEFACE = { principale: 'Police principale', secondaire: 'Police secondaire', tertiaire: 'Police tertiaire' };
 
   const typoVariantLabelStyle = { fontSize: 9, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 0.5, color: MUTED, marginBottom: SP.xs };
 
   const createFontPage = (fontKey, typeKey, pageNum) => {
     const variants = getFontVariants(fontKey);
-    const fontName = FONT_DISPLAY_NAMES[fontKey] || fontKey;
+    const fontName = getFontDisplayName(fontKey);
     const typeLabel = LABEL_TYPEFACE[typeKey] || '';
 
     const createVariantBlock = (variantKey, fontFamily, label) =>

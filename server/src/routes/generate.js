@@ -40,7 +40,7 @@ generateRouter.post('/', async (req, res) => {
     const logoPath = path.join(__dirname, '..', 'public', 'qwebty-logo.png');
     const logoExists = await fs.access(logoPath).then(() => true).catch(() => false);
 
-    await generatePdf(config, images, outputPath, logoExists ? logoPath : null);
+    await generatePdf(config, images, outputPath, logoExists ? logoPath : null, dataDir);
 
     res.json({ success: true, filename });
   } catch (err) {

@@ -7,6 +7,7 @@ import { inputRouter } from './routes/input.js';
 import { outputRouter } from './routes/output.js';
 import { confRouter } from './routes/conf.js';
 import { generateRouter } from './routes/generate.js';
+import { fontsRouter } from './routes/fonts.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3002;
@@ -20,6 +21,7 @@ async function initDataDir() {
     path.join(DATA_DIR, 'output'),
     path.join(DATA_DIR, 'output', 'trash'),
     path.join(DATA_DIR, 'conf'),
+    path.join(DATA_DIR, 'fonts'),
   ];
   for (const dir of dirs) {
     await fs.mkdir(dir, { recursive: true });
@@ -42,6 +44,7 @@ app.use('/api/input', inputRouter);
 app.use('/api/output', outputRouter);
 app.use('/api/conf', confRouter);
 app.use('/api/generate', generateRouter);
+app.use('/api/fonts', fontsRouter);
 
 if (hasPublic) {
   app.get('*', (req, res) => {
