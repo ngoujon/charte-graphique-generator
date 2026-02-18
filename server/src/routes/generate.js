@@ -1,8 +1,11 @@
 import { Router } from 'express';
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { getDataDir } from '../index.js';
 import { generatePdf } from '../pdf/generator.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const generateRouter = Router();
 
@@ -34,7 +37,10 @@ generateRouter.post('/', async (req, res) => {
     const filename = `charte-graphique-${Date.now()}.pdf`;
     const outputPath = path.join(outputDir, filename);
 
-    await generatePdf(config, images, outputPath);
+    const logoPath = path.join(__dirname, '..', 'public', 'qwebty-logo.png');
+    const logoExists = await fs.access(logoPath).then(() => true).catch(() => false);
+
+    await generatePdf(config, images, outputPath, logoExists ? logoPath : null);
 
     res.json({ success: true, filename });
   } catch (err) {

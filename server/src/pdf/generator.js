@@ -417,6 +417,16 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: QWEBTY.colors.primaire,
   },
+  qwebtyLogoImg: {
+    height: 40,
+    width: 'auto',
+    objectFit: 'contain',
+  },
+  qwebtyLogoImgFooter: {
+    height: 24,
+    width: 'auto',
+    objectFit: 'contain',
+  },
   qwebtyLogoText: {
     fontSize: 14,
     fontFamily: 'Helvetica-Bold',
@@ -452,26 +462,32 @@ const styles = StyleSheet.create({
   },
 });
 
-function createQwebtyHeader() {
+function createQwebtyHeader(logoSrc) {
+  const logoContent = logoSrc
+    ? React.createElement(Image, { src: logoSrc, style: styles.qwebtyLogoImg })
+    : React.createElement(
+        View,
+        { style: styles.qwebtyLogo },
+        React.createElement(Text, { style: styles.qwebtyLogoText, children: QWEBTY.name })
+      );
   return React.createElement(
     View,
     { key: 'qwebty-header', style: styles.qwebtyHeader },
-    React.createElement(
-      View,
-      { style: styles.qwebtyLogo },
-      React.createElement(Text, { style: styles.qwebtyLogoText, children: QWEBTY.name })
-    )
+    logoContent
   );
 }
 
-function createQwebtyFooter(pageNum, totalPages) {
+function createQwebtyFooter(pageNum, totalPages, logoSrc) {
+  const logoContent = logoSrc
+    ? React.createElement(Image, { src: logoSrc, style: styles.qwebtyLogoImgFooter })
+    : React.createElement(Text, { style: styles.qwebtyFooterBrand, children: QWEBTY.name });
   return React.createElement(
     View,
     { key: 'qwebty-footer', style: styles.qwebtyFooter },
     React.createElement(
       View,
       { style: styles.qwebtyFooterLeft },
-      React.createElement(Text, { style: styles.qwebtyFooterBrand, children: QWEBTY.name }),
+      logoContent,
       React.createElement(Text, { style: styles.qwebtyFooterText, children: QWEBTY.url })
     ),
     React.createElement(Text, { style: styles.qwebtyFooterText, children: QWEBTY.tagline }),
@@ -479,13 +495,13 @@ function createQwebtyFooter(pageNum, totalPages) {
   );
 }
 
-function wrapPageContent(content, pageNum, totalPages) {
+function wrapPageContent(content, pageNum, totalPages, logoSrc) {
   return React.createElement(
     View,
     { style: { flex: 1 } },
-    createQwebtyHeader(),
+    createQwebtyHeader(logoSrc),
     React.createElement(View, { key: 'content', style: styles.pageContentWrapper }, content),
-    createQwebtyFooter(pageNum, totalPages)
+    createQwebtyFooter(pageNum, totalPages, logoSrc)
   );
 }
 
@@ -597,10 +613,19 @@ function findLogos(images) {
   };
 }
 
-export async function generatePdf(config, imagePaths, outputPath) {
+export async function generatePdf(config, imagePaths, outputPath, logoPath = null) {
   const colors = config.couleurs || {};
   const projet = config.projet || {};
   const typo = config.typographie || {};
+
+  let qwebtyLogoSrc = null;
+  if (logoPath) {
+    try {
+      qwebtyLogoSrc = await imageToBase64(logoPath);
+    } catch (e) {
+      console.warn('Logo Qwebty non chargé:', e.message);
+    }
+  }
 
   const images = [];
   for (const p of imagePaths) {
@@ -645,16 +670,27 @@ export async function generatePdf(config, imagePaths, outputPath) {
   const dateGen = projet.date || new Date().toISOString().slice(0, 10);
   const totalPagesCount = 12 + (otherImages.length > 0 ? 1 : 0);
 
-  const coverChildren = [
-    React.createElement(
-      View,
-      { key: 'qwebty-logo', style: { marginBottom: SP.xl } },
-      React.createElement(
+  const coverLogoContent = qwebtyLogoSrc
+    ? React.createElement(
         View,
-        { style: mergeStyles(styles.qwebtyLogo, { alignSelf: 'center' }) },
-        React.createElement(Text, { style: styles.qwebtyLogoText, children: QWEBTY.name })
+        { key: 'qwebty-logo', style: { marginBottom: SP.xl, alignItems: 'center' } },
+        React.createElement(Image, {
+          src: qwebtyLogoSrc,
+          style: mergeStyles(styles.qwebtyLogoImg, { height: 50 }),
+        })
       )
-    ),
+    : React.createElement(
+        View,
+        { key: 'qwebty-logo', style: { marginBottom: SP.xl } },
+        React.createElement(
+          View,
+          { style: mergeStyles(styles.qwebtyLogo, { alignSelf: 'center' }) },
+          React.createElement(Text, { style: styles.qwebtyLogoText, children: QWEBTY.name })
+        )
+      );
+
+  const coverChildren = [
+    coverLogoContent,
     React.createElement(View, {
       key: 'accent',
       style: mergeStyles(styles.coverAccent, { backgroundColor: primaire }),
@@ -750,7 +786,8 @@ export async function generatePdf(config, imagePaths, outputPath) {
         )
       ),
       2,
-      totalPagesCount
+      totalPagesCount,
+      qwebtyLogoSrc
     )
   );
   pages.push(pageSommaire);
@@ -823,7 +860,8 @@ export async function generatePdf(config, imagePaths, outputPath) {
         ...marqueCards
       ),
       3,
-      totalPagesCount
+      totalPagesCount,
+      qwebtyLogoSrc
     )
   );
   pages.push(pageMarque);
@@ -916,7 +954,8 @@ export async function generatePdf(config, imagePaths, outputPath) {
         React.createElement(View, { style: styles.logoGrid }, ...logoGridItems)
       ),
       4,
-      totalPagesCount
+      totalPagesCount,
+      qwebtyLogoSrc
     )
   );
 
@@ -978,7 +1017,8 @@ export async function generatePdf(config, imagePaths, outputPath) {
         React.createElement(View, { style: styles.paletteGrid }, ...paletteCards)
       ),
       5,
-      totalPagesCount
+      totalPagesCount,
+      qwebtyLogoSrc
     )
   );
   pages.push(pageCouleurs);
@@ -1118,7 +1158,8 @@ export async function generatePdf(config, imagePaths, outputPath) {
         )
       ),
       6,
-      totalPagesCount
+      totalPagesCount,
+      qwebtyLogoSrc
     )
   );
   pages.push(pageTypo1);
@@ -1152,7 +1193,8 @@ export async function generatePdf(config, imagePaths, outputPath) {
         )
       ),
       7,
-      totalPagesCount
+      totalPagesCount,
+      qwebtyLogoSrc
     )
   );
   pages.push(pageTypo2);
@@ -1186,7 +1228,8 @@ export async function generatePdf(config, imagePaths, outputPath) {
         )
       ),
       8,
-      totalPagesCount
+      totalPagesCount,
+      qwebtyLogoSrc
     )
   );
   pages.push(pageTypo3);
@@ -1384,7 +1427,8 @@ export async function generatePdf(config, imagePaths, outputPath) {
       )
     ),
     9,
-    totalPagesCount
+    totalPagesCount,
+    qwebtyLogoSrc
   )
   );
   pages.push(pageUiKit);
@@ -1490,7 +1534,8 @@ export async function generatePdf(config, imagePaths, outputPath) {
       )
     ),
     10,
-    totalPagesCount
+    totalPagesCount,
+    qwebtyLogoSrc
   )
   );
   pages.push(pageUiKit2);
@@ -1529,7 +1574,8 @@ export async function generatePdf(config, imagePaths, outputPath) {
           )
         ),
         11,
-        totalPagesCount
+        totalPagesCount,
+        qwebtyLogoSrc
       )
     );
     pages.push(pageImages);
@@ -1547,11 +1593,17 @@ export async function generatePdf(config, imagePaths, outputPath) {
       React.createElement(
         View,
         { style: mergeStyles(styles.section, { flex: 1, justifyContent: 'center' }) },
-        React.createElement(
-          View,
-          { style: mergeStyles(styles.qwebtyLogo, { alignSelf: 'center', marginBottom: SP.lg }) },
-          React.createElement(Text, { style: styles.qwebtyLogoText, children: QWEBTY.name })
-        ),
+        qwebtyLogoSrc
+          ? React.createElement(
+              View,
+              { style: { alignItems: 'center', marginBottom: SP.lg } },
+              React.createElement(Image, { src: qwebtyLogoSrc, style: mergeStyles(styles.qwebtyLogoImg, { height: 60 }) })
+            )
+          : React.createElement(
+              View,
+              { style: mergeStyles(styles.qwebtyLogo, { alignSelf: 'center', marginBottom: SP.lg }) },
+              React.createElement(Text, { style: styles.qwebtyLogoText, children: QWEBTY.name })
+            ),
         React.createElement(Text, {
           style: {
             fontSize: 18,
@@ -1586,7 +1638,8 @@ export async function generatePdf(config, imagePaths, outputPath) {
         })
       ),
       aboutQwebtyPageNum,
-      totalPagesCount
+      totalPagesCount,
+      qwebtyLogoSrc
     )
   );
   pages.push(pageAboutQwebty);

@@ -558,6 +558,11 @@ main {
   color: var(--text-muted);
 }
 
+.qwebty-logo-footer {
+  height: 28px;
+  width: auto;
+}
+
 .app-footer-brand {
   font-weight: 600;
   color: var(--accent);
