@@ -33,8 +33,8 @@ import path from 'path';
 import { QWEBTY } from './qwebty-brand.js';
 
 const SP = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 };
-const BORDER = '#cbd5e1';
-const MUTED = '#64748b';
+const BORDER = QWEBTY.colors.border || '#e9d5ff';
+const MUTED = QWEBTY.colors.texteMuted || '#64748b';
 
 const styles = StyleSheet.create({
   page: {
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: BORDER,
-    backgroundColor: '#fafbfc',
+    backgroundColor: QWEBTY.colors.borderLight || '#faf5ff',
   },
   colorRow: {
     flexDirection: 'row',
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: BORDER,
-    backgroundColor: '#fafbfc',
+    backgroundColor: QWEBTY.colors.borderLight || '#faf5ff',
   },
   typoSpecItem: {
     flexDirection: 'row',
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: BORDER,
-    backgroundColor: '#fafbfc',
+    backgroundColor: QWEBTY.colors.borderLight || '#faf5ff',
   },
   placeholderLogo: {
     width: 120,
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BORDER,
     borderRadius: 8,
-    backgroundColor: '#fafbfc',
+    backgroundColor: QWEBTY.colors.borderLight || '#faf5ff',
   },
   articleBlockWithAccent: {
     flexDirection: 'row',
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
     borderBottomColor: BORDER,
   },
   uiTableHeader: {
-    backgroundColor: '#f1f5f9',
+    backgroundColor: QWEBTY.colors.borderLight || '#f3e8ff',
     paddingVertical: SP.sm,
     paddingHorizontal: SP.md,
   },
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
   uiProgress: {
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: QWEBTY.colors.border || '#e9d5ff',
     overflow: 'hidden',
     marginBottom: SP.sm,
   },
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     paddingTop: SP.md,
     marginTop: SP.md,
     borderTopWidth: 1,
-    borderTopColor: '#e2e8f0',
+    borderTopColor: QWEBTY.colors.border || '#e9d5ff',
   },
   qwebtyFooterLeft: {
     flexDirection: 'row',
@@ -667,11 +667,13 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         )
       );
 
+  const qwebtyPrimaire = QWEBTY.colors.primaire;
+
   const coverChildren = [
     coverLogoContent,
     React.createElement(View, {
       key: 'accent',
-      style: mergeStyles(styles.coverAccent, { backgroundColor: primaire }),
+      style: mergeStyles(styles.coverAccent, { backgroundColor: qwebtyPrimaire }),
     }),
     React.createElement(Text, {
       key: 'title',
@@ -690,17 +692,17 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       {
         key: 'badge',
         style: mergeStyles(styles.coverBadge, {
-          borderColor: primaire,
+          borderColor: qwebtyPrimaire,
         }),
       },
       React.createElement(Text, {
-        style: { fontSize: 11, color: primaire, fontFamily: 'Helvetica-Bold' },
+        style: { fontSize: 11, color: qwebtyPrimaire, fontFamily: 'Helvetica-Bold' },
         children: `Document · ${dateGen}`,
       })
     ),
     React.createElement(Text, {
       key: 'qwebty-credit',
-      style: { marginTop: SP.xl, fontSize: 10, color: MUTED, fontFamily: 'Helvetica' },
+      style: { marginTop: SP.xl, fontSize: 10, color: qwebtyPrimaire, fontFamily: 'Helvetica-Bold' },
       children: `${QWEBTY.tagline} · ${QWEBTY.url}`,
     }),
   ];
@@ -733,7 +735,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(1, 'Sommaire', primaire),
+        createSectionHeader(1, 'Sommaire', qwebtyPrimaire),
         React.createElement(Text, {
           style: mergeStyles(styles.sectionIntro),
           children: 'Ce document applique les 13 principes du design graphique : alignement, contraste, équilibre, hiérarchie, couleur, espace blanc, proportion, répétition, rythme, mouvement, mise en valeur, proximité et unité.',
@@ -749,11 +751,11 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
                 marginBottom: SP.md,
                 paddingVertical: SP.sm,
                 borderBottomWidth: 1,
-                borderBottomColor: '#f1f5f9',
+                borderBottomColor: QWEBTY.colors.borderLight || '#f3e8ff',
               },
             },
             React.createElement(Text, {
-              style: { fontSize: 11, color: primaire, fontFamily: 'Helvetica-Bold', width: 24 },
+              style: { fontSize: 11, color: qwebtyPrimaire, fontFamily: 'Helvetica-Bold', width: 24 },
               children: `${String(i + 2).padStart(2, '0')}`,
             }),
             React.createElement(Text, {
@@ -830,7 +832,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(2, 'Présentation de la marque', primaire),
+        createSectionHeader(2, 'Présentation de la marque', qwebtyPrimaire),
         React.createElement(Text, {
           style: mergeStyles(styles.sectionIntro),
           children: 'Identité et positionnement de la marque',
@@ -924,7 +926,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(3, 'Logo — Déclinaisons', primaire),
+        createSectionHeader(3, 'Logo — Déclinaisons', qwebtyPrimaire),
         React.createElement(Text, {
           style: mergeStyles(styles.sectionIntro),
           children: 'Versions claire, sombre, sur couleur principale et sur couleur secondaire',
@@ -987,7 +989,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(4, 'Palette de couleurs', primaire),
+        createSectionHeader(4, 'Palette de couleurs', qwebtyPrimaire),
         React.createElement(Text, {
           style: mergeStyles(styles.sectionIntro),
           children: 'Les 5 couleurs de la charte graphique',
@@ -1078,7 +1080,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(5, 'Typographie', primaire),
+        createSectionHeader(5, 'Typographie', qwebtyPrimaire),
         React.createElement(Text, {
           style: mergeStyles(styles.sectionIntro),
           children: 'Hiérarchie des textes, alphabets et chiffres',
@@ -1153,7 +1155,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(5, 'Typographie (suite)', primaire),
+        createSectionHeader(5, 'Typographie (suite)', qwebtyPrimaire),
         React.createElement(
           View,
           { key: 'alphabets', style: { marginTop: SP.md } },
@@ -1188,7 +1190,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(5, 'Typographie (suite)', primaire),
+        createSectionHeader(5, 'Typographie (suite)', qwebtyPrimaire),
         React.createElement(
           View,
           { key: 'numbers', style: { marginTop: SP.md } },
@@ -1248,7 +1250,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(6, 'Kit UI', primaire),
+        createSectionHeader(6, 'Kit UI', qwebtyPrimaire),
       React.createElement(Text, {
         style: mergeStyles(styles.sectionIntro),
         children: 'Composants d\'interface utilisant la charte graphique',
@@ -1422,7 +1424,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(6, 'Kit UI (suite)', primaire),
+        createSectionHeader(6, 'Kit UI (suite)', qwebtyPrimaire),
       createUiBlock(
         'Barres de progression',
         React.createElement(
@@ -1530,7 +1532,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         React.createElement(
           View,
           { style: styles.section },
-          createSectionHeader(7, 'Éléments graphiques', primaire),
+          createSectionHeader(7, 'Éléments graphiques', qwebtyPrimaire),
           React.createElement(Text, {
             style: mergeStyles(styles.sectionIntro),
             children: 'Fichiers du dossier entrée',
@@ -1586,7 +1588,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           style: {
             fontSize: 18,
             fontFamily: 'Helvetica-Bold',
-            color: primaire,
+            color: qwebtyPrimaire,
             textAlign: 'center',
             marginBottom: SP.md,
           },

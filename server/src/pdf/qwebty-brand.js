@@ -9,12 +9,14 @@ export const QWEBTY = {
   tagline: 'Document généré par Qwebty',
   poweredBy: 'Powered by Qwebty',
 
-  // Palette de couleurs Qwebty (cohérente avec qwebty.com)
+  // Palette de couleurs Qwebty (direction artistique - dégradé bleu/violet)
   colors: {
-    primaire: '#7c3aed',   // Violet principal
-    primaryHover: '#8b5cf6',
-    secondaire: '#64748b', // Gris ardoise
-    accent: '#f59e0b',     // Orange/ambre
+    primaire: '#7c3aed',      // Violet principal (logo)
+    primaireClair: '#8b5cf6', // Violet clair
+    secondaire: '#64748b',    // Gris ardoise
+    accent: '#6366f1',        // Indigo (complément dégradé)
+    border: '#e9d5ff',        // Violet très clair
+    borderLight: '#f3e8ff',   // Violet pastel
     fond: '#ffffff',
     texte: '#1e293b',
     texteMuted: '#64748b',
