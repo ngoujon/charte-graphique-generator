@@ -183,6 +183,11 @@ main {
   border-color: var(--accent);
 }
 
+.logo-drop-zone-loading {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
 .logo-drop-input {
   position: absolute;
   inset: 0;

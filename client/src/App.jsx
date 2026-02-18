@@ -12,7 +12,8 @@ function useApi(path, options = {}) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API}${path}`, options);
+      const fetchOptions = { ...options, cache: 'no-store' };
+      const res = await fetch(`${API}${path}`, fetchOptions);
       if (!res.ok) throw new Error(await res.text());
       const json = await res.json().catch(() => ({}));
       setData(json);
@@ -152,8 +153,9 @@ function App() {
     const form = new FormData();
     form.append('file', file);
     try {
-      await fetch(`${API}/input/upload/logo/${type}`, { method: 'POST', body: form });
-      refetchInput();
+      const res = await fetch(`${API}/input/upload/logo/${type}`, { method: 'POST', body: form });
+      if (!res.ok) throw new Error(await res.text());
+      await refetchInput();
       setMessage({ type: 'success', text: `Logo ${type} ajouté` });
       setTimeout(() => setMessage(null), 2000);
     } catch (err) {
@@ -163,14 +165,19 @@ function App() {
 
   const LogoDropZone = ({ type, label, bgColor, isDark }) => {
     const [dragOver, setDragOver] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const logo = getLogoByType(type);
     const fileInputRef = useRef(null);
 
-    const handleDrop = (e) => {
+    const handleDrop = async (e) => {
       e.preventDefault();
       setDragOver(false);
       const file = e.dataTransfer?.files?.[0];
-      if (file?.type?.startsWith('image/')) uploadLogo(type, file);
+      if (file?.type?.startsWith('image/') && !uploading) {
+        setUploading(true);
+        await uploadLogo(type, file);
+        setUploading(false);
+      }
     };
 
     const handleDragOver = (e) => {
@@ -180,20 +187,24 @@ function App() {
 
     const handleDragLeave = () => setDragOver(false);
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
       const file = e.target.files?.[0];
-      if (file) uploadLogo(type, file);
       e.target.value = '';
+      if (file && !uploading) {
+        setUploading(true);
+        await uploadLogo(type, file);
+        setUploading(false);
+      }
     };
 
     return (
       <div
-        className={`logo-drop-zone ${dragOver ? 'logo-drop-zone-active' : ''} ${isDark ? 'logo-drop-zone-dark' : ''}`}
+        className={`logo-drop-zone ${dragOver ? 'logo-drop-zone-active' : ''} ${isDark ? 'logo-drop-zone-dark' : ''} ${uploading ? 'logo-drop-zone-loading' : ''}`}
         style={{ backgroundColor: bgColor }}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onClick={() => fileInputRef.current?.click()}
+        onClick={() => !uploading && fileInputRef.current?.click()}
       >
         <input
           ref={fileInputRef}
@@ -202,10 +213,13 @@ function App() {
           onChange={handleFileChange}
           className="logo-drop-input"
         />
-        {logo ? (
+        {uploading ? (
+          <span className="logo-drop-placeholder">Chargement…</span>
+        ) : logo ? (
           <>
             <img
-              src={`${API}/input/files/${encodeURIComponent(logo.name)}`}
+              key={logo.name}
+              src={`${API}/input/files/${encodeURIComponent(logo.name)}?t=${logo.modified || Date.now()}`}
               alt={label}
               className="logo-preview"
               onClick={(e) => e.stopPropagation()}
@@ -234,7 +248,7 @@ function App() {
       await fetch(`${API}/input/files/${encodeURIComponent(name)}`, {
         method: 'DELETE',
       });
-      refetchInput();
+      await refetchInput();
     } catch (e) {
       setMessage({ type: 'error', text: e.message });
     }
