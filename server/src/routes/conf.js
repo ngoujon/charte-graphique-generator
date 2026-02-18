@@ -27,15 +27,9 @@ const DEFAULT_CONF = {
     secondaire: '#64748b',
   },
   typographie: {
-    titre: 'Helvetica-Bold',
-    corps: 'Helvetica',
-    tailleTitre: 24,
-    tailleSousTitre: 18,
-    tailleCorps: 12,
-    exempleTitre: "Titre de l'exemple",
-    exempleSousTitre: "Sous-titre de l'exemple",
-    exempleDescription:
-      'Description ou corps de texte. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    principale: 'Helvetica',
+    secondaire: 'Times-Roman',
+    tertiaire: 'Courier',
   },
   logo: null,
 };
@@ -47,6 +41,7 @@ confRouter.get('/', async (req, res) => {
       const data = await fs.readFile(confPath, 'utf-8');
       const parsed = JSON.parse(data);
       if (parsed.couleurs) parsed.couleurs = normalizeCouleurs(parsed.couleurs);
+      if (parsed.typographie) parsed.typographie = normalizeTypographie(parsed.typographie);
       res.json(parsed);
     } catch {
       res.json(DEFAULT_CONF);
@@ -66,11 +61,28 @@ function normalizeCouleurs(couleurs) {
   };
 }
 
+function normalizeTypographie(typo) {
+  if (!typo || typeof typo !== 'object') return DEFAULT_CONF.typographie;
+  const validFonts = ['Helvetica', 'Times-Roman', 'Courier'];
+  const toBaseFont = (v) => {
+    if (!v) return null;
+    const base = String(v).replace(/-Bold|-Oblique|-Italic|-BoldOblique|-BoldItalic/g, '');
+    return validFonts.includes(base) ? base : null;
+  };
+  const getFont = (v, fallback) => toBaseFont(v) ?? fallback;
+  return {
+    principale: getFont(typo.principale ?? typo.titre, 'Helvetica'),
+    secondaire: getFont(typo.secondaire ?? typo.corps, 'Times-Roman'),
+    tertiaire: getFont(typo.tertiaire, 'Courier'),
+  };
+}
+
 confRouter.post('/', async (req, res) => {
   try {
     await fs.mkdir(confDir(), { recursive: true });
     const body = { ...req.body };
     if (body.couleurs) body.couleurs = normalizeCouleurs(body.couleurs);
+    if (body.typographie) body.typographie = normalizeTypographie(body.typographie);
     const conf = { ...DEFAULT_CONF, ...body, version: 1 };
     await fs.writeFile(
       path.join(confDir(), 'charte.json'),
@@ -89,6 +101,7 @@ confRouter.post('/import', async (req, res) => {
     await fs.mkdir(confDir(), { recursive: true });
     const imported = { ...config };
     if (imported.couleurs) imported.couleurs = normalizeCouleurs(imported.couleurs);
+    if (imported.typographie) imported.typographie = normalizeTypographie(imported.typographie);
     const conf = { ...DEFAULT_CONF, ...imported, version: 1 };
     await fs.writeFile(
       path.join(confDir(), 'charte.json'),

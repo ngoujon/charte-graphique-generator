@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { FontSelect } from './FontSelect';
 import './App.css';
 
 const API = '/api';
@@ -606,157 +607,51 @@ function App() {
                 </fieldset>
                 <fieldset>
                   <legend>Typographie</legend>
-                  <label>
-                    Police titre
-                    <div className="input-wrap">
-                      <select
-                        value={config.typographie?.titre || 'Helvetica-Bold'}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            typographie: { ...config.typographie, titre: e.target.value },
-                          })
-                        }
-                      >
-                        <option value="Helvetica-Bold">Helvetica-Bold</option>
-                        <option value="Helvetica">Helvetica</option>
-                        <option value="Times-Bold">Times-Bold</option>
-                        <option value="Times-Roman">Times-Roman</option>
-                        <option value="Courier-Bold">Courier-Bold</option>
-                        <option value="Courier">Courier</option>
-                      </select>
-                    </div>
-                  </label>
-                  <label>
-                    Police corps
-                    <div className="input-wrap">
-                      <select
-                        value={config.typographie?.corps || 'Helvetica'}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            typographie: { ...config.typographie, corps: e.target.value },
-                          })
-                        }
-                      >
-                        <option value="Helvetica">Helvetica</option>
-                        <option value="Helvetica-Bold">Helvetica-Bold</option>
-                        <option value="Times-Roman">Times-Roman</option>
-                        <option value="Times-Bold">Times-Bold</option>
-                        <option value="Courier">Courier</option>
-                        <option value="Courier-Bold">Courier-Bold</option>
-                      </select>
-                    </div>
-                  </label>
-                  <label>
-                    Taille titre (pt)
-                    <div className="input-wrap">
-                      <input
-                        type="number"
-                        min={8}
-                        max={72}
-                        value={config.typographie?.tailleTitre ?? 24}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            typographie: { ...config.typographie, tailleTitre: parseInt(e.target.value, 10) || 24 },
-                          })
-                        }
-                      />
-                    </div>
-                  </label>
-                  <label>
-                    Taille sous-titre (pt)
-                    <div className="input-wrap">
-                      <input
-                        type="number"
-                        min={8}
-                        max={48}
-                        value={config.typographie?.tailleSousTitre ?? 18}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            typographie: { ...config.typographie, tailleSousTitre: parseInt(e.target.value, 10) || 18 },
-                          })
-                        }
-                      />
-                    </div>
-                  </label>
-                  <label>
-                    Taille corps (pt)
-                    <div className="input-wrap">
-                      <input
-                        type="number"
-                        min={8}
-                        max={24}
-                        value={config.typographie?.tailleCorps ?? 12}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            typographie: { ...config.typographie, tailleCorps: parseInt(e.target.value, 10) || 12 },
-                          })
-                        }
-                      />
-                    </div>
-                  </label>
-                  <label>
-                    Exemple titre
-                    <div className="input-wrap">
-                      <input
-                        type="text"
-                        placeholder="Ex: Titre de l'exemple"
-                        value={config.typographie?.exempleTitre || ''}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            typographie: {
-                              ...config.typographie,
-                              exempleTitre: e.target.value,
-                            },
-                          })
-                        }
-                      />
-                    </div>
-                  </label>
-                  <label>
-                    Exemple sous-titre
-                    <div className="input-wrap">
-                      <input
-                        type="text"
-                        placeholder="Ex: Sous-titre de l'exemple"
-                        value={config.typographie?.exempleSousTitre || ''}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            typographie: {
-                              ...config.typographie,
-                              exempleSousTitre: e.target.value,
-                            },
-                          })
-                        }
-                      />
-                    </div>
-                  </label>
-                  <label>
-                    Exemple description
-                    <div className="input-wrap">
-                      <textarea
-                        rows={2}
-                        placeholder="Ex: Corps de texte..."
-                        value={config.typographie?.exempleDescription || ''}
-                        onChange={(e) =>
-                          setConfig({
-                            ...config,
-                            typographie: {
-                              ...config.typographie,
-                              exempleDescription: e.target.value,
-                            },
-                          })
-                        }
-                        className="config-textarea"
-                      />
-                    </div>
-                  </label>
+                  <p className="hint" style={{ marginTop: '-0.5rem', marginBottom: '0.75rem' }}>
+                    Police principale, secondaire et tertiaire. Pour chacune : alphabet, chiffres et exemple (titre gras, sous-titre thin, corps regular).
+                  </p>
+                  <div className="typo-font-block">
+                    <h4>Police principale</h4>
+                    <FontSelect
+                      label=""
+                      value={config.typographie?.principale || 'Helvetica'}
+                      onChange={(v) =>
+                        setConfig({
+                          ...config,
+                          typographie: { ...config.typographie, principale: v },
+                        })
+                      }
+                      placeholder="Rechercher une police..."
+                    />
+                  </div>
+                  <div className="typo-font-block">
+                    <h4>Police secondaire</h4>
+                    <FontSelect
+                      label=""
+                      value={config.typographie?.secondaire || 'Times-Roman'}
+                      onChange={(v) =>
+                        setConfig({
+                          ...config,
+                          typographie: { ...config.typographie, secondaire: v },
+                        })
+                      }
+                      placeholder="Rechercher une police..."
+                    />
+                  </div>
+                  <div className="typo-font-block">
+                    <h4>Police tertiaire</h4>
+                    <FontSelect
+                      label=""
+                      value={config.typographie?.tertiaire || 'Courier'}
+                      onChange={(v) =>
+                        setConfig({
+                          ...config,
+                          typographie: { ...config.typographie, tertiaire: v },
+                        })
+                      }
+                      placeholder="Rechercher une police..."
+                    />
+                  </div>
                 </fieldset>
                 <fieldset>
                   <legend>Palette de couleurs</legend>
