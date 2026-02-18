@@ -826,6 +826,17 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         })
       );
 
+  const coverBrandLogo = logoClair
+    ? React.createElement(
+        View,
+        { style: { alignItems: 'center', marginBottom: SP.lg } },
+        React.createElement(Image, {
+          src: logoClair.src,
+          style: { maxWidth: 220, maxHeight: 100, objectFit: 'contain' },
+        })
+      )
+    : null;
+
   const coverContent = React.createElement(
     View,
     { style: styles.cover },
@@ -833,6 +844,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     React.createElement(
       View,
       { style: styles.coverMain },
+      coverBrandLogo,
       React.createElement(Text, {
         style: mergeStyles(styles.coverProjectName, {
           fontFamily: getFontVariants(fontPrincipale).bold,
