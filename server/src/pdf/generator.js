@@ -1061,10 +1061,9 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
   const CHARS_SPECIAUX = '0123456789!@#$%^&*()_';
 
   const FONT_DISPLAY_NAMES = { Helvetica: 'Helvetica', 'Times-Roman': 'Times Roman', Courier: 'Courier' };
-  const LABEL_TYPEFACE = { principale: 'POLICE PRINCIPALE', secondaire: 'POLICE SECONDAIRE', tertiaire: 'POLICE TERTIAIRE' };
+  const LABEL_TYPEFACE = { principale: 'Police principale', secondaire: 'Police secondaire', tertiaire: 'Police tertiaire' };
 
-  const typoBlockStyle = { marginBottom: SP.lg };
-  const typoLabelStyle = { fontSize: 9, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 0.5, color: MUTED, marginBottom: SP.xs };
+  const typoVariantLabelStyle = { fontSize: 9, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 0.5, color: MUTED, marginBottom: SP.xs };
 
   const createFontPage = (fontKey, typeKey, pageNum) => {
     const variants = getFontVariants(fontKey);
@@ -1074,39 +1073,27 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     const createVariantBlock = (variantKey, fontFamily, label) =>
       React.createElement(
         View,
-        { key: variantKey, style: typoBlockStyle },
-        React.createElement(Text, { style: typoLabelStyle, children: label }),
+        { key: variantKey, style: { marginBottom: SP.xl } },
+        React.createElement(Text, { style: typoVariantLabelStyle, children: label }),
         React.createElement(Text, {
-          style: { fontSize: 12, fontFamily: fontFamily, color: texte, lineHeight: 1.5 },
-          children: ALPHABET_MAJ,
-        }),
-        React.createElement(Text, {
-          style: { fontSize: 12, fontFamily: fontFamily, color: texte, marginTop: 2, lineHeight: 1.5 },
-          children: ALPHABET_MIN,
-        }),
-        React.createElement(Text, {
-          style: { fontSize: 12, fontFamily: fontFamily, color: texte, marginTop: 2, lineHeight: 1.5 },
-          children: CHARS_SPECIAUX,
+          style: { fontSize: 11, fontFamily: fontFamily, color: texte, lineHeight: 1.4 },
+          children: `${ALPHABET_MAJ} ${ALPHABET_MIN} ${CHARS_SPECIAUX}`,
         }),
         React.createElement(
           View,
-          { style: { marginTop: SP.sm, flexDirection: 'row', gap: SP.lg, flexWrap: 'wrap' } },
-          React.createElement(
-            View,
-            { style: { flex: 1, minWidth: 120 } },
-            React.createElement(Text, {
-              style: { fontSize: TYPO_SIZES.titre, fontFamily: fontFamily, color: texte, marginBottom: 4 },
-              children: EXEMPLE_TITRE,
-            }),
-            React.createElement(Text, {
-              style: { fontSize: TYPO_SIZES.sousTitre, fontFamily: fontFamily, color: secondaire, marginBottom: 6 },
-              children: EXEMPLE_SOUS_TITRE,
-            }),
-            React.createElement(Text, {
-              style: { fontSize: TYPO_SIZES.corps, fontFamily: fontFamily, color: texte, lineHeight: 1.5 },
-              children: EXEMPLE_LOREM,
-            })
-          )
+          { style: { marginTop: SP.sm } },
+          React.createElement(Text, {
+            style: { fontSize: 14, fontFamily: fontFamily, color: texte, marginBottom: 2 },
+            children: EXEMPLE_TITRE,
+          }),
+          React.createElement(Text, {
+            style: { fontSize: 11, fontFamily: fontFamily, color: secondaire, marginBottom: 4 },
+            children: EXEMPLE_SOUS_TITRE,
+          }),
+          React.createElement(Text, {
+            style: { fontSize: 10, fontFamily: fontFamily, color: texte, lineHeight: 1.45 },
+            children: EXEMPLE_LOREM,
+          })
         )
       );
 
@@ -1121,12 +1108,13 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         React.createElement(
           View,
           { style: styles.section },
+          createSectionHeader(5, 'Typographie'),
           React.createElement(Text, {
-            style: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: MUTED, textTransform: 'uppercase', letterSpacing: 1, marginBottom: SP.xs },
+            style: mergeStyles(styles.sectionIntro),
             children: typeLabel,
           }),
           React.createElement(Text, {
-            style: { fontSize: 28, fontFamily: variants.bold, color: texte, marginBottom: SP.lg },
+            style: { fontSize: 22, fontFamily: variants.bold, color: texte, marginBottom: SP.lg },
             children: fontName,
           }),
           createVariantBlock('bold', variants.bold, 'Bold'),
