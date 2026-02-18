@@ -32,6 +32,26 @@ outputRouter.get('/files/:name', (req, res) => {
   });
 });
 
+outputRouter.delete('/files', async (req, res) => {
+  try {
+    await fs.mkdir(outputDir(), { recursive: true });
+    const files = await fs.readdir(outputDir());
+    const pdfs = files.filter((f) => f.endsWith('.pdf'));
+    await fs.mkdir(trashDir(), { recursive: true });
+    let moved = 0;
+    for (const name of pdfs) {
+      const srcPath = path.join(outputDir(), name);
+      const destPath = path.join(trashDir(), name);
+      await fs.unlink(destPath).catch(() => {});
+      await fs.rename(srcPath, destPath);
+      moved++;
+    }
+    res.json({ moved, count: moved });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 outputRouter.delete('/files/:name', async (req, res) => {
   try {
     const name = decodeURIComponent(req.params.name);

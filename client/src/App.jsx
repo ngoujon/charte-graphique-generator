@@ -40,6 +40,7 @@ function App() {
   const [message, setMessage] = useState(null);
   const [showTrash, setShowTrash] = useState(false);
   const [showAllOutput, setShowAllOutput] = useState(false);
+  const [showConfirmDeleteAll, setShowConfirmDeleteAll] = useState(false);
 
   const { data: inputFiles, refetch: refetchInput } = useApi('/input/files');
   const { data: outputFiles, refetch: refetchOutput } = useApi('/output/files');
@@ -292,6 +293,23 @@ function App() {
     }
   };
 
+  const deleteAllOutputFiles = async () => {
+    setShowConfirmDeleteAll(false);
+    try {
+      const res = await fetch(`${API}/output/files`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Erreur ${res.status}`);
+      }
+      refetchOutput();
+      refetchTrash();
+      setMessage({ type: 'success', text: 'Tous les PDFs ont été déplacés dans la corbeille' });
+      setTimeout(() => setMessage(null), 2000);
+    } catch (e) {
+      setMessage({ type: 'error', text: e.message });
+    }
+  };
+
   const permanentlyDeleteTrashFile = async (name) => {
     try {
       const res = await fetch(`${API}/output/trash/files/${encodeURIComponent(name)}`, {
@@ -385,6 +403,25 @@ function App() {
         <div className={`toast toast-${message.type}`}>{message.text}</div>
       )}
 
+      {showConfirmDeleteAll && (
+        <div className="modal-overlay" onClick={() => setShowConfirmDeleteAll(false)}>
+          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>Supprimer toutes les chartes graphiques ?</h3>
+            <p>
+              Les {outputFiles?.length ?? 0} PDF{outputFiles?.length > 1 ? 's' : ''} seront déplacé{outputFiles?.length > 1 ? 's' : ''} dans la corbeille.
+            </p>
+            <div className="modal-actions">
+              <button className="btn btn-secondary" onClick={() => setShowConfirmDeleteAll(false)}>
+                Annuler
+              </button>
+              <button className="btn btn-primary btn-danger" onClick={deleteAllOutputFiles}>
+                Supprimer tout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="page-all">
         <div className="folders-grid">
         <section className="panel">
@@ -468,6 +505,15 @@ function App() {
                   <line x1="14" y1="11" x2="14" y2="17" />
                 </svg>
               </button>
+              {!showTrash && (outputFiles?.length ?? 0) > 0 && (
+                <button
+                  className="btn btn-secondary btn-delete-all"
+                  onClick={() => setShowConfirmDeleteAll(true)}
+                  title="Supprimer toutes les chartes graphiques"
+                >
+                  Supprimer tout
+                </button>
+              )}
             </div>
             <ul className="file-list file-list-output">
               {showTrash
