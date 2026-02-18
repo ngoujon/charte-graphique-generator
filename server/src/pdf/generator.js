@@ -30,6 +30,7 @@ import {
 } from '@react-pdf/renderer';
 import fs from 'fs/promises';
 import path from 'path';
+import { QWEBTY } from './qwebty-brand.js';
 
 const SP = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 };
 const BORDER = '#cbd5e1';
@@ -402,7 +403,91 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SP.sm,
   },
+  qwebtyHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: SP.md,
+    marginBottom: SP.md,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+  },
+  qwebtyLogo: {
+    paddingVertical: SP.xs,
+    paddingHorizontal: SP.sm,
+    borderRadius: 6,
+    backgroundColor: QWEBTY.colors.primaire,
+  },
+  qwebtyLogoText: {
+    fontSize: 14,
+    fontFamily: 'Helvetica-Bold',
+    color: '#ffffff',
+    letterSpacing: 0.5,
+  },
+  qwebtyFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: SP.md,
+    marginTop: SP.md,
+    borderTopWidth: 1,
+    borderTopColor: '#e2e8f0',
+  },
+  qwebtyFooterLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SP.sm,
+  },
+  qwebtyFooterText: {
+    fontSize: 9,
+    color: MUTED,
+    fontFamily: 'Helvetica',
+  },
+  qwebtyFooterBrand: {
+    fontSize: 9,
+    color: QWEBTY.colors.primaire,
+    fontFamily: 'Helvetica-Bold',
+  },
+  pageContentWrapper: {
+    flex: 1,
+  },
 });
+
+function createQwebtyHeader() {
+  return React.createElement(
+    View,
+    { key: 'qwebty-header', style: styles.qwebtyHeader },
+    React.createElement(
+      View,
+      { style: styles.qwebtyLogo },
+      React.createElement(Text, { style: styles.qwebtyLogoText, children: QWEBTY.name })
+    )
+  );
+}
+
+function createQwebtyFooter(pageNum, totalPages) {
+  return React.createElement(
+    View,
+    { key: 'qwebty-footer', style: styles.qwebtyFooter },
+    React.createElement(
+      View,
+      { style: styles.qwebtyFooterLeft },
+      React.createElement(Text, { style: styles.qwebtyFooterBrand, children: QWEBTY.name }),
+      React.createElement(Text, { style: styles.qwebtyFooterText, children: QWEBTY.url })
+    ),
+    React.createElement(Text, { style: styles.qwebtyFooterText, children: QWEBTY.tagline }),
+    React.createElement(Text, { style: styles.qwebtyFooterText, children: `Page ${pageNum}/${totalPages}` })
+  );
+}
+
+function wrapPageContent(content, pageNum, totalPages) {
+  return React.createElement(
+    View,
+    { style: { flex: 1 } },
+    createQwebtyHeader(),
+    React.createElement(View, { key: 'content', style: styles.pageContentWrapper }, content),
+    createQwebtyFooter(pageNum, totalPages)
+  );
+}
 
 function createSectionHeader(num, title, primaire) {
   return React.createElement(
@@ -557,7 +642,19 @@ export async function generatePdf(config, imagePaths, outputPath) {
   const fontTitre = typo.titre || 'Helvetica-Bold';
   const fontCorps = typo.corps || 'Helvetica';
 
+  const dateGen = projet.date || new Date().toISOString().slice(0, 10);
+  const totalPagesCount = 12 + (otherImages.length > 0 ? 1 : 0);
+
   const coverChildren = [
+    React.createElement(
+      View,
+      { key: 'qwebty-logo', style: { marginBottom: SP.xl } },
+      React.createElement(
+        View,
+        { style: mergeStyles(styles.qwebtyLogo, { alignSelf: 'center' }) },
+        React.createElement(Text, { style: styles.qwebtyLogoText, children: QWEBTY.name })
+      )
+    ),
     React.createElement(View, {
       key: 'accent',
       style: mergeStyles(styles.coverAccent, { backgroundColor: primaire }),
@@ -584,9 +681,14 @@ export async function generatePdf(config, imagePaths, outputPath) {
       },
       React.createElement(Text, {
         style: { fontSize: 11, color: primaire, fontFamily: 'Helvetica-Bold' },
-        children: projet.date ? `Document · ${projet.date}` : 'Charte graphique',
+        children: `Document · ${dateGen}`,
       })
     ),
+    React.createElement(Text, {
+      key: 'qwebty-credit',
+      style: { marginTop: SP.xl, fontSize: 10, color: MUTED, fontFamily: 'Helvetica' },
+      children: `${QWEBTY.tagline} · ${QWEBTY.url}`,
+    }),
   ];
 
   const pages = [];
@@ -613,38 +715,42 @@ export async function generatePdf(config, imagePaths, outputPath) {
       size: 'A4',
       style: mergeStyles(styles.page, { backgroundColor: fond }),
     },
-    React.createElement(
-      View,
-      { style: styles.section },
-      createSectionHeader(1, 'Sommaire', primaire),
-      React.createElement(Text, {
-        style: mergeStyles(styles.sectionIntro),
-        children: 'Ce document applique les 13 principes du design graphique : alignement, contraste, équilibre, hiérarchie, couleur, espace blanc, proportion, répétition, rythme, mouvement, mise en valeur, proximité et unité.',
-      }),
-      ...sommaireItems.map((item, i) =>
-        React.createElement(
-          View,
-          {
-            key: i,
-            style: {
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: SP.md,
-              paddingVertical: SP.sm,
-              borderBottomWidth: 1,
-              borderBottomColor: '#f1f5f9',
+    wrapPageContent(
+      React.createElement(
+        View,
+        { style: styles.section },
+        createSectionHeader(1, 'Sommaire', primaire),
+        React.createElement(Text, {
+          style: mergeStyles(styles.sectionIntro),
+          children: 'Ce document applique les 13 principes du design graphique : alignement, contraste, équilibre, hiérarchie, couleur, espace blanc, proportion, répétition, rythme, mouvement, mise en valeur, proximité et unité.',
+        }),
+        ...sommaireItems.map((item, i) =>
+          React.createElement(
+            View,
+            {
+              key: i,
+              style: {
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: SP.md,
+                paddingVertical: SP.sm,
+                borderBottomWidth: 1,
+                borderBottomColor: '#f1f5f9',
+              },
             },
-          },
-          React.createElement(Text, {
-            style: { fontSize: 11, color: primaire, fontFamily: 'Helvetica-Bold', width: 24 },
-            children: `${String(i + 2).padStart(2, '0')}`,
-          }),
-          React.createElement(Text, {
-            style: { fontSize: 14, color: texte, fontFamily: fontCorps, flex: 1 },
-            children: item,
-          })
+            React.createElement(Text, {
+              style: { fontSize: 11, color: primaire, fontFamily: 'Helvetica-Bold', width: 24 },
+              children: `${String(i + 2).padStart(2, '0')}`,
+            }),
+            React.createElement(Text, {
+              style: { fontSize: 14, color: texte, fontFamily: fontCorps, flex: 1 },
+              children: item,
+            })
+          )
         )
-      )
+      ),
+      2,
+      totalPagesCount
     )
   );
   pages.push(pageSommaire);
@@ -705,15 +811,19 @@ export async function generatePdf(config, imagePaths, outputPath) {
       size: 'A4',
       style: mergeStyles(styles.page, { backgroundColor: fond }),
     },
-    React.createElement(
-      View,
-      { style: styles.section },
-      createSectionHeader(2, 'Présentation de la marque', primaire),
-      React.createElement(Text, {
-        style: mergeStyles(styles.sectionIntro),
-        children: 'Identité et positionnement de la marque',
-      }),
-      ...marqueCards
+    wrapPageContent(
+      React.createElement(
+        View,
+        { style: styles.section },
+        createSectionHeader(2, 'Présentation de la marque', primaire),
+        React.createElement(Text, {
+          style: mergeStyles(styles.sectionIntro),
+          children: 'Identité et positionnement de la marque',
+        }),
+        ...marqueCards
+      ),
+      3,
+      totalPagesCount
     )
   );
   pages.push(pageMarque);
@@ -794,15 +904,19 @@ export async function generatePdf(config, imagePaths, outputPath) {
       size: 'A4',
       style: mergeStyles(styles.page, { backgroundColor: fond }),
     },
-    React.createElement(
-      View,
-      { style: styles.section },
-      createSectionHeader(3, 'Logo — Déclinaisons', primaire),
-      React.createElement(Text, {
-        style: mergeStyles(styles.sectionIntro),
-        children: 'Versions claire, sombre, sur couleur principale et sur couleur secondaire',
-      }),
-      React.createElement(View, { style: styles.logoGrid }, ...logoGridItems)
+    wrapPageContent(
+      React.createElement(
+        View,
+        { style: styles.section },
+        createSectionHeader(3, 'Logo — Déclinaisons', primaire),
+        React.createElement(Text, {
+          style: mergeStyles(styles.sectionIntro),
+          children: 'Versions claire, sombre, sur couleur principale et sur couleur secondaire',
+        }),
+        React.createElement(View, { style: styles.logoGrid }, ...logoGridItems)
+      ),
+      4,
+      totalPagesCount
     )
   );
 
@@ -852,15 +966,19 @@ export async function generatePdf(config, imagePaths, outputPath) {
       size: 'A4',
       style: mergeStyles(styles.page, { backgroundColor: fond }),
     },
-    React.createElement(
-      View,
-      { style: styles.section },
-      createSectionHeader(4, 'Palette de couleurs', primaire),
-      React.createElement(Text, {
-        style: mergeStyles(styles.sectionIntro),
-        children: 'Les 5 couleurs de la charte graphique',
-      }),
-      React.createElement(View, { style: styles.paletteGrid }, ...paletteCards)
+    wrapPageContent(
+      React.createElement(
+        View,
+        { style: styles.section },
+        createSectionHeader(4, 'Palette de couleurs', primaire),
+        React.createElement(Text, {
+          style: mergeStyles(styles.sectionIntro),
+          children: 'Les 5 couleurs de la charte graphique',
+        }),
+        React.createElement(View, { style: styles.paletteGrid }, ...paletteCards)
+      ),
+      5,
+      totalPagesCount
     )
   );
   pages.push(pageCouleurs);
@@ -938,65 +1056,69 @@ export async function generatePdf(config, imagePaths, outputPath) {
       size: 'A4',
       style: mergeStyles(styles.page, { backgroundColor: fond }),
     },
-    React.createElement(
-      View,
-      { style: styles.section },
-      createSectionHeader(5, 'Typographie', primaire),
-      React.createElement(Text, {
-        style: mergeStyles(styles.sectionIntro),
-        children: 'Hiérarchie des textes, alphabets et chiffres',
-      }),
-      typoSpecsCard,
+    wrapPageContent(
       React.createElement(
         View,
-        { key: 'article', style: mergeStyles(styles.section, { marginTop: SP.lg }) },
+        { style: styles.section },
+        createSectionHeader(5, 'Typographie', primaire),
         React.createElement(Text, {
-          style: mergeStyles(styles.sectionTitle, {
-            color: primaire,
-            borderBottomColor: primaire,
-            marginBottom: 12,
-          }),
-          children: 'Exemple d\'article',
+          style: mergeStyles(styles.sectionIntro),
+          children: 'Hiérarchie des textes, alphabets et chiffres',
         }),
+        typoSpecsCard,
         React.createElement(
           View,
-          { style: styles.articleBlockWithAccent },
-          React.createElement(View, {
-            style: mergeStyles(styles.articleBlockAccentBar, { backgroundColor: primaire }),
+          { key: 'article', style: mergeStyles(styles.section, { marginTop: SP.lg }) },
+          React.createElement(Text, {
+            style: mergeStyles(styles.sectionTitle, {
+              color: primaire,
+              borderBottomColor: primaire,
+              marginBottom: 12,
+            }),
+            children: 'Exemple d\'article',
           }),
           React.createElement(
             View,
-            { style: mergeStyles(styles.articleBlock, { flex: 1 }) },
-            React.createElement(Text, {
-              style: {
-                fontSize: tailleTitre,
-                fontFamily: fontTitre,
-                color: texte,
-                marginBottom: 8,
-              },
-              children: exempleTitre,
+            { style: styles.articleBlockWithAccent },
+            React.createElement(View, {
+              style: mergeStyles(styles.articleBlockAccentBar, { backgroundColor: primaire }),
             }),
-            React.createElement(Text, {
-              style: {
-                fontSize: tailleSousTitre,
-                fontFamily: fontCorps,
-                color: secondaire,
-                marginBottom: 12,
-              },
-              children: exempleSousTitre,
-            }),
-            React.createElement(Text, {
-              style: {
-                fontSize: tailleCorps,
-                fontFamily: fontCorps,
-                color: texte,
-                lineHeight: 1.6,
-              },
-              children: exempleDescription,
-            })
+            React.createElement(
+              View,
+              { style: mergeStyles(styles.articleBlock, { flex: 1 }) },
+              React.createElement(Text, {
+                style: {
+                  fontSize: tailleTitre,
+                  fontFamily: fontTitre,
+                  color: texte,
+                  marginBottom: 8,
+                },
+                children: exempleTitre,
+              }),
+              React.createElement(Text, {
+                style: {
+                  fontSize: tailleSousTitre,
+                  fontFamily: fontCorps,
+                  color: secondaire,
+                  marginBottom: 12,
+                },
+                children: exempleSousTitre,
+              }),
+              React.createElement(Text, {
+                style: {
+                  fontSize: tailleCorps,
+                  fontFamily: fontCorps,
+                  color: texte,
+                  lineHeight: 1.6,
+                },
+                children: exempleDescription,
+              })
+            )
           )
         )
-      )
+      ),
+      6,
+      totalPagesCount
     )
   );
   pages.push(pageTypo1);
@@ -1008,25 +1130,29 @@ export async function generatePdf(config, imagePaths, outputPath) {
       size: 'A4',
       style: mergeStyles(styles.page, { backgroundColor: fond }),
     },
-    React.createElement(
-      View,
-      { style: styles.section },
-      createSectionHeader(5, 'Typographie (suite)', primaire),
+    wrapPageContent(
       React.createElement(
         View,
-        { key: 'alphabets', style: { marginTop: SP.md } },
-        React.createElement(Text, {
-          style: mergeStyles(styles.sectionTitle, {
-            color: primaire,
-            borderBottomColor: primaire,
-            marginBottom: 12,
+        { style: styles.section },
+        createSectionHeader(5, 'Typographie (suite)', primaire),
+        React.createElement(
+          View,
+          { key: 'alphabets', style: { marginTop: SP.md } },
+          React.createElement(Text, {
+            style: mergeStyles(styles.sectionTitle, {
+              color: primaire,
+              borderBottomColor: primaire,
+              marginBottom: 12,
+            }),
+            children: 'Alphabet',
           }),
-          children: 'Alphabet',
-        }),
-        createTypoLevelCard('Titre', fontTitre, tailleTitre, texte),
-        createTypoLevelCard('Sous-titre', fontCorps, tailleSousTitre, texte),
-        createTypoLevelCard('Corps', fontCorps, tailleCorps, texte),
-      )
+          createTypoLevelCard('Titre', fontTitre, tailleTitre, texte),
+          createTypoLevelCard('Sous-titre', fontCorps, tailleSousTitre, texte),
+          createTypoLevelCard('Corps', fontCorps, tailleCorps, texte),
+        )
+      ),
+      7,
+      totalPagesCount
     )
   );
   pages.push(pageTypo2);
@@ -1038,25 +1164,29 @@ export async function generatePdf(config, imagePaths, outputPath) {
       size: 'A4',
       style: mergeStyles(styles.page, { backgroundColor: fond }),
     },
-    React.createElement(
-      View,
-      { style: styles.section },
-      createSectionHeader(5, 'Typographie (suite)', primaire),
+    wrapPageContent(
       React.createElement(
         View,
-        { key: 'numbers', style: { marginTop: SP.md } },
-        React.createElement(Text, {
-          style: mergeStyles(styles.sectionTitle, {
-            color: primaire,
-            borderBottomColor: primaire,
-            marginBottom: 12,
+        { style: styles.section },
+        createSectionHeader(5, 'Typographie (suite)', primaire),
+        React.createElement(
+          View,
+          { key: 'numbers', style: { marginTop: SP.md } },
+          React.createElement(Text, {
+            style: mergeStyles(styles.sectionTitle, {
+              color: primaire,
+              borderBottomColor: primaire,
+              marginBottom: 12,
+            }),
+            children: 'Chiffres 0-9',
           }),
-          children: 'Chiffres 0-9',
-        }),
-        createNumbersRow(fontTitre, tailleTitre, 'Titre'),
-        createNumbersRow(fontCorps, tailleSousTitre, 'Sous-titre'),
-        createNumbersRow(fontCorps, tailleCorps, 'Corps'),
-      )
+          createNumbersRow(fontTitre, tailleTitre, 'Titre'),
+          createNumbersRow(fontCorps, tailleSousTitre, 'Sous-titre'),
+          createNumbersRow(fontCorps, tailleCorps, 'Corps'),
+        )
+      ),
+      8,
+      totalPagesCount
     )
   );
   pages.push(pageTypo3);
@@ -1093,10 +1223,11 @@ export async function generatePdf(config, imagePaths, outputPath) {
       size: 'A4',
       style: mergeStyles(styles.page, { backgroundColor: fond }),
     },
-    React.createElement(
-      View,
-      { style: styles.section },
-      createSectionHeader(6, 'Kit UI', primaire),
+    wrapPageContent(
+      React.createElement(
+        View,
+        { style: styles.section },
+        createSectionHeader(6, 'Kit UI', primaire),
       React.createElement(Text, {
         style: mergeStyles(styles.sectionIntro),
         children: 'Composants d\'interface utilisant la charte graphique',
@@ -1251,7 +1382,10 @@ export async function generatePdf(config, imagePaths, outputPath) {
           )
         )
       )
-    )
+    ),
+    9,
+    totalPagesCount
+  )
   );
   pages.push(pageUiKit);
 
@@ -1262,10 +1396,11 @@ export async function generatePdf(config, imagePaths, outputPath) {
       size: 'A4',
       style: mergeStyles(styles.page, { backgroundColor: fond }),
     },
-    React.createElement(
-      View,
-      { style: styles.section },
-      createSectionHeader(6, 'Kit UI (suite)', primaire),
+    wrapPageContent(
+      React.createElement(
+        View,
+        { style: styles.section },
+        createSectionHeader(6, 'Kit UI (suite)', primaire),
       createUiBlock(
         'Barres de progression',
         React.createElement(
@@ -1353,7 +1488,10 @@ export async function generatePdf(config, imagePaths, outputPath) {
           createButton('Action', { bgColor: primaire })
         )
       )
-    )
+    ),
+    10,
+    totalPagesCount
+  )
   );
   pages.push(pageUiKit2);
 
@@ -1365,33 +1503,93 @@ export async function generatePdf(config, imagePaths, outputPath) {
         size: 'A4',
         style: mergeStyles(styles.page, { backgroundColor: fond }),
       },
-      React.createElement(
-        View,
-        { style: styles.section },
-        createSectionHeader(7, 'Éléments graphiques', primaire),
-        React.createElement(Text, {
-          style: mergeStyles(styles.sectionIntro),
-          children: 'Fichiers du dossier entrée',
-        }),
+      wrapPageContent(
         React.createElement(
           View,
-          { style: styles.imageGrid },
-          ...otherImages.map((img, i) =>
-            React.createElement(
-              View,
-              { key: i, style: styles.imageItem },
-              React.createElement(Image, { src: img.src, style: styles.img }),
-              React.createElement(Text, {
-                style: styles.colorLabel,
-                children: img.name,
-              })
+          { style: styles.section },
+          createSectionHeader(7, 'Éléments graphiques', primaire),
+          React.createElement(Text, {
+            style: mergeStyles(styles.sectionIntro),
+            children: 'Fichiers du dossier entrée',
+          }),
+          React.createElement(
+            View,
+            { style: styles.imageGrid },
+            ...otherImages.map((img, i) =>
+              React.createElement(
+                View,
+                { key: i, style: styles.imageItem },
+                React.createElement(Image, { src: img.src, style: styles.img }),
+                React.createElement(Text, {
+                  style: styles.colorLabel,
+                  children: img.name,
+                })
+              )
             )
           )
-        )
+        ),
+        11,
+        totalPagesCount
       )
     );
     pages.push(pageImages);
   }
+
+  const aboutQwebtyPageNum = otherImages.length > 0 ? 12 : 11;
+  const pageAboutQwebty = React.createElement(
+    Page,
+    {
+      key: 'about-qwebty',
+      size: 'A4',
+      style: mergeStyles(styles.page, { backgroundColor: fond }),
+    },
+    wrapPageContent(
+      React.createElement(
+        View,
+        { style: mergeStyles(styles.section, { flex: 1, justifyContent: 'center' }) },
+        React.createElement(
+          View,
+          { style: mergeStyles(styles.qwebtyLogo, { alignSelf: 'center', marginBottom: SP.lg }) },
+          React.createElement(Text, { style: styles.qwebtyLogoText, children: QWEBTY.name })
+        ),
+        React.createElement(Text, {
+          style: {
+            fontSize: 18,
+            fontFamily: 'Helvetica-Bold',
+            color: primaire,
+            textAlign: 'center',
+            marginBottom: SP.md,
+          },
+          children: 'À propos de Qwebty',
+        }),
+        React.createElement(Text, {
+          style: {
+            fontSize: 12,
+            fontFamily: fontCorps,
+            color: texte,
+            textAlign: 'center',
+            lineHeight: 1.6,
+            maxWidth: 400,
+            alignSelf: 'center',
+          },
+          children: 'Qwebty est une agence web et digitale basée à Lyon. Nous créons des solutions web sur mesure : sites performants, applications SaaS, intégration IA, SEO et conformité RGPD. Ce document a été généré par notre outil de charte graphique.',
+        }),
+        React.createElement(Text, {
+          style: {
+            marginTop: SP.lg,
+            fontSize: 10,
+            color: MUTED,
+            textAlign: 'center',
+            fontFamily: 'Helvetica',
+          },
+          children: QWEBTY.url,
+        })
+      ),
+      aboutQwebtyPageNum,
+      totalPagesCount
+    )
+  );
+  pages.push(pageAboutQwebty);
 
   const CharteDocument = () =>
     React.createElement(Document, null, ...pages);

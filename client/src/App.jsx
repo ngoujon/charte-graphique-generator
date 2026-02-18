@@ -215,9 +215,17 @@ function App() {
 
   return (
     <div className="app">
-      <header>
-        <h1>Charte Graphique Generator</h1>
-        <p>data/input → data/output • data/trash • data/conf</p>
+      <header className="app-header">
+        <div className="app-header-brand">
+          <img src="/qwebty-logo.svg" alt="Qwebty" className="qwebty-logo" />
+          <div>
+            <h1>Charte Graphique Generator</h1>
+            <p>data/input → data/output • data/trash • data/conf</p>
+          </div>
+        </div>
+        <a href="https://qwebty.com" target="_blank" rel="noreferrer" className="qwebty-link">
+          qwebty.com
+        </a>
       </header>
 
       {message && (
@@ -716,6 +724,11 @@ function App() {
             )}
         </section>
       </main>
+      <footer className="app-footer">
+        <span className="app-footer-brand">Qwebty</span>
+        <a href="https://qwebty.com" target="_blank" rel="noreferrer">qwebty.com</a>
+        <span className="app-footer-tagline">Document généré par Qwebty</span>
+      </footer>
     </div>
   );
 }

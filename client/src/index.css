@@ -1,4 +1,9 @@
+/* Palette Qwebty - identité de marque */
 :root {
+  --qwebty-primary: #7c3aed;
+  --qwebty-primary-hover: #8b5cf6;
+  --qwebty-secondary: #64748b;
+  --qwebty-accent: #f59e0b;
   --bg: #1e2329;
   --bg-subtle: #252b33;
   --surface: #2a3139;
@@ -7,8 +12,8 @@
   --border-light: #4a5568;
   --text: #e8eaed;
   --text-muted: #9ca3af;
-  --accent: #7c3aed;
-  --accent-hover: #8b5cf6;
+  --accent: var(--qwebty-primary);
+  --accent-hover: var(--qwebty-primary-hover);
   --accent-glow: rgba(124, 58, 237, 0.25);
   --success: #10b981;
   --error: #f43f5e;

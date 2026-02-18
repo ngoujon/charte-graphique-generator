@@ -8,14 +8,43 @@
   overflow: hidden;
 }
 
-header {
+.app-header {
   flex-shrink: 0;
   padding: 0.6rem 1.5rem;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-header h1 {
+.app-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.qwebty-logo {
+  height: 40px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.qwebty-link {
+  font-size: 0.85rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.qwebty-link:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+header h1,
+.app-header h1 {
   font-size: 1.25rem;
   font-weight: 700;
   margin: 0;
@@ -23,7 +52,8 @@ header h1 {
   color: var(--text);
 }
 
-header p {
+header p,
+.app-header p {
   color: var(--text-muted);
   margin: 0;
   font-size: 0.85rem;
@@ -513,5 +543,32 @@ main {
   font-size: 0.9rem;
   margin: 1rem 0 0;
   font-style: italic;
+}
+
+.app-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--bg-subtle);
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.app-footer-brand {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.app-footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.app-footer a:hover {
+  text-decoration: underline;
 }
 
