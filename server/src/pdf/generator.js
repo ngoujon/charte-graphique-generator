@@ -44,34 +44,53 @@ const styles = StyleSheet.create({
   },
   cover: {
     flex: 1,
-    justifyContent: 'center',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    paddingVertical: SP.xxl,
+  },
+  coverHeader: {
     alignItems: 'center',
   },
-  coverAccent: {
-    width: 60,
-    height: 4,
-    marginBottom: SP.lg,
-    borderRadius: 2,
+  coverMain: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: SP.xl,
   },
-  title: {
-    fontSize: 36,
-    marginBottom: SP.sm,
+  coverProjectName: {
+    fontSize: 32,
     fontFamily: 'Helvetica-Bold',
     letterSpacing: -0.5,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: MUTED,
-    maxWidth: 400,
+    marginBottom: SP.sm,
     textAlign: 'center',
-    lineHeight: 1.5,
   },
-  coverBadge: {
-    marginTop: SP.xl,
-    paddingVertical: SP.sm,
-    paddingHorizontal: SP.md,
-    borderRadius: 20,
-    borderWidth: 1,
+  coverDocumentTitle: {
+    fontSize: 18,
+    fontFamily: 'Helvetica',
+    color: MUTED,
+    marginBottom: SP.lg,
+    textTransform: 'uppercase',
+    letterSpacing: 2,
+    textAlign: 'center',
+  },
+  coverDate: {
+    fontSize: 12,
+    fontFamily: 'Helvetica',
+    color: MUTED,
+    textAlign: 'center',
+  },
+  coverFooter: {
+    borderTopWidth: 1,
+    borderTopColor: BORDER,
+    paddingTop: SP.md,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  coverQwebtyText: {
+    fontSize: 9,
+    fontFamily: 'Helvetica',
+    color: MUTED,
   },
   section: {
     marginBottom: SP.lg,
@@ -551,6 +570,14 @@ function darkenHex(hex, amount = 0.2) {
   return rgbToHex(rgb.r * (1 - amount), rgb.g * (1 - amount), rgb.b * (1 - amount));
 }
 
+function formatDateFr(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
 function findLogos(images) {
   const clair = images.find((i) =>
     /clair|light|claire/i.test(i.name)
@@ -631,64 +658,62 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
   const dateGen = projet.date || new Date().toISOString().slice(0, 10);
   const totalPagesCount = 12 + (otherImages.length > 0 ? 1 : 0);
 
+  const dateFormatted = formatDateFr(dateGen) || dateGen;
+  const qwebtyAccent = MUTED;
+
   const coverLogoContent = qwebtyLogoSrc
     ? React.createElement(
         View,
-        { key: 'qwebty-logo', style: { marginBottom: SP.xl, alignItems: 'center' } },
+        { key: 'qwebty-logo', style: { alignItems: 'center' } },
         React.createElement(Image, {
           src: qwebtyLogoSrc,
-          style: mergeStyles(styles.qwebtyLogoImg, { height: 60 }),
+          style: mergeStyles(styles.qwebtyLogoImg, { height: 36 }),
         })
       )
     : React.createElement(
         View,
-        { key: 'qwebty-logo', style: { marginBottom: SP.xl } },
-        React.createElement(
-          View,
-          { style: mergeStyles(styles.qwebtyLogo, { alignSelf: 'center' }) },
-          React.createElement(Text, { style: styles.qwebtyLogoText, children: QWEBTY.name })
-        )
+        { key: 'qwebty-logo', style: { alignItems: 'center' } },
+        React.createElement(Text, {
+          style: { fontSize: 12, fontFamily: 'Helvetica-Bold', color: MUTED, letterSpacing: 1 },
+          children: QWEBTY.name,
+        })
       );
 
-  const qwebtyAccent = MUTED;
-
-  const coverChildren = [
-    coverLogoContent,
-    React.createElement(View, {
-      key: 'accent',
-      style: mergeStyles(styles.coverAccent, { backgroundColor: qwebtyAccent }),
-    }),
-    React.createElement(Text, {
-      key: 'title',
-      style: mergeStyles(styles.title, {
-        color: colors.primaire || colors.texte || texte,
-      }),
-      children: projet.nom || 'Charte Graphique',
-    }),
-    React.createElement(Text, {
-      key: 'desc',
-      style: mergeStyles(styles.subtitle, { color: secondaire }),
-      children: projet.description || 'Document de charge graphique',
-    }),
+  const coverContent = React.createElement(
+    View,
+    { style: styles.cover },
+    React.createElement(View, { style: styles.coverHeader }, coverLogoContent),
     React.createElement(
       View,
-      {
-        key: 'badge',
-        style: mergeStyles(styles.coverBadge, {
-          borderColor: qwebtyAccent,
-        }),
-      },
+      { style: styles.coverMain },
       React.createElement(Text, {
-        style: { fontSize: 11, color: qwebtyAccent, fontFamily: 'Helvetica-Bold' },
-        children: `Document · ${dateGen}`,
+        style: mergeStyles(styles.coverProjectName, {
+          color: colors.primaire || colors.texte || texte,
+        }),
+        children: projet.nom || 'Mon Projet',
+      }),
+      React.createElement(Text, {
+        style: styles.coverDocumentTitle,
+        children: 'Charte Graphique',
+      }),
+      React.createElement(Text, {
+        style: styles.coverDate,
+        children: dateFormatted,
       })
     ),
-    React.createElement(Text, {
-      key: 'qwebty-credit',
-      style: { marginTop: SP.xl, fontSize: 10, color: qwebtyAccent, fontFamily: 'Helvetica-Bold' },
-      children: `${QWEBTY.tagline} · ${QWEBTY.url}`,
-    }),
-  ];
+    React.createElement(
+      View,
+      { style: styles.coverFooter },
+      React.createElement(Text, {
+        style: styles.coverQwebtyText,
+        children: QWEBTY.tagline,
+      }),
+      React.createElement(Text, {
+        style: styles.coverQwebtyText,
+        children: QWEBTY.url,
+      })
+    )
+  );
 
   const pages = [];
 
@@ -700,7 +725,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         size: 'A4',
         style: mergeStyles(styles.page, { backgroundColor: fond }),
       },
-      React.createElement(View, { style: styles.cover }, ...coverChildren)
+      coverContent
     )
   );
 
