@@ -1180,10 +1180,11 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     );
 
   const createButton = (label, options = {}) => {
-    const { bgColor, textColor = '#ffffff', border, borderColor } = options;
+    const { bgColor, textColor = '#ffffff', border, borderColor, fontFamily } = options;
     const isOutline = border || borderColor;
     const outlineColor = borderColor || primaire;
     const outlineTextColor = borderColor === BORDER ? texte : outlineColor;
+    const btnFont = fontFamily || fontSecondaire;
     return React.createElement(
       View,
       {
@@ -1193,7 +1194,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         }),
       },
       React.createElement(Text, {
-        style: { color: isOutline ? outlineTextColor : textColor, fontSize: 12, fontFamily: fontSecondaire },
+        style: { color: isOutline ? outlineTextColor : textColor, fontSize: 12, fontFamily: btnFont },
         children: label,
       })
     );
@@ -1510,15 +1511,15 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           null,
           React.createElement(View, { style: styles.uiListItem },
             React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12 }, children: '•' }),
-            React.createElement(Text, { style: { fontSize: 12, fontFamily: fontSecondaire, color: texte }, children: 'Premier élément de la liste' })
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: 'Premier élément de la liste' })
           ),
           React.createElement(View, { style: styles.uiListItem },
             React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12 }, children: '•' }),
-            React.createElement(Text, { style: { fontSize: 12, fontFamily: fontSecondaire, color: texte }, children: 'Deuxième élément de la liste' })
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: 'Deuxième élément de la liste' })
           ),
           React.createElement(View, { style: styles.uiListItem },
             React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12 }, children: '•' }),
-            React.createElement(Text, { style: { fontSize: 12, fontFamily: fontSecondaire, color: texte }, children: 'Troisième élément de la liste' })
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: 'Troisième élément de la liste' })
           )
         )
       ),
@@ -1543,9 +1544,9 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           React.createElement(
             View,
             { style: { flexDirection: 'row', justifyContent: 'flex-end', gap: SP.sm, flexWrap: 'wrap' } },
-            createButton('Action', { bgColor: primaire }),
-            createButton('Secondaire', { bgColor: secondaire }),
-            createButton('Contour', { borderColor: secondaire })
+            createButton('Action', { bgColor: primaire, fontFamily: getFontVariants(fontPrincipale).regular }),
+            createButton('Action', { bgColor: secondaire, fontFamily: getFontVariants(fontPrincipale).regular }),
+            createButton('Action', { borderColor: secondaire, fontFamily: getFontVariants(fontPrincipale).regular })
           )
         )
       )
