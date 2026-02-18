@@ -325,10 +325,21 @@ function App() {
   };
 
   const fontInputRef = useRef(null);
+  const normalizeFontName = (name) =>
+    String(name || '').replace(/-[0-9]+$/, '').replace(/[-_\s]/g, '').toLowerCase();
   const uploadFont = async (e) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
+    const baseName = file.name.replace(/\.[^.]+$/, '');
+    const incomingNorm = normalizeFontName(baseName);
+    const existing = (customFonts || []).some(
+      (f) => normalizeFontName(f.label || f.id) === incomingNorm
+    );
+    if (existing) {
+      setMessage({ type: 'error', text: 'Une police avec ce nom existe déjà' });
+      return;
+    }
     const form = new FormData();
     form.append('font', file);
     try {

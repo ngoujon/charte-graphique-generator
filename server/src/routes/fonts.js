@@ -44,16 +44,28 @@ function familyIdFromFilename(filename) {
   return `custom:${base}`;
 }
 
+function normalizedFontName(filename) {
+  const base = path.basename(filename, path.extname(filename));
+  return base.replace(/-[0-9]+$/, '').toLowerCase();
+}
+
 fontsRouter.get('/list', async (req, res) => {
   try {
     await fs.mkdir(fontsDir(), { recursive: true });
     const files = await fs.readdir(fontsDir());
+    const seen = new Set();
     const fonts = files
       .filter((f) => ACCEPTED_EXT.includes(path.extname(f).toLowerCase()))
       .map((f) => {
         const id = familyIdFromFilename(f);
         const label = path.basename(f, path.extname(f)).replace(/-[0-9]+$/, '').replace(/-/g, ' ');
         return { id, label, filename: f };
+      })
+      .filter((f) => {
+        const key = normalizedFontName(f.filename);
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
       });
     res.json(fonts);
   } catch (err) {
@@ -72,10 +84,24 @@ fontsRouter.post('/upload', (req, res, next) => {
 }, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Aucun fichier. Envoyez un fichier .ttf, .otf ou .woff' });
   try {
+    const incomingName = normalizedFontName(req.file.filename);
+    const files = await fs.readdir(fontsDir()).catch(() => []);
+    const existingNames = files
+      .filter((f) => f !== req.file.filename && ACCEPTED_EXT.includes(path.extname(f).toLowerCase()))
+      .map((f) => normalizedFontName(f));
+    if (existingNames.includes(incomingName)) {
+      const filePath = path.join(fontsDir(), req.file.filename);
+      await fs.unlink(filePath).catch(() => {});
+      return res.status(400).json({ error: 'Une police avec ce nom existe déjà' });
+    }
     const id = familyIdFromFilename(req.file.filename);
     const label = path.basename(req.file.filename, path.extname(req.file.filename)).replace(/-[0-9]+$/, '').replace(/-/g, ' ');
     res.json({ id, label, filename: req.file.filename });
   } catch (err) {
+    if (req.file?.filename) {
+      const filePath = path.join(fontsDir(), req.file.filename);
+      await fs.unlink(filePath).catch(() => {});
+    }
     res.status(500).json({ error: err.message });
   }
 });

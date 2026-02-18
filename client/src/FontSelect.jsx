@@ -6,10 +6,18 @@ const BUILTIN_FONTS = [
 
 export function FontSelect({ value, onChange, customFonts = [] }) {
   const customList = Array.isArray(customFonts) ? customFonts : [];
-  const customOptions = customList.map((f) => ({
-    id: f.id,
-    label: f.label || f.id?.replace?.(/^custom:/, '').replace(/-[0-9]+$/, '').replace(/-/g, ' ') || 'Police personnalisée',
-  }));
+  const seenIds = new Set();
+  const customOptions = customList
+    .filter((f) => {
+      const id = f.id;
+      if (!id || seenIds.has(id)) return false;
+      seenIds.add(id);
+      return true;
+    })
+    .map((f) => ({
+      id: f.id,
+      label: f.label || f.id?.replace?.(/^custom:/, '').replace(/-[0-9]+$/, '').replace(/-/g, ' ') || 'Police personnalisée',
+    }));
   const allFonts = [...customOptions, ...BUILTIN_FONTS];
   const safeValue = value && allFonts.some((f) => f.id === value) ? value : 'Helvetica';
   return (
