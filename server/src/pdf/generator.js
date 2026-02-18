@@ -637,6 +637,18 @@ function mergeStyles(...args) {
   return Object.assign({}, ...args.filter(Boolean));
 }
 
+/** Évite les retours à la ligne avant : ; ! ? (espace insécable) */
+function fixTypoOrphans(text) {
+  if (!text || typeof text !== 'string') return text;
+  return text
+    .replace(/ :/g, '\u00A0:')
+    .replace(/ ;/g, '\u00A0;')
+    .replace(/ !/g, '\u00A0!')
+    .replace(/ \?/g, '\u00A0?')
+    .replace(/ »/g, '\u00A0»')
+    .replace(/ %/g, '\u00A0%');
+}
+
 function hexToRgb(hex) {
   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return m ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) } : null;
@@ -977,7 +989,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         }),
         React.createElement(Text, {
           style: style,
-          children: value,
+          children: fixTypoOrphans(value),
         })
       )
     );
