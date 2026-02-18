@@ -258,9 +258,13 @@ function App() {
 
   const deleteOutputFile = async (name) => {
     try {
-      await fetch(`${API}/output/files/${encodeURIComponent(name)}`, {
+      const res = await fetch(`${API}/output/files/${encodeURIComponent(name)}`, {
         method: 'DELETE',
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Erreur ${res.status}`);
+      }
       refetchOutput();
       refetchTrash();
       setMessage({ type: 'success', text: 'PDF déplacé dans la corbeille' });
@@ -272,9 +276,13 @@ function App() {
 
   const restoreTrashFile = async (name) => {
     try {
-      await fetch(`${API}/output/trash/files/${encodeURIComponent(name)}/restore`, {
+      const res = await fetch(`${API}/output/trash/files/${encodeURIComponent(name)}/restore`, {
         method: 'POST',
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Erreur ${res.status}`);
+      }
       refetchOutput();
       refetchTrash();
       setMessage({ type: 'success', text: 'PDF restauré' });
@@ -286,9 +294,13 @@ function App() {
 
   const permanentlyDeleteTrashFile = async (name) => {
     try {
-      await fetch(`${API}/output/trash/files/${encodeURIComponent(name)}`, {
+      const res = await fetch(`${API}/output/trash/files/${encodeURIComponent(name)}`, {
         method: 'DELETE',
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Erreur ${res.status}`);
+      }
       refetchTrash();
       setMessage({ type: 'success', text: 'PDF supprimé définitivement' });
       setTimeout(() => setMessage(null), 2000);

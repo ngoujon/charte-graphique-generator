@@ -38,10 +38,14 @@ outputRouter.delete('/files/:name', async (req, res) => {
     if (!name.endsWith('.pdf')) {
       return res.status(400).json({ error: 'Seuls les PDF peuvent être supprimés' });
     }
+    if (name.includes('..') || path.isAbsolute(name)) {
+      return res.status(400).json({ error: 'Nom de fichier invalide' });
+    }
     const srcPath = path.join(outputDir(), name);
     await fs.access(srcPath);
     await fs.mkdir(trashDir(), { recursive: true });
     const destPath = path.join(trashDir(), name);
+    await fs.unlink(destPath).catch(() => {});
     await fs.rename(srcPath, destPath);
     res.json({ moved: name });
   } catch (err) {
