@@ -368,7 +368,7 @@ main {
 
 .config-form .config-fields-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
 }
 
@@ -451,7 +451,15 @@ main {
 }
 
 .config-form fieldset:has(.palette-grid) {
+  grid-column: span 2;
+}
+
+.config-form fieldset:has(.logo-zones-grid) {
   grid-column: span 1;
+}
+
+.config-form .logo-zones-grid {
+  grid-template-columns: 1fr;
 }
 
 .config-form .palette-grid {
@@ -486,6 +494,10 @@ main {
   }
   .config-form .config-fields-grid {
     grid-template-columns: 1fr;
+  }
+  .config-form fieldset:has(.palette-grid),
+  .config-form fieldset:has(.logo-zones-grid) {
+    grid-column: span 1;
   }
   .config-form .palette-grid-5 {
     grid-template-columns: repeat(2, 1fr);

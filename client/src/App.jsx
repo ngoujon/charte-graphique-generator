@@ -779,6 +779,35 @@ function App() {
                     })}
                   </div>
                 </fieldset>
+                <fieldset>
+                  <legend>Logos</legend>
+                  <p className="hint" style={{ marginTop: '-0.5rem', marginBottom: '0.5rem' }}>
+                    Glissez-déposez vos logos selon le fond d'affichage. Un logo par type.
+                  </p>
+                  <div className="logo-zones-grid">
+                    <LogoDropZone
+                      type="clair"
+                      label="Logo clair (fond clair)"
+                      bgColor="#ffffff"
+                    />
+                    <LogoDropZone
+                      type="sombre"
+                      label="Logo sombre (fond sombre)"
+                      bgColor="#1e293b"
+                      isDark
+                    />
+                    <LogoDropZone
+                      type="primaire"
+                      label="Sur couleur principale"
+                      bgColor={config?.couleurs?.primaire || '#2563eb'}
+                    />
+                    <LogoDropZone
+                      type="secondaire"
+                      label="Sur couleur secondaire"
+                      bgColor={config?.couleurs?.secondaire || '#64748b'}
+                    />
+                  </div>
+                </fieldset>
                 </div>
                 <div className="config-form-footer">
                   <button className="btn btn-primary" onClick={saveConfig}>
@@ -787,36 +816,6 @@ function App() {
                 </div>
               </div>
             )}
-        </section>
-
-        <section className="panel">
-            <h2>Logos</h2>
-            <p className="hint">
-              Glissez-déposez vos logos selon le fond d'affichage. Un logo par type.
-            </p>
-            <div className="logo-zones-grid">
-              <LogoDropZone
-                type="clair"
-                label="Logo clair (fond clair)"
-                bgColor="#ffffff"
-              />
-              <LogoDropZone
-                type="sombre"
-                label="Logo sombre (fond sombre)"
-                bgColor="#1e293b"
-                isDark
-              />
-              <LogoDropZone
-                type="primaire"
-                label="Sur couleur principale"
-                bgColor={config?.couleurs?.primaire || '#2563eb'}
-              />
-              <LogoDropZone
-                type="secondaire"
-                label="Sur couleur secondaire"
-                bgColor={config?.couleurs?.secondaire || '#64748b'}
-              />
-            </div>
         </section>
 
         {showTrash && (
