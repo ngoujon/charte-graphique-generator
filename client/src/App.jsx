@@ -15,7 +15,15 @@ function useApi(path, options = {}) {
       const fetchOptions = { ...options, cache: 'no-store' };
       const res = await fetch(`${API}${path}`, fetchOptions);
       if (!res.ok) throw new Error(await res.text());
-      const json = await res.json().catch(() => ({}));
+      const text = await res.text();
+      let json = {};
+      if (text) {
+        try {
+          json = JSON.parse(text);
+        } catch {
+          throw new Error('Réponse invalide du serveur');
+        }
+      }
       setData(json);
       return json;
     } catch (e) {
@@ -93,7 +101,9 @@ function App() {
   const exportConfig = async () => {
     try {
       const res = await fetch(`${API}/conf/export`);
-      const config = await res.json();
+      if (!res.ok) throw new Error(await res.text());
+      const text = await res.text();
+      const config = text ? JSON.parse(text) : {};
       const blob = new Blob([JSON.stringify(config, null, 2)], {
         type: 'application/json',
       });

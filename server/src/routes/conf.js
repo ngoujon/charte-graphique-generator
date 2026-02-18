@@ -45,7 +45,12 @@ confRouter.get('/', async (req, res) => {
     const confPath = path.join(confDir(), 'charte.json');
     try {
       const data = await fs.readFile(confPath, 'utf-8');
-      const parsed = JSON.parse(data);
+      const trimmed = (data || '').trim();
+      if (!trimmed) {
+        res.json(DEFAULT_CONF);
+        return;
+      }
+      const parsed = JSON.parse(trimmed);
       if (parsed.couleurs) parsed.couleurs = normalizeCouleurs(parsed.couleurs);
       res.json(parsed);
     } catch {
@@ -104,7 +109,8 @@ confRouter.get('/export', async (req, res) => {
   try {
     const confPath = path.join(confDir(), 'charte.json');
     const data = await fs.readFile(confPath, 'utf-8');
-    const config = JSON.parse(data);
+    const trimmed = (data || '').trim();
+    const config = trimmed ? JSON.parse(trimmed) : DEFAULT_CONF;
     res.setHeader('Content-Disposition', 'attachment; filename=charte-config.json');
     res.json(config);
   } catch {
