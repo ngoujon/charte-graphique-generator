@@ -552,6 +552,22 @@ function App() {
                     </div>
                   </label>
                   <label>
+                    Référence unique
+                    <div className="input-wrap">
+                      <input
+                        type="text"
+                        placeholder="Ex: CHG-2025-001"
+                        value={config.projet?.reference || ''}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            projet: { ...config.projet, reference: e.target.value },
+                          })
+                        }
+                      />
+                    </div>
+                  </label>
+                  <label>
                     Date
                     <div className="input-wrap">
                       <input

@@ -842,6 +842,12 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         style: styles.coverDocumentTitle,
         children: 'Charte Graphique',
       }),
+      projet.reference
+        ? React.createElement(Text, {
+            style: { ...styles.coverDate, marginBottom: SP.xs },
+            children: `Réf. ${projet.reference}`,
+          })
+        : null,
       React.createElement(Text, {
         style: styles.coverDate,
         children: dateFormatted,
