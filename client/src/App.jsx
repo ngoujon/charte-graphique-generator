@@ -797,28 +797,28 @@ function App() {
                 <fieldset>
                   <legend>Logos</legend>
                   <p className="hint" style={{ marginTop: '-0.5rem', marginBottom: '0.5rem' }}>
-                    Glissez-déposez vos logos selon le fond d'affichage. Un logo par type.
+                    Glissez-déposez ou cliquez pour ajouter un logo sur chaque fond.
                   </p>
                   <div className="logo-zones-grid">
                     <LogoDropZone
                       type="clair"
-                      label="Logo clair (fond clair)"
-                      bgColor="#ffffff"
+                      label="Logo sur fond clair"
+                      bgColor={config?.couleurs?.clair || config?.couleurs?.fond || '#ffffff'}
                     />
                     <LogoDropZone
                       type="sombre"
-                      label="Logo sombre (fond sombre)"
-                      bgColor="#1e293b"
+                      label="Logo sur fond sombre"
+                      bgColor={config?.couleurs?.sombre || config?.couleurs?.texte || '#1a1a1a'}
                       isDark
                     />
                     <LogoDropZone
                       type="primaire"
-                      label="Sur couleur principale"
+                      label="Logo sur couleur principale"
                       bgColor={config?.couleurs?.primaire || '#2563eb'}
                     />
                     <LogoDropZone
                       type="secondaire"
-                      label="Sur couleur secondaire"
+                      label="Logo sur couleur secondaire"
                       bgColor={config?.couleurs?.secondaire || '#64748b'}
                     />
                   </div>
