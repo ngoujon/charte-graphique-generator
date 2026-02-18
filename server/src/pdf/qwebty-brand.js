@@ -5,7 +5,7 @@
 
 export const QWEBTY = {
   name: 'Qwebty',
-  url: 'https://qwebty.com',
+  url: 'www.qwebty.com',
   tagline: 'Document généré par Qwebty',
   poweredBy: 'Powered by Qwebty',
 
