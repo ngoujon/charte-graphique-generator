@@ -744,10 +744,6 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         View,
         { style: styles.section },
         createSectionHeader(1, 'Sommaire'),
-        React.createElement(Text, {
-          style: mergeStyles(styles.sectionIntro),
-          children: 'Ce document applique les 13 principes du design graphique : alignement, contraste, équilibre, hiérarchie, couleur, espace blanc, proportion, répétition, rythme, mouvement, mise en valeur, proximité et unité.',
-        }),
         ...sommaireItems.map((item, i) =>
           React.createElement(
             View,
