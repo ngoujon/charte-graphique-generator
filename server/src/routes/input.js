@@ -2,7 +2,7 @@ import { Router } from 'express';
 import fs from 'fs/promises';
 import path from 'path';
 import multer from 'multer';
-import { getDataDir } from '../index.js';
+import { getDataDir } from '../dataDir.js';
 
 export const inputRouter = Router();
 const inputDir = () => path.join(getDataDir(), 'input');
@@ -41,7 +41,8 @@ inputRouter.get('/files', async (req, res) => {
     );
     res.json(details);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[input/files]', err);
+    res.json([]);
   }
 });
 

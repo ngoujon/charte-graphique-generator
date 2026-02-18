@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import multer from 'multer';
 import JSZip from 'jszip';
-import { getDataDir } from '../index.js';
+import { getDataDir } from '../dataDir.js';
 
 export const confRouter = Router();
 const confDir = () => path.join(getDataDir(), 'conf');
@@ -48,9 +48,15 @@ const DEFAULT_CONF = {
 confRouter.get('/', async (req, res) => {
   try {
     const confPath = path.join(confDir(), 'charte.json');
+    const data = await fs.readFile(confPath, 'utf-8').catch(() => null);
+    if (!data) return res.json(DEFAULT_CONF);
+    let parsed;
     try {
-      const data = await fs.readFile(confPath, 'utf-8');
-      const parsed = JSON.parse(data);
+      parsed = JSON.parse(data);
+    } catch {
+      return res.json(DEFAULT_CONF);
+    }
+    try {
       if (parsed.couleurs) parsed.couleurs = normalizeCouleurs(parsed.couleurs);
       if (parsed.typographie) parsed.typographie = normalizeTypographie(parsed.typographie);
       res.json(parsed);
@@ -58,7 +64,8 @@ confRouter.get('/', async (req, res) => {
       res.json(DEFAULT_CONF);
     }
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[conf GET]', err);
+    res.json(DEFAULT_CONF);
   }
 });
 

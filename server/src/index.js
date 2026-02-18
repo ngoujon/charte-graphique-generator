@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
+import { DATA_DIR } from './dataDir.js';
 import { inputRouter } from './routes/input.js';
 import { outputRouter } from './routes/output.js';
 import { confRouter } from './routes/conf.js';
@@ -11,15 +12,12 @@ import { fontsRouter } from './routes/fonts.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3002;
-const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data');
-
-export const getDataDir = () => DATA_DIR;
 
 async function initDataDir() {
   const dirs = [
     path.join(DATA_DIR, 'input'),
     path.join(DATA_DIR, 'output'),
-    path.join(DATA_DIR, 'output', 'trash'),
+    path.join(DATA_DIR, 'trash'),
     path.join(DATA_DIR, 'conf'),
     path.join(DATA_DIR, 'fonts'),
   ];
@@ -38,6 +36,9 @@ const hasPublic = await fs.access(publicDir).then(() => true).catch(() => false)
 if (hasPublic) {
   app.use(express.static(publicDir));
 }
+
+// Health check
+app.get('/api/health', (req, res) => res.json({ ok: true }));
 
 // API routes
 app.use('/api/input', inputRouter);

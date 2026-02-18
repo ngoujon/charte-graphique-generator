@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import fs from 'fs/promises';
 import path from 'path';
-import { getDataDir } from '../index.js';
+import { getDataDir } from '../dataDir.js';
 
 export const outputRouter = Router();
 const outputDir = () => path.join(getDataDir(), 'output');
@@ -21,7 +21,8 @@ outputRouter.get('/files', async (req, res) => {
     );
     res.json(details.sort((a, b) => new Date(b.modified) - new Date(a.modified)));
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[output/files]', err);
+    res.json([]);
   }
 });
 
@@ -88,7 +89,8 @@ outputRouter.get('/trash/files', async (req, res) => {
     );
     res.json(details.sort((a, b) => new Date(b.modified) - new Date(a.modified)));
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[output/trash/files]', err);
+    res.json([]);
   }
 });
 

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import fs from 'fs/promises';
 import path from 'path';
 import multer from 'multer';
-import { getDataDir } from '../index.js';
+import { getDataDir } from '../dataDir.js';
 
 export const fontsRouter = Router();
 const fontsDir = () => path.join(getDataDir(), 'fonts');
@@ -69,7 +69,8 @@ fontsRouter.get('/list', async (req, res) => {
       });
     res.json(fonts);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[fonts/list]', err);
+    res.json([]);
   }
 });
 

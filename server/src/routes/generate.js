@@ -2,7 +2,7 @@ import { Router } from 'express';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getDataDir } from '../index.js';
+import { getDataDir } from '../dataDir.js';
 import { generatePdf } from '../pdf/generator.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
