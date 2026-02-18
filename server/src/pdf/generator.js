@@ -455,7 +455,9 @@ const styles = StyleSheet.create({
 });
 
 function createQwebtyFooter(pageNum, totalPages, logoSrc) {
-  const logoContent = logoSrc
+  const isLastPage = pageNum === totalPages;
+  const displayLogo = isLastPage && logoSrc;
+  const logoContent = displayLogo
     ? React.createElement(Image, { src: logoSrc, style: styles.qwebtyLogoImgFooter })
     : React.createElement(Text, { style: styles.qwebtyFooterBrand, children: QWEBTY.name });
   return React.createElement(
