@@ -322,36 +322,6 @@ function App() {
 
       <main className="page-all">
         <section className="panel">
-            <h2>Logos</h2>
-            <p className="hint">
-              Glissez-déposez vos logos selon le fond d'affichage. Un logo par type.
-            </p>
-            <div className="logo-zones-grid">
-              <LogoDropZone
-                type="clair"
-                label="Logo clair (fond clair)"
-                bgColor="#ffffff"
-              />
-              <LogoDropZone
-                type="sombre"
-                label="Logo sombre (fond sombre)"
-                bgColor="#1e293b"
-                isDark
-              />
-              <LogoDropZone
-                type="primaire"
-                label="Sur couleur principale"
-                bgColor={config?.couleurs?.primaire || '#2563eb'}
-              />
-              <LogoDropZone
-                type="secondaire"
-                label="Sur couleur secondaire"
-                bgColor={config?.couleurs?.secondaire || '#64748b'}
-              />
-            </div>
-        </section>
-
-        <section className="panel">
             <h2>Dossier Entrée</h2>
             <p className="hint">
               Autres images pour la charte (éléments graphiques, etc.)
@@ -742,6 +712,36 @@ function App() {
                 </div>
               </div>
             )}
+        </section>
+
+        <section className="panel">
+            <h2>Logos</h2>
+            <p className="hint">
+              Glissez-déposez vos logos selon le fond d'affichage. Un logo par type.
+            </p>
+            <div className="logo-zones-grid">
+              <LogoDropZone
+                type="clair"
+                label="Logo clair (fond clair)"
+                bgColor="#ffffff"
+              />
+              <LogoDropZone
+                type="sombre"
+                label="Logo sombre (fond sombre)"
+                bgColor="#1e293b"
+                isDark
+              />
+              <LogoDropZone
+                type="primaire"
+                label="Sur couleur principale"
+                bgColor={config?.couleurs?.primaire || '#2563eb'}
+              />
+              <LogoDropZone
+                type="secondaire"
+                label="Sur couleur secondaire"
+                bgColor={config?.couleurs?.secondaire || '#64748b'}
+              />
+            </div>
         </section>
 
         <section className="panel">

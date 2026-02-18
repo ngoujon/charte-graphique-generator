@@ -440,7 +440,7 @@ main {
 }
 
 .config-form fieldset:has(.palette-grid) {
-  grid-column: 1 / -1;
+  grid-column: span 1;
 }
 
 .config-form .palette-grid {
