@@ -889,7 +889,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
               children: `${String(i + 2).padStart(2, '0')}`,
             }),
             React.createElement(Text, {
-              style: { fontSize: 14, color: texte, fontFamily: fontSecondaire, flex: 1 },
+              style: { fontSize: 14, color: texte, fontFamily: 'Helvetica-Bold', flex: 1 },
               children: item,
             })
           )
