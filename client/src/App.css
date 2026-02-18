@@ -681,6 +681,19 @@ main {
   font-style: italic;
 }
 
+.font-select-group-label {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  list-style: none;
+  cursor: default;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.25rem;
+}
+
 .typo-font-block {
   margin-bottom: 1rem;
   padding: 0.75rem;

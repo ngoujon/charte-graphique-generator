@@ -1,7 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 
-const API = '/api';
-
 const BUILTIN_FONTS = [
   { id: 'Helvetica', label: 'Helvetica', regular: 'Helvetica', bold: 'Helvetica-Bold', thin: 'Helvetica-Oblique' },
   { id: 'Times-Roman', label: 'Times Roman', regular: 'Times-Roman', bold: 'Times-Bold', thin: 'Times-Italic' },
@@ -13,22 +11,24 @@ export function FontSelect({ value, onChange, label, placeholder = 'Rechercher u
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
-  const customAsFamily = customFonts.map((f) => ({
+  const customList = Array.isArray(customFonts) ? customFonts : [];
+  const customAsFamily = customList.map((f) => ({
     id: f.id,
-    label: f.label,
+    label: f.label || f.id?.replace?.(/^custom:/, '').replace(/-[0-9]+$/, '').replace(/-/g, ' ') || 'Police personnalisée',
     regular: f.id,
     bold: f.id,
     thin: f.id,
   }));
-  const allFonts = [...BUILTIN_FONTS, ...customAsFamily];
+  const allFonts = [...customAsFamily, ...BUILTIN_FONTS];
 
   const selectedFont = allFonts.find((f) => f.id === value);
   const displayValue = selectedFont?.label ?? (value?.replace?.(/^custom:/, '').replace(/-[0-9]+$/, '').replace(/-/g, ' ') ?? value ?? '');
-  const filteredFonts = search.trim()
+  const searchLower = search.trim().toLowerCase();
+  const filteredFonts = searchLower
     ? allFonts.filter(
         (f) =>
-          f.label.toLowerCase().includes(search.toLowerCase()) ||
-          f.id.toLowerCase().includes(search.toLowerCase())
+          f.label.toLowerCase().includes(searchLower) ||
+          f.id.toLowerCase().includes(searchLower)
       )
     : allFonts;
 
@@ -42,14 +42,25 @@ export function FontSelect({ value, onChange, label, placeholder = 'Rechercher u
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    if (open) setSearch(displayValue);
-  }, [open, displayValue]);
+  const handleOpen = () => {
+    setOpen(true);
+    setSearch('');
+  };
 
   const handleSelect = (font) => {
     onChange(font.id);
-    setSearch('');
     setOpen(false);
+    setSearch('');
+  };
+
+  const handleInputClick = (e) => {
+    e.stopPropagation();
+    setOpen(true);
+  };
+
+  const handleOptionMouseDown = (e, font) => {
+    e.preventDefault();
+    handleSelect(font);
   };
 
   return (
@@ -58,7 +69,11 @@ export function FontSelect({ value, onChange, label, placeholder = 'Rechercher u
       <div className="font-select-wrap" ref={containerRef}>
         <div
           className={`font-select-trigger ${open ? 'font-select-open' : ''}`}
-          onClick={() => setOpen(!open)}
+          onClick={(e) => {
+            if (e.target.closest('.font-select-input')) return;
+            setOpen((prev) => !prev);
+            if (!open) setSearch('');
+          }}
           role="combobox"
           aria-expanded={open}
           aria-haspopup="listbox"
@@ -69,14 +84,15 @@ export function FontSelect({ value, onChange, label, placeholder = 'Rechercher u
             value={open ? search : displayValue}
             onChange={(e) => {
               setSearch(e.target.value);
-              setOpen(true);
+              if (!open) setOpen(true);
             }}
-            onFocus={() => setOpen(true)}
+            onFocus={handleOpen}
+            onClick={handleInputClick}
             placeholder={placeholder}
             aria-autocomplete="list"
             aria-controls="font-listbox"
           />
-          <span className="font-select-arrow">▼</span>
+          <span className="font-select-arrow" aria-hidden>▼</span>
         </div>
         {open && (
           <ul
@@ -84,6 +100,9 @@ export function FontSelect({ value, onChange, label, placeholder = 'Rechercher u
             className="font-select-dropdown"
             role="listbox"
           >
+            {customAsFamily.length > 0 && !searchLower && (
+              <li className="font-select-group-label">Polices personnalisées</li>
+            )}
             {filteredFonts.length > 0 ? (
               filteredFonts.map((font) => (
                 <li
@@ -91,8 +110,8 @@ export function FontSelect({ value, onChange, label, placeholder = 'Rechercher u
                   role="option"
                   aria-selected={value === font.id}
                   className={`font-select-option ${value === font.id ? 'font-select-option-selected' : ''}`}
-                  onClick={() => handleSelect(font)}
-                  style={{ fontFamily: font.regular }}
+                  onMouseDown={(e) => handleOptionMouseDown(e, font)}
+                  style={font.regular?.startsWith('custom:') ? undefined : { fontFamily: font.regular }}
                 >
                   {font.label}
                 </li>

@@ -29,6 +29,7 @@ Thumbs.db
 data/input/*
 data/output/*
 data/trash/*
+data/fonts/*
 data/conf/charte.json
 !data/input/.gitkeep
 !data/output/.gitkeep

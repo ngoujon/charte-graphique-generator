@@ -335,9 +335,9 @@ function App() {
       const res = await fetch(`${API}/fonts/upload`, { method: 'POST', body: form });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'upload');
-      refetchFonts();
-      setMessage({ type: 'success', text: 'Police ajoutée' });
-      setTimeout(() => setMessage(null), 2000);
+      await refetchFonts();
+      setMessage({ type: 'success', text: 'Police ajoutée — elle apparaît en tête de liste' });
+      setTimeout(() => setMessage(null), 3000);
     } catch (err) {
       setMessage({ type: 'error', text: err.message });
     }
