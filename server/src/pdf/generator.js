@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     lineHeight: 1.5,
   },
   marqueItem: {
-    marginBottom: SP.lg,
+    marginBottom: SP.sm,
   },
   colorRow: {
     flexDirection: 'row',
