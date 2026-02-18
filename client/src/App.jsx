@@ -48,20 +48,26 @@ function App() {
     if (confData) setConfig(confData);
   }, [confData]);
 
-  const saveConfig = async () => {
+  const isFirstConfig = useRef(true);
+  useEffect(() => {
     if (!config) return;
-    try {
-      await fetch(`${API}/conf`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(config),
-      });
-      setMessage({ type: 'success', text: 'Configuration enregistrée' });
-      setTimeout(() => setMessage(null), 3000);
-    } catch (e) {
-      setMessage({ type: 'error', text: e.message });
+    if (isFirstConfig.current) {
+      isFirstConfig.current = false;
+      return;
     }
-  };
+    const timer = setTimeout(async () => {
+      try {
+        await fetch(`${API}/conf`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(config),
+        });
+      } catch (e) {
+        setMessage({ type: 'error', text: e.message });
+      }
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [config]);
 
   const importConfig = async (e) => {
     const file = e.target.files?.[0];
@@ -443,16 +449,9 @@ function App() {
         <section className="panel">
             <h2>Configuration (conf)</h2>
             <p className="hint">
-              Importez/exportez pour réutiliser une config.
+              Les modifications sont appliquées en temps réel. Importez/exportez pour réutiliser une config.
             </p>
             <div className="config-actions">
-              <button className="btn btn-primary btn-icon-only" onClick={saveConfig} title="Enregistrer la configuration">
-                <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                  <polyline points="17 21 17 13 7 13 7 21" />
-                  <polyline points="7 3 7 8 15 8" />
-                </svg>
-              </button>
               <label className="btn btn-secondary btn-icon-only" title="Importer config">
                 <input type="file" accept=".json" onChange={importConfig} hidden />
                 <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
