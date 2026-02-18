@@ -16,7 +16,7 @@ services:
       - NODE_ENV=development
       - PORT=3003
       - DATA_DIR=/app/data
-    command: npm run dev
+    command: sh -c "cd client && npm install && cd ../server && npm install && cd .. && npm run dev"
 
 volumes:
   client_node_modules:

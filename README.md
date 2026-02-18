@@ -52,9 +52,11 @@ Si vous ne fournissez que clair et sombre, les versions primaire et secondaire u
 npm run docker:dev
 ```
 
-Ouvrez **http://localhost:3002** — les modifications sont reflétées en temps réel.
+Ouvrez **http://localhost:3002** — les modifications de l’interface (client) sont reflétées en temps réel **sans rebuild**. Les dossiers `client/` et `server/` sont montés en volume.
 
 ## Production Docker (port 3002)
+
+> ⚠️ Pour le développement avec hot reload, utilisez `npm run docker:dev` ci-dessus. La commande ci-dessous build l’image et nécessite un rebuild à chaque modification.
 
 ```bash
 docker compose up -d
