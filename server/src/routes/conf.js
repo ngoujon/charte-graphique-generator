@@ -120,6 +120,16 @@ confRouter.post('/reset', async (req, res) => {
     const conf = { ...DEFAULT_CONF, version: 1 };
     conf.projet = { ...DEFAULT_CONF.projet, date: new Date().toISOString().split('T')[0] };
     await fs.writeFile(path.join(confDir(), 'charte.json'), JSON.stringify(conf, null, 2));
+
+    const inputPath = inputDir();
+    const files = await fs.readdir(inputPath).catch(() => []);
+    const logoPrefixes = ['logo-clair-', 'logo-sombre-', 'logo-primaire-', 'logo-secondaire-'];
+    for (const name of files) {
+      if (logoPrefixes.some((p) => name.startsWith(p))) {
+        await fs.unlink(path.join(inputPath, name)).catch(() => {});
+      }
+    }
+
     res.json(conf);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -145,7 +145,8 @@ function App() {
         throw new Error(data.error || `Erreur ${res.status}`);
       }
       await refetchConf();
-      setMessage({ type: 'success', text: 'Configuration réinitialisée' });
+      await refetchInput();
+      setMessage({ type: 'success', text: 'Configuration et logos réinitialisés' });
       setTimeout(() => setMessage(null), 2000);
     } catch (e) {
       setMessage({ type: 'error', text: e.message });
@@ -468,7 +469,7 @@ function App() {
           <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
             <h3>Réinitialiser la configuration ?</h3>
             <p>
-              Tous les paramètres (projet, marque, couleurs, typographie) seront remis aux valeurs par défaut. Les images et polices ne sont pas modifiées.
+              Tous les paramètres (projet, marque, couleurs, typographie) seront remis aux valeurs par défaut. Les logos seront supprimés. Les autres images et polices ne sont pas modifiées.
             </p>
             <div className="modal-actions">
               <button className="btn btn-secondary" onClick={() => setShowConfirmReset(false)}>
