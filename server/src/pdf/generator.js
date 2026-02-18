@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   aboutText: {
     fontSize: 12,
     fontFamily: 'Helvetica',
-    color: texte,
+    color: '#1a1a1a',
     textAlign: 'center',
     lineHeight: 1.7,
     maxWidth: 380,

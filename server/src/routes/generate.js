@@ -19,8 +19,7 @@ generateRouter.post('/', async (req, res) => {
     let config = {};
     try {
       const confData = await fs.readFile(confPath, 'utf-8');
-      const trimmed = (confData || '').trim();
-      if (trimmed) config = JSON.parse(trimmed);
+      config = JSON.parse(confData);
     } catch {
       config = {
         projet: { nom: 'Charte Graphique', description: '' },

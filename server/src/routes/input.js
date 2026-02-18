@@ -8,14 +8,7 @@ export const inputRouter = Router();
 const inputDir = () => path.join(getDataDir(), 'input');
 
 const storage = multer.diskStorage({
-  destination: async (req, file, cb) => {
-    try {
-      await fs.mkdir(inputDir(), { recursive: true });
-      cb(null, inputDir());
-    } catch (e) {
-      cb(e);
-    }
-  },
+  destination: (req, file, cb) => cb(null, inputDir()),
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname) || '.png';
@@ -25,14 +18,7 @@ const storage = multer.diskStorage({
 
 const createLogoStorage = (logoType) =>
   multer.diskStorage({
-    destination: async (req, file, cb) => {
-      try {
-        await fs.mkdir(inputDir(), { recursive: true });
-        cb(null, inputDir());
-      } catch (e) {
-        cb(e);
-      }
-    },
+    destination: (req, file, cb) => cb(null, inputDir()),
     filename: (req, file, cb) => {
       const ext = path.extname(file.originalname) || '.png';
       cb(null, `logo-${logoType}-${Date.now()}${ext}`);
@@ -59,31 +45,22 @@ inputRouter.get('/files', async (req, res) => {
   }
 });
 
-inputRouter.post('/upload', (req, res, next) => {
-  upload.array('files', 20)(req, res, (err) => {
-    if (err) return next(err);
-    const files = (req.files || []).map((f) => ({ name: f.filename, size: f.size }));
-    res.json({ uploaded: files });
-  });
+inputRouter.post('/upload', upload.array('files', 20), (req, res) => {
+  const files = (req.files || []).map((f) => ({ name: f.filename, size: f.size }));
+  res.json({ uploaded: files });
 });
 
 ['clair', 'sombre', 'primaire', 'secondaire'].forEach((type) => {
-  const logoUpload = multer({ storage: createLogoStorage(type) }).single('file');
-  inputRouter.post(`/upload/logo/${type}`, (req, res, next) => {
-    logoUpload(req, res, async (err) => {
-      if (err) return next(err);
-      if (!req.file) return res.status(400).json({ error: 'Aucun fichier' });
-      try {
-        await fs.mkdir(inputDir(), { recursive: true });
-        const files = await fs.readdir(inputDir());
-        const toDelete = files.filter((f) => f.startsWith(`logo-${type}-`) && f !== req.file.filename);
-        await Promise.all(toDelete.map((f) => fs.unlink(path.join(inputDir(), f))));
-        res.json({ uploaded: { name: req.file.filename, size: req.file.size } });
-      } catch (e) {
-        console.warn('Could not remove old logos:', e.message);
-        res.json({ uploaded: { name: req.file.filename, size: req.file.size } });
-      }
-    });
+  inputRouter.post(`/upload/logo/${type}`, multer({ storage: createLogoStorage(type) }).single('file'), async (req, res) => {
+    if (!req.file) return res.status(400).json({ error: 'Aucun fichier' });
+    try {
+      const files = await fs.readdir(inputDir());
+      const toDelete = files.filter((f) => f.startsWith(`logo-${type}-`) && f !== req.file.filename);
+      await Promise.all(toDelete.map((f) => fs.unlink(path.join(inputDir(), f))));
+    } catch (e) {
+      console.warn('Could not remove old logos:', e.message);
+    }
+    res.json({ uploaded: { name: req.file.filename, size: req.file.size } });
   });
 });
 
