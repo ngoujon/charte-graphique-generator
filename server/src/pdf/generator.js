@@ -33,7 +33,8 @@ import path from 'path';
 import { QWEBTY } from './qwebty-brand.js';
 
 const SP = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 };
-const BORDER = QWEBTY.colors.border || '#e9d5ff';
+const BORDER = '#e2e8f0';
+const CARD_BG = '#f8fafc';
 const MUTED = QWEBTY.colors.texteMuted || '#64748b';
 
 const styles = StyleSheet.create({
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: BORDER,
-    backgroundColor: QWEBTY.colors.borderLight || '#faf5ff',
+    backgroundColor: CARD_BG,
   },
   typoSpecItem: {
     flexDirection: 'row',
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: BORDER,
-    backgroundColor: QWEBTY.colors.borderLight || '#faf5ff',
+    backgroundColor: CARD_BG,
   },
   placeholderLogo: {
     width: 120,
@@ -272,7 +273,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BORDER,
     borderRadius: 8,
-    backgroundColor: QWEBTY.colors.borderLight || '#faf5ff',
+    backgroundColor: CARD_BG,
   },
   articleBlockWithAccent: {
     flexDirection: 'row',
@@ -353,7 +354,7 @@ const styles = StyleSheet.create({
     borderBottomColor: BORDER,
   },
   uiTableHeader: {
-    backgroundColor: QWEBTY.colors.borderLight || '#f3e8ff',
+    backgroundColor: CARD_BG,
     paddingVertical: SP.sm,
     paddingHorizontal: SP.md,
   },
@@ -365,7 +366,7 @@ const styles = StyleSheet.create({
   uiProgress: {
     height: 8,
     borderRadius: 4,
-    backgroundColor: QWEBTY.colors.border || '#e9d5ff',
+    backgroundColor: BORDER,
     overflow: 'hidden',
     marginBottom: SP.sm,
   },
@@ -392,7 +393,7 @@ const styles = StyleSheet.create({
     paddingVertical: SP.xs,
     paddingHorizontal: SP.sm,
     borderRadius: 6,
-    backgroundColor: QWEBTY.colors.primaire,
+    backgroundColor: MUTED,
   },
   qwebtyLogoImg: {
     height: 40,
@@ -417,7 +418,7 @@ const styles = StyleSheet.create({
     paddingTop: SP.md,
     marginTop: SP.md,
     borderTopWidth: 1,
-    borderTopColor: QWEBTY.colors.border || '#e9d5ff',
+    borderTopColor: BORDER,
   },
   qwebtyFooterLeft: {
     flexDirection: 'row',
@@ -431,7 +432,7 @@ const styles = StyleSheet.create({
   },
   qwebtyFooterBrand: {
     fontSize: 9,
-    color: QWEBTY.colors.primaire,
+    color: MUTED,
     fontFamily: 'Helvetica-Bold',
   },
   pageContentWrapper: {
@@ -648,13 +649,13 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         )
       );
 
-  const qwebtyPrimaire = QWEBTY.colors.primaire;
+  const qwebtyAccent = MUTED;
 
   const coverChildren = [
     coverLogoContent,
     React.createElement(View, {
       key: 'accent',
-      style: mergeStyles(styles.coverAccent, { backgroundColor: qwebtyPrimaire }),
+      style: mergeStyles(styles.coverAccent, { backgroundColor: qwebtyAccent }),
     }),
     React.createElement(Text, {
       key: 'title',
@@ -673,17 +674,17 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       {
         key: 'badge',
         style: mergeStyles(styles.coverBadge, {
-          borderColor: qwebtyPrimaire,
+          borderColor: qwebtyAccent,
         }),
       },
       React.createElement(Text, {
-        style: { fontSize: 11, color: qwebtyPrimaire, fontFamily: 'Helvetica-Bold' },
+        style: { fontSize: 11, color: qwebtyAccent, fontFamily: 'Helvetica-Bold' },
         children: `Document · ${dateGen}`,
       })
     ),
     React.createElement(Text, {
       key: 'qwebty-credit',
-      style: { marginTop: SP.xl, fontSize: 10, color: qwebtyPrimaire, fontFamily: 'Helvetica-Bold' },
+      style: { marginTop: SP.xl, fontSize: 10, color: qwebtyAccent, fontFamily: 'Helvetica-Bold' },
       children: `${QWEBTY.tagline} · ${QWEBTY.url}`,
     }),
   ];
@@ -732,11 +733,11 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
                 marginBottom: SP.md,
                 paddingVertical: SP.sm,
                 borderBottomWidth: 1,
-                borderBottomColor: QWEBTY.colors.borderLight || '#f3e8ff',
+                borderBottomColor: BORDER,
               },
             },
             React.createElement(Text, {
-              style: { fontSize: 11, color: qwebtyPrimaire, fontFamily: 'Helvetica-Bold', width: 24 },
+              style: { fontSize: 11, color: qwebtyAccent, fontFamily: 'Helvetica-Bold', width: 24 },
               children: `${String(i + 2).padStart(2, '0')}`,
             }),
             React.createElement(Text, {
@@ -1569,7 +1570,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           style: {
             fontSize: 18,
             fontFamily: 'Helvetica-Bold',
-            color: qwebtyPrimaire,
+            color: qwebtyAccent,
             textAlign: 'center',
             marginBottom: SP.md,
           },
