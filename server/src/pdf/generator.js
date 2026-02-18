@@ -76,17 +76,7 @@ const styles = StyleSheet.create({
     marginBottom: SP.lg,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: SP.lg,
-  },
-  sectionNumber: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: SP.md,
   },
   sectionTitle: {
     fontSize: 20,
@@ -483,14 +473,9 @@ function createSectionHeader(num, title) {
   return React.createElement(
     View,
     { style: styles.sectionHeader },
-    React.createElement(
-      View,
-      { style: mergeStyles(styles.sectionNumber, { backgroundColor: titleColor }) },
-      React.createElement(Text, { style: { color: '#fff', fontSize: 12, fontFamily: 'Helvetica-Bold' }, children: String(num) })
-    ),
     React.createElement(Text, {
-      style: mergeStyles(styles.sectionTitle, { color: titleColor, borderBottomColor: titleColor, flex: 1 }),
-      children: title,
+      style: mergeStyles(styles.sectionTitle, { color: titleColor, borderBottomColor: titleColor }),
+      children: `${num}. ${title}`,
     })
   );
 }
