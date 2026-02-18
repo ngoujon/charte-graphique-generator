@@ -561,12 +561,13 @@ const styles = StyleSheet.create({
   },
 });
 
-function createQwebtyFooter(pageNum, totalPages, logoSrc) {
+function createQwebtyFooter(pageNum, totalPages, logoSrc, reference) {
   const isLastPage = pageNum === totalPages;
   const displayLogo = isLastPage && logoSrc;
   const logoContent = displayLogo
     ? React.createElement(Image, { src: logoSrc, style: styles.qwebtyLogoImgFooter })
     : React.createElement(Text, { style: styles.qwebtyFooterBrand, children: QWEBTY.name });
+  const refText = reference ? React.createElement(Text, { style: { ...styles.qwebtyFooterText, fontSize: 7 }, children: reference }) : null;
   return React.createElement(
     View,
     { key: 'qwebty-footer', style: styles.qwebtyFooter },
@@ -574,19 +575,20 @@ function createQwebtyFooter(pageNum, totalPages, logoSrc) {
       View,
       { style: styles.qwebtyFooterLeft },
       logoContent,
-      React.createElement(Text, { style: styles.qwebtyFooterText, children: QWEBTY.url })
+      React.createElement(Text, { style: styles.qwebtyFooterText, children: QWEBTY.url }),
+      refText
     ),
     React.createElement(Text, { style: styles.qwebtyFooterText, children: QWEBTY.tagline }),
     React.createElement(Text, { style: styles.qwebtyFooterText, children: `Page ${pageNum}/${totalPages}` })
   );
 }
 
-function wrapPageContent(content, pageNum, totalPages, logoSrc) {
+function wrapPageContent(content, pageNum, totalPages, logoSrc, reference) {
   return React.createElement(
     View,
     { style: { flex: 1 } },
     React.createElement(View, { key: 'content', style: styles.pageContentWrapper }, content),
-    createQwebtyFooter(pageNum, totalPages, logoSrc)
+    createQwebtyFooter(pageNum, totalPages, logoSrc, reference)
   );
 }
 
@@ -935,7 +937,8 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       ),
       2,
       totalPagesCount,
-      qwebtyLogoSrc
+      qwebtyLogoSrc,
+      projet.reference || ''
     )
   );
   pages.push(pageSommaire);
@@ -1024,7 +1027,8 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       ),
       3,
       totalPagesCount,
-      qwebtyLogoSrc
+      qwebtyLogoSrc,
+      projet.reference || ''
     )
   );
   pages.push(pageMarque);
@@ -1118,7 +1122,8 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       ),
       4,
       totalPagesCount,
-      qwebtyLogoSrc
+      qwebtyLogoSrc,
+      projet.reference || ''
     )
   );
 
@@ -1185,7 +1190,8 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       ),
       5,
       totalPagesCount,
-      qwebtyLogoSrc
+      qwebtyLogoSrc,
+      projet.reference || ''
     )
   );
   pages.push(pageCouleurs);
@@ -1264,7 +1270,8 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         ),
         pageNum,
         totalPagesCount,
-        qwebtyLogoSrc
+        qwebtyLogoSrc,
+        projet.reference || ''
       )
     );
   };
@@ -1526,7 +1533,8 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     ),
     9,
     totalPagesCount,
-    qwebtyLogoSrc
+    qwebtyLogoSrc,
+    projet.reference || ''
   )
   );
   pages.push(pageUiKit);
@@ -1658,7 +1666,8 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     ),
     10,
     totalPagesCount,
-    qwebtyLogoSrc
+    qwebtyLogoSrc,
+    projet.reference || ''
   )
   );
   pages.push(pageUiKit2);
@@ -1698,7 +1707,8 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         ),
         11,
         totalPagesCount,
-        qwebtyLogoSrc
+        qwebtyLogoSrc,
+        projet.reference || ''
       )
     );
     pages.push(pageImages);
@@ -1733,7 +1743,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       size: 'A4',
       style: mergeStyles(styles.page, { backgroundColor: fond }),
     },
-    wrapPageContent(aboutContent, aboutQwebtyPageNum, totalPagesCount, qwebtyLogoSrc)
+    wrapPageContent(aboutContent, aboutQwebtyPageNum, totalPagesCount, qwebtyLogoSrc, projet.reference || '')
   );
   pages.push(pageAboutQwebty);
 
