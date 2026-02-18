@@ -957,6 +957,12 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       value: marque.personnalite || '',
       style: { fontSize: 11, fontFamily: marqueFont, color: texte, lineHeight: 1.6 },
     },
+    {
+      key: 'recherche',
+      label: 'Recherche',
+      value: marque.recherche || '',
+      style: { fontSize: 11, fontFamily: marqueFont, color: texte, lineHeight: 1.6 },
+    },
   ];
 
   const marqueItems = marqueFields

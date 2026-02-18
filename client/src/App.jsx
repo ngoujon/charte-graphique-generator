@@ -634,6 +634,23 @@ function App() {
                       />
                     </div>
                   </label>
+                  <label>
+                    Recherche
+                    <div className="input-wrap">
+                      <textarea
+                        rows={3}
+                        placeholder="Présentez vos recherches, études, analyses..."
+                        value={config.marque?.recherche || ''}
+                        onChange={(e) =>
+                          setConfig({
+                            ...config,
+                            marque: { ...config.marque, recherche: e.target.value },
+                          })
+                        }
+                        className="config-textarea"
+                      />
+                    </div>
+                  </label>
                 </fieldset>
                 <fieldset>
                   <legend>Typographie</legend>
