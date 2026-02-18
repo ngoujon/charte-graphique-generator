@@ -1058,9 +1058,58 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
 
   const ALPHABET_MAJ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const ALPHABET_MIN = 'abcdefghijklmnopqrstuvwxyz';
+  const CHARS_SPECIAUX = '0123456789!@#$%^&*()_';
 
-  const createFontPage = (fontKey, label, pageNum) => {
+  const FONT_DISPLAY_NAMES = { Helvetica: 'Helvetica', 'Times-Roman': 'Times Roman', Courier: 'Courier' };
+  const LABEL_TYPEFACE = { principale: 'POLICE PRINCIPALE', secondaire: 'POLICE SECONDAIRE', tertiaire: 'POLICE TERTIAIRE' };
+
+  const typoBlockStyle = { marginBottom: SP.lg };
+  const typoLabelStyle = { fontSize: 9, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 0.5, color: MUTED, marginBottom: SP.xs };
+
+  const createFontPage = (fontKey, typeKey, pageNum) => {
     const variants = getFontVariants(fontKey);
+    const fontName = FONT_DISPLAY_NAMES[fontKey] || fontKey;
+    const typeLabel = LABEL_TYPEFACE[typeKey] || '';
+
+    const createVariantBlock = (variantKey, fontFamily, label) =>
+      React.createElement(
+        View,
+        { key: variantKey, style: typoBlockStyle },
+        React.createElement(Text, { style: typoLabelStyle, children: label }),
+        React.createElement(Text, {
+          style: { fontSize: 12, fontFamily: fontFamily, color: texte, lineHeight: 1.5 },
+          children: ALPHABET_MAJ,
+        }),
+        React.createElement(Text, {
+          style: { fontSize: 12, fontFamily: fontFamily, color: texte, marginTop: 2, lineHeight: 1.5 },
+          children: ALPHABET_MIN,
+        }),
+        React.createElement(Text, {
+          style: { fontSize: 12, fontFamily: fontFamily, color: texte, marginTop: 2, lineHeight: 1.5 },
+          children: CHARS_SPECIAUX,
+        }),
+        React.createElement(
+          View,
+          { style: { marginTop: SP.sm, flexDirection: 'row', gap: SP.lg, flexWrap: 'wrap' } },
+          React.createElement(
+            View,
+            { style: { flex: 1, minWidth: 120 } },
+            React.createElement(Text, {
+              style: { fontSize: TYPO_SIZES.titre, fontFamily: fontFamily, color: texte, marginBottom: 4 },
+              children: EXEMPLE_TITRE,
+            }),
+            React.createElement(Text, {
+              style: { fontSize: TYPO_SIZES.sousTitre, fontFamily: fontFamily, color: secondaire, marginBottom: 6 },
+              children: EXEMPLE_SOUS_TITRE,
+            }),
+            React.createElement(Text, {
+              style: { fontSize: TYPO_SIZES.corps, fontFamily: fontFamily, color: texte, lineHeight: 1.5 },
+              children: EXEMPLE_LOREM,
+            })
+          )
+        )
+      );
+
     return React.createElement(
       Page,
       {
@@ -1072,91 +1121,17 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         React.createElement(
           View,
           { style: styles.section },
-          createSectionHeader(5, `Typographie — ${label}`),
           React.createElement(Text, {
-            style: mergeStyles(styles.sectionIntro),
-            children: `Alphabet, chiffres et exemple pour la police ${label}`,
+            style: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: MUTED, textTransform: 'uppercase', letterSpacing: 1, marginBottom: SP.xs },
+            children: typeLabel,
           }),
-          React.createElement(
-            View,
-            { key: 'alphabet', style: mergeStyles(styles.typoLevelCard, { marginTop: SP.md }) },
-            React.createElement(Text, {
-              style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 9, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 0.5 }),
-              children: 'Alphabet majuscule',
-            }),
-            React.createElement(Text, {
-              style: { fontSize: 14, fontFamily: variants.regular, color: texte, lineHeight: 1.4 },
-              children: ALPHABET_MAJ,
-            }),
-            React.createElement(Text, {
-              style: mergeStyles(styles.colorLabel, { marginTop: SP.sm, marginBottom: SP.xs, fontSize: 9, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 0.5 }),
-              children: 'Alphabet minuscule',
-            }),
-            React.createElement(Text, {
-              style: { fontSize: 14, fontFamily: variants.regular, color: texte, lineHeight: 1.4 },
-              children: ALPHABET_MIN,
-            }),
-          ),
-          React.createElement(
-            View,
-            { key: 'numbers', style: mergeStyles(styles.typoLevelCard, { marginTop: SP.sm }) },
-            React.createElement(Text, {
-              style: mergeStyles(styles.colorLabel, { marginBottom: SP.sm, fontSize: 9, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 0.5 }),
-              children: 'Chiffres 0-9',
-            }),
-            React.createElement(
-              View,
-              { style: styles.numbersRow },
-              ...'0123456789'.split('').map((n) =>
-                React.createElement(
-                  View,
-                  { key: n, style: styles.numberBox },
-                  React.createElement(Text, {
-                    style: { fontSize: 16, fontFamily: variants.regular, color: texte },
-                    children: n,
-                  })
-                )
-              )
-            )
-          ),
-          React.createElement(
-            View,
-            { key: 'exemple', style: mergeStyles(styles.articleBlockWithAccent, { marginTop: SP.lg }) },
-            React.createElement(View, {
-              style: mergeStyles(styles.articleBlockAccentBar, { backgroundColor: primaire }),
-            }),
-            React.createElement(
-              View,
-              { style: mergeStyles(styles.articleBlock, { flex: 1 }) },
-              React.createElement(Text, {
-                style: {
-                  fontSize: TYPO_SIZES.titre,
-                  fontFamily: variants.bold,
-                  color: texte,
-                  marginBottom: 8,
-                },
-                children: EXEMPLE_TITRE,
-              }),
-              React.createElement(Text, {
-                style: {
-                  fontSize: TYPO_SIZES.sousTitre,
-                  fontFamily: variants.thin,
-                  color: secondaire,
-                  marginBottom: 12,
-                },
-                children: EXEMPLE_SOUS_TITRE,
-              }),
-              React.createElement(Text, {
-                style: {
-                  fontSize: TYPO_SIZES.corps,
-                  fontFamily: variants.regular,
-                  color: texte,
-                  lineHeight: 1.6,
-                },
-                children: EXEMPLE_LOREM,
-              })
-            )
-          )
+          React.createElement(Text, {
+            style: { fontSize: 28, fontFamily: variants.bold, color: texte, marginBottom: SP.lg },
+            children: fontName,
+          }),
+          createVariantBlock('bold', variants.bold, 'Bold'),
+          createVariantBlock('regular', variants.regular, 'Regular'),
+          createVariantBlock('thin', variants.thin, 'Thin'),
         ),
         pageNum,
         totalPagesCount,
@@ -1165,10 +1140,9 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     );
   };
 
-  const fontLabels = { [fontPrincipale]: 'Principale', [fontSecondaire]: 'Secondaire', [fontTertiaire]: 'Tertiaire' };
-  pages.push(createFontPage(fontPrincipale, fontLabels[fontPrincipale] || 'Principale', 6));
-  pages.push(createFontPage(fontSecondaire, fontLabels[fontSecondaire] || 'Secondaire', 7));
-  pages.push(createFontPage(fontTertiaire, fontLabels[fontTertiaire] || 'Tertiaire', 8));
+  pages.push(createFontPage(fontPrincipale, 'principale', 6));
+  pages.push(createFontPage(fontSecondaire, 'secondaire', 7));
+  pages.push(createFontPage(fontTertiaire, 'tertiaire', 8));
 
   const createUiBlock = (title, content) =>
     React.createElement(
