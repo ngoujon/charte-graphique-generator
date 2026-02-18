@@ -1496,7 +1496,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
               borderTopColor: primaire,
               borderRightColor: primaire,
               borderBottomColor: primaire,
-              borderLeftColor: 'transparent',
+              borderLeftColor: fond,
             }),
           }),
           React.createElement(Text, {
