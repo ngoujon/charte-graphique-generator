@@ -425,6 +425,13 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 4,
   },
+  uiLoaderCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: BORDER,
+  },
   uiCheckbox: {
     width: 18,
     height: 18,
@@ -1468,15 +1475,34 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           React.createElement(View, null,
             React.createElement(Text, { style: mergeStyles(styles.colorLabel, { marginBottom: 4 }), children: '60%' }),
             React.createElement(View, { style: styles.uiProgress },
-              React.createElement(View, { style: mergeStyles(styles.uiProgressBar, { backgroundColor: secondaire, width: '60%' }) })
+              React.createElement(View, { style: mergeStyles(styles.uiProgressBar, { backgroundColor: primaire, width: '60%' }) })
             )
           ),
           React.createElement(View, null,
             React.createElement(Text, { style: mergeStyles(styles.colorLabel, { marginBottom: 4 }), children: '100%' }),
             React.createElement(View, { style: styles.uiProgress },
-              React.createElement(View, { style: mergeStyles(styles.uiProgressBar, { backgroundColor: secondaire, width: '100%' }) })
+              React.createElement(View, { style: mergeStyles(styles.uiProgressBar, { backgroundColor: primaire, width: '100%' }) })
             )
           )
+        )
+      ),
+      createUiBlock(
+        'Loader',
+        React.createElement(
+          View,
+          { style: { flexDirection: 'row', alignItems: 'center', gap: SP.lg } },
+          React.createElement(View, {
+            style: mergeStyles(styles.uiLoaderCircle, {
+              borderTopColor: primaire,
+              borderRightColor: primaire,
+              borderBottomColor: primaire,
+              borderLeftColor: 'transparent',
+            }),
+          }),
+          React.createElement(Text, {
+            style: mergeStyles(styles.colorLabel, { fontSize: 11, fontFamily: fontCorps }),
+            children: 'Chargement…',
+          })
         )
       ),
       createUiBlock(
