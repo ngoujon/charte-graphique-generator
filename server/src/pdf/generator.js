@@ -403,14 +403,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SP.sm,
   },
-  qwebtyHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingBottom: SP.md,
-    marginBottom: SP.md,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-  },
   qwebtyLogo: {
     paddingVertical: SP.xs,
     paddingHorizontal: SP.sm,
@@ -462,21 +454,6 @@ const styles = StyleSheet.create({
   },
 });
 
-function createQwebtyHeader(logoSrc) {
-  const logoContent = logoSrc
-    ? React.createElement(Image, { src: logoSrc, style: styles.qwebtyLogoImg })
-    : React.createElement(
-        View,
-        { style: styles.qwebtyLogo },
-        React.createElement(Text, { style: styles.qwebtyLogoText, children: QWEBTY.name })
-      );
-  return React.createElement(
-    View,
-    { key: 'qwebty-header', style: styles.qwebtyHeader },
-    logoContent
-  );
-}
-
 function createQwebtyFooter(pageNum, totalPages, logoSrc) {
   const logoContent = logoSrc
     ? React.createElement(Image, { src: logoSrc, style: styles.qwebtyLogoImgFooter })
@@ -499,7 +476,6 @@ function wrapPageContent(content, pageNum, totalPages, logoSrc) {
   return React.createElement(
     View,
     { style: { flex: 1 } },
-    createQwebtyHeader(logoSrc),
     React.createElement(View, { key: 'content', style: styles.pageContentWrapper }, content),
     createQwebtyFooter(pageNum, totalPages, logoSrc)
   );
