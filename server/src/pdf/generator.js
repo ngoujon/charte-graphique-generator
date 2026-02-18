@@ -652,7 +652,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         { key: 'qwebty-logo', style: { marginBottom: SP.xl, alignItems: 'center' } },
         React.createElement(Image, {
           src: qwebtyLogoSrc,
-          style: mergeStyles(styles.qwebtyLogoImg, { height: 50 }),
+          style: mergeStyles(styles.qwebtyLogoImg, { height: 60 }),
         })
       )
     : React.createElement(
@@ -1573,7 +1573,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           ? React.createElement(
               View,
               { style: { alignItems: 'center', marginBottom: SP.lg } },
-              React.createElement(Image, { src: qwebtyLogoSrc, style: mergeStyles(styles.qwebtyLogoImg, { height: 60 }) })
+              React.createElement(Image, { src: qwebtyLogoSrc, style: mergeStyles(styles.qwebtyLogoImg, { height: 70 }) })
             )
           : React.createElement(
               View,
