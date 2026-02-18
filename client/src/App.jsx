@@ -45,8 +45,6 @@ function App() {
   const { data: outputFiles, refetch: refetchOutput } = useApi('/output/files');
   const { data: trashFiles, refetch: refetchTrash } = useApi('/output/trash/files');
   const { data: confData, refetch: refetchConf } = useApi('/conf');
-  const { data: customFonts = [], refetch: refetchFonts } = useApi('/fonts/list');
-
   useEffect(() => {
     if (confData) setConfig(confData);
   }, [confData]);
@@ -323,25 +321,6 @@ function App() {
       ...config,
       couleurs: { ...config.couleurs, [key]: hex || inputValue },
     });
-  };
-
-  const fontInputRef = useRef(null);
-  const uploadFont = async (e) => {
-    const file = e.target.files?.[0];
-    e.target.value = '';
-    if (!file) return;
-    const form = new FormData();
-    form.append('font', file);
-    try {
-      const res = await fetch(`${API}/fonts/upload`, { method: 'POST', body: form });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'upload');
-      await refetchFonts();
-      setMessage({ type: 'success', text: 'Police ajoutée' });
-      setTimeout(() => setMessage(null), 3000);
-    } catch (err) {
-      setMessage({ type: 'error', text: err.message });
-    }
   };
 
   return (
@@ -641,7 +620,6 @@ function App() {
                             typographie: { ...config.typographie, principale: v },
                           })
                         }
-                        customFonts={customFonts}
                       />
                     </div>
                   </label>
@@ -656,7 +634,6 @@ function App() {
                             typographie: { ...config.typographie, secondaire: v },
                           })
                         }
-                        customFonts={customFonts}
                       />
                     </div>
                   </label>
@@ -671,27 +648,7 @@ function App() {
                             typographie: { ...config.typographie, tertiaire: v },
                           })
                         }
-                        customFonts={customFonts}
                       />
-                    </div>
-                  </label>
-                  <label>
-                    Ajouter une police
-                    <div className="input-wrap">
-                      <input
-                        ref={fontInputRef}
-                        type="file"
-                        accept=".ttf,.otf,.woff"
-                        onChange={uploadFont}
-                        className="font-upload-input-hidden"
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-secondary"
-                        onClick={() => fontInputRef.current?.click()}
-                      >
-                        Parcourir (.ttf, .otf, .woff)
-                      </button>
                     </div>
                   </label>
                 </fieldset>
