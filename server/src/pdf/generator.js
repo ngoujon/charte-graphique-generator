@@ -842,12 +842,6 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         style: styles.coverDocumentTitle,
         children: 'Charte Graphique',
       }),
-      projet.reference
-        ? React.createElement(Text, {
-            style: { ...styles.coverDate, marginBottom: SP.xs },
-            children: `Réf. ${projet.reference}`,
-          })
-        : null,
       React.createElement(Text, {
         style: styles.coverDate,
         children: dateFormatted,
@@ -856,14 +850,24 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     React.createElement(
       View,
       { style: styles.coverFooter },
-      React.createElement(Text, {
-        style: styles.coverQwebtyText,
-        children: QWEBTY.tagline,
-      }),
-      React.createElement(Text, {
-        style: styles.coverQwebtyText,
-        children: QWEBTY.url,
-      })
+      React.createElement(View, { style: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' } },
+        React.createElement(View, null,
+          React.createElement(Text, {
+            style: styles.coverQwebtyText,
+            children: QWEBTY.tagline,
+          }),
+          React.createElement(Text, {
+            style: styles.coverQwebtyText,
+            children: QWEBTY.url,
+          })
+        ),
+        projet.reference
+          ? React.createElement(Text, {
+              style: { fontSize: 7, fontFamily: 'Helvetica', color: MUTED, opacity: 0.7 },
+              children: projet.reference,
+            })
+          : null
+      )
     )
   );
 
