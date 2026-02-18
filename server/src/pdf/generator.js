@@ -483,17 +483,18 @@ function wrapPageContent(content, pageNum, totalPages, logoSrc) {
   );
 }
 
-function createSectionHeader(num, title, primaire) {
+function createSectionHeader(num, title) {
+  const titleColor = '#1a1a1a';
   return React.createElement(
     View,
     { style: styles.sectionHeader },
     React.createElement(
       View,
-      { style: mergeStyles(styles.sectionNumber, { backgroundColor: primaire }) },
+      { style: mergeStyles(styles.sectionNumber, { backgroundColor: titleColor }) },
       React.createElement(Text, { style: { color: '#fff', fontSize: 12, fontFamily: 'Helvetica-Bold' }, children: String(num) })
     ),
     React.createElement(Text, {
-      style: mergeStyles(styles.sectionTitle, { color: primaire, borderBottomColor: primaire, flex: 1 }),
+      style: mergeStyles(styles.sectionTitle, { color: titleColor, borderBottomColor: titleColor, flex: 1 }),
       children: title,
     })
   );
@@ -735,7 +736,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(1, 'Sommaire', qwebtyPrimaire),
+        createSectionHeader(1, 'Sommaire'),
         React.createElement(Text, {
           style: mergeStyles(styles.sectionIntro),
           children: 'Ce document applique les 13 principes du design graphique : alignement, contraste, équilibre, hiérarchie, couleur, espace blanc, proportion, répétition, rythme, mouvement, mise en valeur, proximité et unité.',
@@ -832,7 +833,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(2, 'Présentation de la marque', qwebtyPrimaire),
+        createSectionHeader(2, 'Présentation de la marque'),
         React.createElement(Text, {
           style: mergeStyles(styles.sectionIntro),
           children: 'Identité et positionnement de la marque',
@@ -926,7 +927,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(3, 'Logo — Déclinaisons', qwebtyPrimaire),
+        createSectionHeader(3, 'Logo — Déclinaisons'),
         React.createElement(Text, {
           style: mergeStyles(styles.sectionIntro),
           children: 'Versions claire, sombre, sur couleur principale et sur couleur secondaire',
@@ -989,7 +990,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(4, 'Palette de couleurs', qwebtyPrimaire),
+        createSectionHeader(4, 'Palette de couleurs'),
         React.createElement(Text, {
           style: mergeStyles(styles.sectionIntro),
           children: 'Les 5 couleurs de la charte graphique',
@@ -1080,7 +1081,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(5, 'Typographie', qwebtyPrimaire),
+        createSectionHeader(5, 'Typographie'),
         React.createElement(Text, {
           style: mergeStyles(styles.sectionIntro),
           children: 'Hiérarchie des textes, alphabets et chiffres',
@@ -1091,11 +1092,11 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           { key: 'article', style: mergeStyles(styles.section, { marginTop: SP.lg }) },
           React.createElement(Text, {
             style: mergeStyles(styles.sectionTitle, {
-              color: primaire,
-              borderBottomColor: primaire,
+              color: '#1a1a1a',
+              borderBottomColor: '#1a1a1a',
               marginBottom: 12,
             }),
-            children: 'Exemple d\'article',
+          children: 'Exemple d\'article',
           }),
           React.createElement(
             View,
@@ -1155,17 +1156,17 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(5, 'Typographie (suite)', qwebtyPrimaire),
+        createSectionHeader(5, 'Typographie (suite)'),
         React.createElement(
           View,
           { key: 'alphabets', style: { marginTop: SP.md } },
           React.createElement(Text, {
             style: mergeStyles(styles.sectionTitle, {
-              color: primaire,
-              borderBottomColor: primaire,
+              color: '#1a1a1a',
+              borderBottomColor: '#1a1a1a',
               marginBottom: 12,
             }),
-            children: 'Alphabet',
+          children: 'Alphabet',
           }),
           createTypoLevelCard('Titre', fontTitre, tailleTitre, texte),
           createTypoLevelCard('Sous-titre', fontCorps, tailleSousTitre, texte),
@@ -1190,17 +1191,17 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(5, 'Typographie (suite)', qwebtyPrimaire),
+        createSectionHeader(5, 'Typographie (suite)'),
         React.createElement(
           View,
           { key: 'numbers', style: { marginTop: SP.md } },
           React.createElement(Text, {
             style: mergeStyles(styles.sectionTitle, {
-              color: primaire,
-              borderBottomColor: primaire,
+              color: '#1a1a1a',
+              borderBottomColor: '#1a1a1a',
               marginBottom: 12,
             }),
-            children: 'Chiffres 0-9',
+          children: 'Chiffres 0-9',
           }),
           createNumbersRow(fontTitre, tailleTitre, 'Titre'),
           createNumbersRow(fontCorps, tailleSousTitre, 'Sous-titre'),
@@ -1250,7 +1251,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(6, 'Kit UI', qwebtyPrimaire),
+        createSectionHeader(6, 'Kit UI'),
       React.createElement(Text, {
         style: mergeStyles(styles.sectionIntro),
         children: 'Composants d\'interface utilisant la charte graphique',
@@ -1424,7 +1425,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(6, 'Kit UI (suite)', qwebtyPrimaire),
+        createSectionHeader(6, 'Kit UI (suite)'),
       createUiBlock(
         'Barres de progression',
         React.createElement(
@@ -1532,7 +1533,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         React.createElement(
           View,
           { style: styles.section },
-          createSectionHeader(7, 'Éléments graphiques', qwebtyPrimaire),
+          createSectionHeader(7, 'Éléments graphiques'),
           React.createElement(Text, {
             style: mergeStyles(styles.sectionIntro),
             children: 'Fichiers du dossier entrée',
