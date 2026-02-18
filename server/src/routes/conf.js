@@ -107,6 +107,18 @@ confRouter.post('/', async (req, res) => {
   }
 });
 
+confRouter.post('/reset', async (req, res) => {
+  try {
+    await fs.mkdir(confDir(), { recursive: true });
+    const conf = { ...DEFAULT_CONF, version: 1 };
+    conf.projet = { ...DEFAULT_CONF.projet, date: new Date().toISOString().split('T')[0] };
+    await fs.writeFile(path.join(confDir(), 'charte.json'), JSON.stringify(conf, null, 2));
+    res.json(conf);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 confRouter.post('/import', async (req, res) => {
   try {
     const { config } = req.body;

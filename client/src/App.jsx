@@ -41,6 +41,7 @@ function App() {
   const [showTrash, setShowTrash] = useState(false);
   const [showAllOutput, setShowAllOutput] = useState(false);
   const [showConfirmDeleteAll, setShowConfirmDeleteAll] = useState(false);
+  const [showConfirmReset, setShowConfirmReset] = useState(false);
 
   const { data: inputFiles, refetch: refetchInput } = useApi('/input/files');
   const { data: outputFiles, refetch: refetchOutput } = useApi('/output/files');
@@ -127,6 +128,22 @@ function App() {
       a.click();
       URL.revokeObjectURL(url);
       setMessage({ type: 'success', text: 'Configuration complète exportée (config, images, polices)' });
+      setTimeout(() => setMessage(null), 2000);
+    } catch (e) {
+      setMessage({ type: 'error', text: e.message });
+    }
+  };
+
+  const resetConfig = async () => {
+    setShowConfirmReset(false);
+    try {
+      const res = await fetch(`${API}/conf/reset`, { method: 'POST' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Erreur ${res.status}`);
+      }
+      await refetchConf();
+      setMessage({ type: 'success', text: 'Configuration réinitialisée' });
       setTimeout(() => setMessage(null), 2000);
     } catch (e) {
       setMessage({ type: 'error', text: e.message });
@@ -442,6 +459,25 @@ function App() {
         </div>
       )}
 
+      {showConfirmReset && (
+        <div className="modal-overlay" onClick={() => setShowConfirmReset(false)}>
+          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3>Réinitialiser la configuration ?</h3>
+            <p>
+              Tous les paramètres (projet, marque, couleurs, typographie) seront remis aux valeurs par défaut. Les images et polices ne sont pas modifiées.
+            </p>
+            <div className="modal-actions">
+              <button className="btn btn-secondary" onClick={() => setShowConfirmReset(false)}>
+                Annuler
+              </button>
+              <button className="btn btn-primary btn-danger" onClick={resetConfig}>
+                Réinitialiser
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="page-all">
         <div className="folders-grid">
         <section className="panel">
@@ -627,6 +663,12 @@ function App() {
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="7 10 12 15 17 10" />
                   <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+              </button>
+              <button className="btn btn-secondary btn-icon-only" onClick={() => setShowConfirmReset(true)} title="Réinitialiser la configuration">
+                <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
                 </svg>
               </button>
             </div>
