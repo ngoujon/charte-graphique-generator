@@ -92,6 +92,35 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     color: MUTED,
   },
+  aboutPage: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    paddingVertical: SP.xxl,
+  },
+  aboutMain: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: SP.xl,
+  },
+  aboutTitle: {
+    fontSize: 24,
+    fontFamily: 'Helvetica-Bold',
+    color: MUTED,
+    marginBottom: SP.lg,
+    textTransform: 'uppercase',
+    letterSpacing: 2,
+    textAlign: 'center',
+  },
+  aboutText: {
+    fontSize: 12,
+    fontFamily: 'Helvetica',
+    color: texte,
+    textAlign: 'center',
+    lineHeight: 1.7,
+    maxWidth: 380,
+  },
   section: {
     marginBottom: SP.lg,
   },
@@ -1562,6 +1591,45 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
   }
 
   const aboutQwebtyPageNum = otherImages.length > 0 ? 12 : 11;
+  const aboutLogoContent = qwebtyLogoSrc
+    ? React.createElement(
+        View,
+        { style: { alignItems: 'center' } },
+        React.createElement(Image, { src: qwebtyLogoSrc, style: mergeStyles(styles.qwebtyLogoImg, { height: 40 }) })
+      )
+    : React.createElement(
+        View,
+        { style: { alignItems: 'center' } },
+        React.createElement(Text, {
+          style: { fontSize: 14, fontFamily: 'Helvetica-Bold', color: MUTED, letterSpacing: 1 },
+          children: QWEBTY.name,
+        })
+      );
+
+  const aboutContent = React.createElement(
+    View,
+    { style: styles.aboutPage },
+    React.createElement(View, { style: styles.coverHeader }, aboutLogoContent),
+    React.createElement(
+      View,
+      { style: styles.aboutMain },
+      React.createElement(Text, {
+        style: styles.aboutTitle,
+        children: 'À propos de Qwebty',
+      }),
+      React.createElement(Text, {
+        style: styles.aboutText,
+        children: 'Qwebty est une agence web et digitale basée à Lyon. Nous créons des solutions web sur mesure : sites performants, applications SaaS, intégration IA, SEO et conformité RGPD. Ce document a été généré par notre outil de charte graphique.',
+      })
+    ),
+    React.createElement(
+      View,
+      { style: styles.coverFooter },
+      React.createElement(Text, { style: styles.coverQwebtyText, children: QWEBTY.tagline }),
+      React.createElement(Text, { style: styles.coverQwebtyText, children: QWEBTY.url })
+    )
+  );
+
   const pageAboutQwebty = React.createElement(
     Page,
     {
@@ -1569,58 +1637,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       size: 'A4',
       style: mergeStyles(styles.page, { backgroundColor: fond }),
     },
-    wrapPageContent(
-      React.createElement(
-        View,
-        { style: mergeStyles(styles.section, { flex: 1, justifyContent: 'center' }) },
-        qwebtyLogoSrc
-          ? React.createElement(
-              View,
-              { style: { alignItems: 'center', marginBottom: SP.lg } },
-              React.createElement(Image, { src: qwebtyLogoSrc, style: mergeStyles(styles.qwebtyLogoImg, { height: 70 }) })
-            )
-          : React.createElement(
-              View,
-              { style: mergeStyles(styles.qwebtyLogo, { alignSelf: 'center', marginBottom: SP.lg }) },
-              React.createElement(Text, { style: styles.qwebtyLogoText, children: QWEBTY.name })
-            ),
-        React.createElement(Text, {
-          style: {
-            fontSize: 18,
-            fontFamily: 'Helvetica-Bold',
-            color: qwebtyAccent,
-            textAlign: 'center',
-            marginBottom: SP.md,
-          },
-          children: 'À propos de Qwebty',
-        }),
-        React.createElement(Text, {
-          style: {
-            fontSize: 12,
-            fontFamily: fontCorps,
-            color: texte,
-            textAlign: 'center',
-            lineHeight: 1.6,
-            maxWidth: 400,
-            alignSelf: 'center',
-          },
-          children: 'Qwebty est une agence web et digitale basée à Lyon. Nous créons des solutions web sur mesure : sites performants, applications SaaS, intégration IA, SEO et conformité RGPD. Ce document a été généré par notre outil de charte graphique.',
-        }),
-        React.createElement(Text, {
-          style: {
-            marginTop: SP.lg,
-            fontSize: 10,
-            color: MUTED,
-            textAlign: 'center',
-            fontFamily: 'Helvetica',
-          },
-          children: QWEBTY.url,
-        })
-      ),
-      aboutQwebtyPageNum,
-      totalPagesCount,
-      qwebtyLogoSrc
-    )
+    wrapPageContent(aboutContent, aboutQwebtyPageNum, totalPagesCount, qwebtyLogoSrc)
   );
   pages.push(pageAboutQwebty);
 
