@@ -536,7 +536,7 @@ function App() {
                     </div>
                   </label>
                   <label>
-                    Description
+                    Présentation
                     <div className="input-wrap">
                       <input
                         type="text"

@@ -930,6 +930,12 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       style: { fontSize: 11, fontFamily: marqueFont, color: texte, lineHeight: 1.6 },
     },
     {
+      key: 'presentation',
+      label: 'Présentation',
+      value: projet.description || '',
+      style: { fontSize: 11, fontFamily: marqueFont, color: texte, lineHeight: 1.6 },
+    },
+    {
       key: 'personnalite',
       label: 'Personnalité',
       value: marque.personnalite || '',
