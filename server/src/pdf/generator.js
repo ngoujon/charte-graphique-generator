@@ -98,14 +98,14 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: BORDER,
     paddingTop: SP.md,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
   },
   coverQwebtyText: {
     fontSize: 9,
     fontFamily: 'Helvetica',
     color: MUTED,
+    textAlign: 'left',
   },
   aboutPage: {
     flex: 1,
@@ -113,10 +113,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: SP.xxl,
   },
+  aboutHeader: {
+    alignItems: 'flex-start',
+  },
   aboutMain: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
     paddingVertical: SP.xl,
   },
   aboutTitle: {
@@ -126,13 +129,13 @@ const styles = StyleSheet.create({
     marginBottom: SP.lg,
     textTransform: 'uppercase',
     letterSpacing: 2,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   aboutText: {
     fontSize: 12,
     fontFamily: 'Helvetica',
     color: '#1a1a1a',
-    textAlign: 'center',
+    textAlign: 'justify',
     lineHeight: 1.7,
     maxWidth: 380,
   },
@@ -548,6 +551,8 @@ const styles = StyleSheet.create({
   },
   pageContentWrapper: {
     flex: 1,
+    flexGrow: 1,
+    minHeight: 0,
   },
 });
 
@@ -776,7 +781,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
   const getFontVariants = (base) => FONT_FAMILIES[base] || BUILTIN_FONT_FAMILIES.Helvetica;
 
   const dateGen = projet.date || new Date().toISOString().slice(0, 10);
-  const totalPagesCount = 12 + (otherImages.length > 0 ? 1 : 0);
+  const totalPagesCount = 11 + (otherImages.length > 0 ? 1 : 0);
 
   const dateFormatted = formatDateFr(dateGen) || dateGen;
   const qwebtyAccent = MUTED;
@@ -1652,12 +1657,12 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
   const aboutLogoContent = qwebtyLogoSrc
     ? React.createElement(
         View,
-        { style: { alignItems: 'center' } },
+        { style: { alignItems: 'flex-start' } },
         React.createElement(Image, { src: qwebtyLogoSrc, style: mergeStyles(styles.qwebtyLogoImg, { height: 40 }) })
       )
     : React.createElement(
         View,
-        { style: { alignItems: 'center' } },
+        { style: { alignItems: 'flex-start' } },
         React.createElement(Text, {
           style: { fontSize: 14, fontFamily: 'Helvetica-Bold', color: MUTED, letterSpacing: 1 },
           children: QWEBTY.name,
@@ -1667,7 +1672,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
   const aboutContent = React.createElement(
     View,
     { style: styles.aboutPage },
-    React.createElement(View, { style: styles.coverHeader }, aboutLogoContent),
+    React.createElement(View, { style: styles.aboutHeader }, aboutLogoContent),
     React.createElement(
       View,
       { style: styles.aboutMain },
@@ -1679,12 +1684,6 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         style: styles.aboutText,
         children: 'Qwebty est une agence web et digitale basée à Lyon. Nous créons des solutions web sur mesure : sites performants, applications SaaS, intégration IA, SEO et conformité RGPD. Ce document a été généré par notre outil de charte graphique.',
       })
-    ),
-    React.createElement(
-      View,
-      { style: styles.coverFooter },
-      React.createElement(Text, { style: styles.coverQwebtyText, children: QWEBTY.tagline }),
-      React.createElement(Text, { style: styles.coverQwebtyText, children: QWEBTY.url })
     )
   );
 
