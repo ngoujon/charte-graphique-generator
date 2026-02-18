@@ -370,6 +370,34 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 12,
   },
+  uiDropZone: {
+    borderWidth: 2,
+    borderColor: BORDER,
+    borderRadius: 8,
+    padding: SP.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 80,
+  },
+  uiSelect: {
+    borderWidth: 1,
+    borderColor: BORDER,
+    borderRadius: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  uiDateTime: {
+    borderWidth: 1,
+    borderColor: BORDER,
+    borderRadius: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   uiCard: {
     borderWidth: 1,
     borderColor: BORDER,
@@ -1232,6 +1260,94 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             style: { color: secondaire, fontSize: 12, fontFamily: fontSecondaire },
             children: 'Exemple de saisie…',
           })
+        )
+      ),
+      createUiBlock(
+        'Glisser-déposer / Parcourir',
+        React.createElement(
+          View,
+          {
+            style: mergeStyles(styles.uiDropZone, {
+              borderColor: BORDER,
+              backgroundColor: fond,
+            }),
+          },
+          React.createElement(Text, {
+            style: { color: MUTED, fontSize: 11, fontFamily: fontSecondaire, textAlign: 'center' },
+            children: 'Glissez-déposez vos fichiers ici ou cliquez pour parcourir',
+          })
+        )
+      ),
+      createUiBlock(
+        'Menu déroulant (select)',
+        React.createElement(
+          View,
+          { style: { gap: SP.sm } },
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiSelect, {
+                borderColor: BORDER,
+                backgroundColor: fond,
+              }),
+            },
+            React.createElement(Text, {
+              style: { color: texte, fontSize: 12, fontFamily: fontSecondaire },
+              children: 'Sélectionner une option',
+            }),
+            React.createElement(Text, { style: { color: MUTED, fontSize: 10 }, children: '▼' })
+          ),
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiSelect, {
+                borderColor: BORDER,
+                backgroundColor: fond,
+              }),
+            },
+            React.createElement(Text, {
+              style: { color: texte, fontSize: 12, fontFamily: fontSecondaire },
+              children: 'Option choisie',
+            }),
+            React.createElement(Text, { style: { color: MUTED, fontSize: 10 }, children: '▼' })
+          )
+        )
+      ),
+      createUiBlock(
+        'Date et heure',
+        React.createElement(
+          View,
+          { style: { flexDirection: 'row', gap: SP.md, flexWrap: 'wrap' } },
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiDateTime, {
+                borderColor: BORDER,
+                backgroundColor: fond,
+                flex: 1,
+                minWidth: 120,
+              }),
+            },
+            React.createElement(Text, {
+              style: { color: MUTED, fontSize: 12, fontFamily: fontSecondaire },
+              children: 'jj/mm/aaaa',
+            })
+          ),
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiDateTime, {
+                borderColor: BORDER,
+                backgroundColor: fond,
+                flex: 1,
+                minWidth: 100,
+              }),
+            },
+            React.createElement(Text, {
+              style: { color: MUTED, fontSize: 12, fontFamily: fontSecondaire },
+              children: 'hh:mm',
+            })
+          )
         )
       ),
       createUiBlock(
