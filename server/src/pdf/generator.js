@@ -789,20 +789,22 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     },
   ];
 
-  const marqueItems = marqueFields.map(({ key, label, value, style }) =>
-    React.createElement(
-      View,
-      { key: `marque-${key}`, style: styles.marqueItem },
-      React.createElement(Text, {
-        style: { marginBottom: SP.xs, fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#64748b', textTransform: 'uppercase' },
-        children: label,
-      }),
-      React.createElement(Text, {
-        style: style,
-        children: value || '—',
-      })
-    )
-  );
+  const marqueItems = marqueFields
+    .filter(({ value }) => value != null && String(value).trim() !== '')
+    .map(({ key, label, value, style }) =>
+      React.createElement(
+        View,
+        { key: `marque-${key}`, style: styles.marqueItem },
+        React.createElement(Text, {
+          style: { marginBottom: SP.xs, fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#64748b', textTransform: 'uppercase' },
+          children: label,
+        }),
+        React.createElement(Text, {
+          style: style,
+          children: value,
+        })
+      )
+    );
 
   const pageMarque = React.createElement(
     Page,
