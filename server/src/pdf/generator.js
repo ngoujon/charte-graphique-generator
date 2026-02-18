@@ -1378,7 +1378,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           React.createElement(
             View,
             { style: mergeStyles(styles.uiBadge, { backgroundColor: 'transparent', borderWidth: 1, borderColor: BORDER }) },
-            React.createElement(Text, { style: { color: texte, fontSize: 10, fontFamily: fontCorps }, children: 'Outline' })
+            React.createElement(Text, { style: { color: texte, fontSize: 10, fontFamily: fontCorps }, children: 'Contour' })
           )
         )
       )
