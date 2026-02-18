@@ -710,41 +710,30 @@ main {
   margin-bottom: 1rem;
 }
 
-.font-upload-label {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.75rem;
-  border: 2px dashed var(--border);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
-}
-
-.font-upload-label:hover {
-  border-color: var(--accent);
-  background: rgba(124, 58, 237, 0.05);
-}
-
-.font-upload-input {
+.font-upload-input-hidden {
   position: absolute;
-  inset: 0;
+  width: 0;
+  height: 0;
   opacity: 0;
-  cursor: pointer;
+  pointer-events: none;
+}
+
+.font-select-native {
   width: 100%;
-  height: 100%;
-}
-
-.font-upload-text {
+  padding: 0.45rem 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: inherit;
   font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--accent);
+  cursor: pointer;
 }
 
-.font-upload-hint {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+.font-select-native:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 .typo-font-block h4 {

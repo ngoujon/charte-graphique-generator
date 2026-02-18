@@ -61,7 +61,15 @@ fontsRouter.get('/list', async (req, res) => {
   }
 });
 
-fontsRouter.post('/upload', upload.single('font'), async (req, res) => {
+fontsRouter.post('/upload', (req, res, next) => {
+  upload.single('font')(req, res, (err) => {
+    if (err) {
+      const msg = err.code === 'LIMIT_FILE_SIZE' ? 'Fichier trop volumineux (max 5 Mo)' : (err.message || 'Erreur upload');
+      return res.status(400).json({ error: msg });
+    }
+    next();
+  });
+}, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Aucun fichier. Envoyez un fichier .ttf, .otf ou .woff' });
   try {
     const id = familyIdFromFilename(req.file.filename);

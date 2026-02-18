@@ -325,6 +325,7 @@ function App() {
     });
   };
 
+  const fontInputRef = useRef(null);
   const uploadFont = async (e) => {
     const file = e.target.files?.[0];
     e.target.value = '';
@@ -336,7 +337,7 @@ function App() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'upload');
       await refetchFonts();
-      setMessage({ type: 'success', text: 'Police ajoutée — elle apparaît en tête de liste' });
+      setMessage({ type: 'success', text: 'Police ajoutée' });
       setTimeout(() => setMessage(null), 3000);
     } catch (err) {
       setMessage({ type: 'error', text: err.message });
@@ -630,21 +631,24 @@ function App() {
                     Police principale, secondaire et tertiaire. Pour chacune : alphabet, chiffres et exemple (titre gras, sous-titre thin, corps regular).
                   </p>
                   <div className="typo-font-upload">
-                    <label className="font-upload-label">
-                      <span className="font-upload-text">Ajouter une police</span>
-                      <span className="font-upload-hint">.ttf, .otf, .woff</span>
-                      <input
-                        type="file"
-                        accept=".ttf,.otf,.woff"
-                        onChange={uploadFont}
-                        className="font-upload-input"
-                      />
-                    </label>
+                    <input
+                      ref={fontInputRef}
+                      type="file"
+                      accept=".ttf,.otf,.woff"
+                      onChange={uploadFont}
+                      className="font-upload-input-hidden"
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => fontInputRef.current?.click()}
+                    >
+                      Ajouter une police (.ttf, .otf, .woff)
+                    </button>
                   </div>
                   <div className="typo-font-block">
                     <h4>Police principale</h4>
                     <FontSelect
-                      label=""
                       value={config.typographie?.principale || 'Helvetica'}
                       onChange={(v) =>
                         setConfig({
@@ -652,14 +656,12 @@ function App() {
                           typographie: { ...config.typographie, principale: v },
                         })
                       }
-                      placeholder="Rechercher une police..."
                       customFonts={customFonts}
                     />
                   </div>
                   <div className="typo-font-block">
                     <h4>Police secondaire</h4>
                     <FontSelect
-                      label=""
                       value={config.typographie?.secondaire || 'Times-Roman'}
                       onChange={(v) =>
                         setConfig({
@@ -667,14 +669,12 @@ function App() {
                           typographie: { ...config.typographie, secondaire: v },
                         })
                       }
-                      placeholder="Rechercher une police..."
                       customFonts={customFonts}
                     />
                   </div>
                   <div className="typo-font-block">
                     <h4>Police tertiaire</h4>
                     <FontSelect
-                      label=""
                       value={config.typographie?.tertiaire || 'Courier'}
                       onChange={(v) =>
                         setConfig({
@@ -682,7 +682,6 @@ function App() {
                           typographie: { ...config.typographie, tertiaire: v },
                         })
                       }
-                      placeholder="Rechercher une police..."
                       customFonts={customFonts}
                     />
                   </div>
