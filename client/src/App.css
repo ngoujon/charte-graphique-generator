@@ -325,6 +325,12 @@ main {
   height: 1.25rem;
 }
 
+.btn-icon-only.btn-active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
 .btn-large {
   padding: 0.6rem 1.25rem;
   font-size: 0.95rem;

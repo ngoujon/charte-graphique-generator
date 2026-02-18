@@ -36,6 +36,7 @@ function App() {
   const [config, setConfig] = useState(null);
   const [generating, setGenerating] = useState(false);
   const [message, setMessage] = useState(null);
+  const [showTrash, setShowTrash] = useState(false);
 
   const { data: inputFiles, refetch: refetchInput } = useApi('/input/files');
   const { data: outputFiles, refetch: refetchOutput } = useApi('/output/files');
@@ -773,6 +774,18 @@ function App() {
                   <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
                 </svg>
               </button>
+              <button
+                className={`btn btn-secondary btn-icon-only ${showTrash ? 'btn-active' : ''}`}
+                onClick={() => setShowTrash((v) => !v)}
+                title={showTrash ? 'Masquer la corbeille' : 'Afficher la corbeille'}
+              >
+                <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  <line x1="10" y1="11" x2="10" y2="17" />
+                  <line x1="14" y1="11" x2="14" y2="17" />
+                </svg>
+              </button>
             </div>
             <ul className="file-list">
               {(outputFiles || []).map((f) => (
@@ -796,6 +809,7 @@ function App() {
             )}
         </section>
 
+        {showTrash && (
         <section className="panel panel-trash">
             <h2>Corbeille</h2>
             <p className="hint">PDFs supprimés. Restaurez ou supprimez définitivement.</p>
@@ -840,6 +854,7 @@ function App() {
               <p className="empty">Corbeille vide.</p>
             )}
         </section>
+        )}
       </main>
       <footer className="app-footer">
         <img src="/qwebty-logo.png" alt="Qwebty" className="qwebty-logo-footer" />
