@@ -1564,16 +1564,16 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           View,
           null,
           React.createElement(View, { style: styles.uiListItem },
-            React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12 }, children: '•' }),
-            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontSecondaire).regular, color: texte }, children: 'Premier élément de la liste' })
+            React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12, paddingTop: 2 }, children: '•' }),
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontSecondaire).regular, color: texte, lineHeight: 14 }, children: 'Premier élément de la liste' })
           ),
           React.createElement(View, { style: styles.uiListItem },
-            React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12 }, children: '•' }),
-            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontSecondaire).regular, color: texte }, children: 'Deuxième élément de la liste' })
+            React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12, paddingTop: 2 }, children: '•' }),
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontSecondaire).regular, color: texte, lineHeight: 14 }, children: 'Deuxième élément de la liste' })
           ),
           React.createElement(View, { style: styles.uiListItem },
-            React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12 }, children: '•' }),
-            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontSecondaire).regular, color: texte }, children: 'Troisième élément de la liste' })
+            React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12, paddingTop: 2 }, children: '•' }),
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontSecondaire).regular, color: texte, lineHeight: 14 }, children: 'Troisième élément de la liste' })
           )
         )
       ),
