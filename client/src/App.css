@@ -582,13 +582,6 @@ main {
   box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
-.config-form-footer {
-  flex-shrink: 0;
-  padding-top: 0.75rem;
-  margin-top: 0.5rem;
-  border-top: 1px solid var(--border);
-}
-
 .config-form textarea.config-textarea {
   width: 100%;
   min-height: 48px;
