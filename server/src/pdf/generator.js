@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
   },
   sectionIntro: {
     fontSize: 11,
+    fontFamily: 'Helvetica',
     color: MUTED,
     marginTop: SP.sm,
     marginBottom: SP.lg,
@@ -820,36 +821,37 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
   pages.push(pageSommaire);
 
   const marque = config.marque || {};
+  const marqueFont = 'Helvetica';
   const marqueFields = [
     {
       key: 'nom',
       label: 'Nom de la marque',
       value: projet.nom || 'Mon Projet',
-      style: { fontSize: TYPO_SIZES.titre, fontFamily: getFontVariants(fontPrincipale).bold, color: primaire },
+      style: { fontSize: 14, fontFamily: marqueFont, color: texte, lineHeight: 1.5 },
     },
     {
       key: 'slogan',
       label: 'Slogan',
       value: marque.slogan || '',
-      style: { fontSize: TYPO_SIZES.sousTitre, fontFamily: fontSecondaire, color: secondaire, fontStyle: 'italic', lineHeight: 1.5 },
+      style: { fontSize: 12, fontFamily: marqueFont, color: texte, lineHeight: 1.5 },
     },
     {
       key: 'mission',
       label: 'Mission',
       value: marque.mission || '',
-      style: { fontSize: TYPO_SIZES.corps, fontFamily: fontSecondaire, color: texte, lineHeight: 1.6 },
+      style: { fontSize: 11, fontFamily: marqueFont, color: texte, lineHeight: 1.6 },
     },
     {
       key: 'valeurs',
       label: 'Valeurs',
       value: marque.valeurs || '',
-      style: { fontSize: TYPO_SIZES.corps, fontFamily: fontSecondaire, color: texte, lineHeight: 1.6 },
+      style: { fontSize: 11, fontFamily: marqueFont, color: texte, lineHeight: 1.6 },
     },
     {
       key: 'personnalite',
       label: 'Personnalité',
       value: marque.personnalite || '',
-      style: { fontSize: TYPO_SIZES.corps, fontFamily: fontSecondaire, color: texte, lineHeight: 1.6 },
+      style: { fontSize: 11, fontFamily: marqueFont, color: texte, lineHeight: 1.6 },
     },
   ];
 
@@ -860,7 +862,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         View,
         { key: `marque-${key}`, style: styles.marqueItem },
         React.createElement(Text, {
-          style: { marginBottom: SP.xs, fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#64748b', textTransform: 'uppercase' },
+          style: { marginBottom: SP.xs, fontSize: 10, fontFamily: 'Helvetica-Bold', color: MUTED, textTransform: 'uppercase' },
           children: label,
         }),
         React.createElement(Text, {
