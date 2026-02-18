@@ -143,13 +143,13 @@ const styles = StyleSheet.create({
     marginBottom: SP.lg,
   },
   sectionHeader: {
-    marginBottom: SP.lg,
+    marginBottom: SP.sm,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'Helvetica-Bold',
-    lineHeight: 1.4,
-    paddingBottom: SP.md,
+    lineHeight: 1.3,
+    paddingBottom: SP.xs,
     marginBottom: 0,
     borderBottomWidth: 2,
   },
@@ -157,8 +157,8 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'Helvetica',
     color: MUTED,
-    marginTop: SP.sm,
-    marginBottom: SP.lg,
+    marginTop: SP.xs,
+    marginBottom: SP.md,
     lineHeight: 1.5,
   },
   marqueItem: {
