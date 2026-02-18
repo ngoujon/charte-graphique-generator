@@ -587,6 +587,14 @@ main {
   box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
+.font-upload-input-hidden {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .config-form textarea.config-textarea {
   width: 100%;
   min-height: 48px;
