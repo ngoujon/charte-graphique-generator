@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     color: '#1a1a1a',
     textAlign: 'justify',
     lineHeight: 1.7,
-    maxWidth: 380,
+    alignSelf: 'stretch',
   },
   section: {
     marginBottom: SP.lg,
