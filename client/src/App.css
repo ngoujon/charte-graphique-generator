@@ -118,6 +118,17 @@ main {
   margin-bottom: 0;
 }
 
+.folders-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.folders-grid .panel {
+  margin-bottom: 0;
+}
+
 .panel {
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -463,6 +474,15 @@ main {
 @media (max-width: 768px) {
   .page-all {
     padding: 1rem;
+  }
+  .folders-grid {
+    grid-template-columns: 1fr;
+  }
+  .folders-grid .panel {
+    margin-bottom: 1rem;
+  }
+  .folders-grid .panel:last-child {
+    margin-bottom: 0;
   }
   .config-form .config-fields-grid {
     grid-template-columns: 1fr;
