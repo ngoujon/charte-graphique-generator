@@ -398,6 +398,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  uiNumberStepper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: BORDER,
+    borderRadius: 6,
+    overflow: 'hidden',
+  },
+  uiNumberBtn: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: CARD_BG,
+    borderRightWidth: 1,
+    borderRightColor: BORDER,
+  },
+  uiNumberBtnLast: {
+    borderRightWidth: 0,
+    borderLeftWidth: 1,
+    borderLeftColor: BORDER,
+  },
+  uiNumberValue: {
+    minWidth: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: SP.sm,
+  },
   uiCard: {
     borderWidth: 1,
     borderColor: BORDER,
@@ -1347,6 +1375,51 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
               style: { color: MUTED, fontSize: 12, fontFamily: fontSecondaire },
               children: 'hh:mm',
             })
+          )
+        )
+      ),
+      createUiBlock(
+        'Sélecteur de quantité (number)',
+        React.createElement(
+          View,
+          { style: { flexDirection: 'row', gap: SP.lg, flexWrap: 'wrap', alignItems: 'center' } },
+          React.createElement(
+            View,
+            { style: mergeStyles(styles.uiNumberStepper, { borderColor: BORDER }) },
+            React.createElement(
+              View,
+              { style: styles.uiNumberBtn },
+              React.createElement(Text, { style: { fontSize: 16, fontFamily: fontSecondaire, color: texte }, children: '−' })
+            ),
+            React.createElement(
+              View,
+              { style: styles.uiNumberValue },
+              React.createElement(Text, { style: { fontSize: 12, fontFamily: fontSecondaire, color: texte }, children: '1' })
+            ),
+            React.createElement(
+              View,
+              { style: [styles.uiNumberBtn, styles.uiNumberBtnLast] },
+              React.createElement(Text, { style: { fontSize: 16, fontFamily: fontSecondaire, color: texte }, children: '+' })
+            )
+          ),
+          React.createElement(
+            View,
+            { style: mergeStyles(styles.uiNumberStepper, { borderColor: BORDER }) },
+            React.createElement(
+              View,
+              { style: styles.uiNumberBtn },
+              React.createElement(Text, { style: { fontSize: 16, fontFamily: fontSecondaire, color: texte }, children: '−' })
+            ),
+            React.createElement(
+              View,
+              { style: styles.uiNumberValue },
+              React.createElement(Text, { style: { fontSize: 12, fontFamily: fontSecondaire, color: texte }, children: '5' })
+            ),
+            React.createElement(
+              View,
+              { style: [styles.uiNumberBtn, styles.uiNumberBtnLast] },
+              React.createElement(Text, { style: { fontSize: 16, fontFamily: fontSecondaire, color: texte }, children: '+' })
+            )
           )
         )
       ),
