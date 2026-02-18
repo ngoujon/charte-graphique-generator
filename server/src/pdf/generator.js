@@ -110,13 +110,16 @@ const styles = StyleSheet.create({
     marginBottom: SP.sm,
   },
   paletteGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: 'column',
     gap: SP.lg,
     marginTop: SP.xl,
   },
+  paletteRow: {
+    flexDirection: 'row',
+    gap: SP.lg,
+  },
   paletteCard: {
-    width: 165,
+    flex: 1,
     backgroundColor: '#ffffff',
   },
   paletteCardSwatch: {
@@ -973,7 +976,12 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           style: mergeStyles(styles.sectionIntro),
           children: 'Les 4 couleurs de la charte graphique',
         }),
-        React.createElement(View, { style: styles.paletteGrid }, ...paletteCards)
+        React.createElement(
+          View,
+          { style: styles.paletteGrid },
+          React.createElement(View, { style: styles.paletteRow }, paletteCards[0], paletteCards[1]),
+          React.createElement(View, { style: styles.paletteRow }, paletteCards[2], paletteCards[3])
+        )
       ),
       5,
       totalPagesCount,
