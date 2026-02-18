@@ -1227,7 +1227,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     React.createElement(
       View,
       { key: title, style: styles.uiBlock },
-      React.createElement(Text, { style: styles.uiBlockTitle, children: title }),
+      React.createElement(Text, { style: mergeStyles(styles.uiBlockTitle, { fontFamily: getFontVariants(fontTertiaire).bold }), children: title }),
       content
     );
 
@@ -1236,7 +1236,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     const isOutline = border || borderColor;
     const outlineColor = borderColor || primaire;
     const outlineTextColor = borderColor === BORDER ? texte : outlineColor;
-    const btnFont = fontFamily || fontSecondaire;
+    const btnFont = fontFamily || getFontVariants(fontTertiaire).regular;
     return React.createElement(
       View,
       {
@@ -1287,7 +1287,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
               }),
             },
             React.createElement(Text, {
-              style: { color: secondaire, fontSize: 12, fontFamily: fontSecondaire },
+              style: { color: secondaire, fontSize: 12, fontFamily: getFontVariants(fontTertiaire).regular },
               children: 'Désactivé',
             })
           )
@@ -1299,11 +1299,11 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           View,
           { style: { flexDirection: 'row', flexWrap: 'wrap', gap: SP.lg } },
           React.createElement(Text, {
-            style: mergeStyles(styles.uiLink, { color: primaire }),
+            style: mergeStyles(styles.uiLink, { color: primaire, fontFamily: getFontVariants(fontTertiaire).regular }),
             children: 'Lien principal',
           }),
           React.createElement(Text, {
-            style: mergeStyles(styles.uiLink, { color: secondaire }),
+            style: mergeStyles(styles.uiLink, { color: secondaire, fontFamily: getFontVariants(fontTertiaire).regular }),
             children: 'Lien secondaire',
           })
         )
@@ -1319,7 +1319,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             }),
           },
           React.createElement(Text, {
-            style: { color: secondaire, fontSize: 12, fontFamily: fontSecondaire },
+            style: { color: secondaire, fontSize: 12, fontFamily: getFontVariants(fontTertiaire).regular },
             children: 'Exemple de saisie…',
           })
         )
@@ -1335,7 +1335,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             }),
           },
           React.createElement(Text, {
-            style: { color: MUTED, fontSize: 11, fontFamily: getFontVariants(fontPrincipale).regular, textAlign: 'center' },
+            style: { color: MUTED, fontSize: 11, fontFamily: getFontVariants(fontTertiaire).regular, textAlign: 'center' },
             children: 'Glissez-déposez vos fichiers ici ou cliquez pour parcourir',
           })
         )
@@ -1351,17 +1351,17 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             React.createElement(
               View,
               { style: styles.uiNumberBtn },
-              React.createElement(Text, { style: { fontSize: 16, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: '−' })
+              React.createElement(Text, { style: { fontSize: 16, fontFamily: getFontVariants(fontTertiaire).regular, color: texte }, children: '−' })
             ),
             React.createElement(
               View,
               { style: styles.uiNumberValue },
-              React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: '1' })
+              React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontTertiaire).regular, color: texte }, children: '1' })
             ),
             React.createElement(
               View,
               { style: [styles.uiNumberBtn, styles.uiNumberBtnLast] },
-              React.createElement(Text, { style: { fontSize: 16, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: '+' })
+              React.createElement(Text, { style: { fontSize: 16, fontFamily: getFontVariants(fontTertiaire).regular, color: texte }, children: '+' })
             )
           ),
           React.createElement(
@@ -1370,17 +1370,17 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             React.createElement(
               View,
               { style: styles.uiNumberBtn },
-              React.createElement(Text, { style: { fontSize: 16, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: '−' })
+              React.createElement(Text, { style: { fontSize: 16, fontFamily: getFontVariants(fontTertiaire).regular, color: texte }, children: '−' })
             ),
             React.createElement(
               View,
               { style: styles.uiNumberValue },
-              React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: '5' })
+              React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontTertiaire).regular, color: texte }, children: '5' })
             ),
             React.createElement(
               View,
               { style: [styles.uiNumberBtn, styles.uiNumberBtnLast] },
-              React.createElement(Text, { style: { fontSize: 16, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: '+' })
+              React.createElement(Text, { style: { fontSize: 16, fontFamily: getFontVariants(fontTertiaire).regular, color: texte }, children: '+' })
             )
           )
         )
@@ -1400,7 +1400,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
               }),
             },
             React.createElement(Text, {
-              style: { fontSize: 11, fontFamily: getFontVariants(fontPrincipale).regular, color: texte },
+              style: { fontSize: 11, fontFamily: getFontVariants(fontTertiaire).regular, color: texte },
               children: 'Principale — Message utilisant la couleur principale de la charte.',
             })
           ),
@@ -1414,7 +1414,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
               }),
             },
             React.createElement(Text, {
-              style: { fontSize: 11, fontFamily: getFontVariants(fontPrincipale).regular, color: texte },
+              style: { fontSize: 11, fontFamily: getFontVariants(fontTertiaire).regular, color: texte },
               children: 'Secondaire — Message utilisant la couleur secondaire.',
             })
           ),
@@ -1430,7 +1430,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
               }),
             },
             React.createElement(Text, {
-              style: { fontSize: 11, fontFamily: getFontVariants(fontPrincipale).regular, color: texte },
+              style: { fontSize: 11, fontFamily: getFontVariants(fontTertiaire).regular, color: texte },
               children: 'Clair — Alerte sur fond clair avec bordure discrète.',
             })
           ),
@@ -1444,7 +1444,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
               }),
             },
             React.createElement(Text, {
-              style: { fontSize: 11, fontFamily: getFontVariants(fontPrincipale).regular, color: fond },
+              style: { fontSize: 11, fontFamily: getFontVariants(fontTertiaire).regular, color: fond },
               children: 'Sombre — Message sur fond sombre, texte clair.',
             })
           )
@@ -1458,17 +1458,17 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           React.createElement(
             View,
             { style: mergeStyles(styles.uiBadge, { backgroundColor: primaire }) },
-            React.createElement(Text, { style: { color: '#ffffff', fontSize: 10, fontFamily: fontSecondaire }, children: 'Primaire' })
+            React.createElement(Text, { style: { color: '#ffffff', fontSize: 10, fontFamily: getFontVariants(fontTertiaire).regular }, children: 'Primaire' })
           ),
           React.createElement(
             View,
             { style: mergeStyles(styles.uiBadge, { backgroundColor: secondaire }) },
-            React.createElement(Text, { style: { color: '#ffffff', fontSize: 10, fontFamily: fontSecondaire }, children: 'Secondaire' })
+            React.createElement(Text, { style: { color: '#ffffff', fontSize: 10, fontFamily: getFontVariants(fontTertiaire).regular }, children: 'Secondaire' })
           ),
           React.createElement(
             View,
             { style: mergeStyles(styles.uiBadge, { backgroundColor: 'transparent', borderWidth: 1, borderColor: BORDER }) },
-            React.createElement(Text, { style: { color: texte, fontSize: 10, fontFamily: fontSecondaire }, children: 'Contour' })
+            React.createElement(Text, { style: { color: texte, fontSize: 10, fontFamily: getFontVariants(fontTertiaire).regular }, children: 'Contour' })
           )
         )
       )
@@ -1498,19 +1498,19 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           View,
           { style: { gap: SP.md } },
           React.createElement(View, null,
-            React.createElement(Text, { style: mergeStyles(styles.colorLabel, { marginBottom: 4 }), children: '25%' }),
+            React.createElement(Text, { style: mergeStyles(styles.colorLabel, { marginBottom: 4, fontFamily: getFontVariants(fontTertiaire).regular }), children: '25%' }),
             React.createElement(View, { style: styles.uiProgress },
               React.createElement(View, { style: mergeStyles(styles.uiProgressBar, { backgroundColor: primaire, width: '25%' }) })
             )
           ),
           React.createElement(View, null,
-            React.createElement(Text, { style: mergeStyles(styles.colorLabel, { marginBottom: 4 }), children: '60%' }),
+            React.createElement(Text, { style: mergeStyles(styles.colorLabel, { marginBottom: 4, fontFamily: getFontVariants(fontTertiaire).regular }), children: '60%' }),
             React.createElement(View, { style: styles.uiProgress },
               React.createElement(View, { style: mergeStyles(styles.uiProgressBar, { backgroundColor: primaire, width: '60%' }) })
             )
           ),
           React.createElement(View, null,
-            React.createElement(Text, { style: mergeStyles(styles.colorLabel, { marginBottom: 4 }), children: '100%' }),
+            React.createElement(Text, { style: mergeStyles(styles.colorLabel, { marginBottom: 4, fontFamily: getFontVariants(fontTertiaire).regular }), children: '100%' }),
             React.createElement(View, { style: styles.uiProgress },
               React.createElement(View, { style: mergeStyles(styles.uiProgressBar, { backgroundColor: primaire, width: '100%' }) })
             )
@@ -1531,7 +1531,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             }),
           }),
           React.createElement(Text, {
-            style: mergeStyles(styles.colorLabel, { fontSize: 11, fontFamily: fontSecondaire }),
+            style: mergeStyles(styles.colorLabel, { fontSize: 11, fontFamily: getFontVariants(fontTertiaire).regular }),
             children: 'Chargement…',
           })
         )
@@ -1547,14 +1547,14 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontFamily: 'Helvetica-Bold', fontSize: 10 }), children: 'Colonne 3' })
           ),
           React.createElement(View, { style: styles.uiTableRow },
-            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: fontSecondaire }), children: 'Donnée A' }),
-            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: fontSecondaire }), children: 'Donnée B' }),
-            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: fontSecondaire }), children: 'Donnée C' })
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: getFontVariants(fontTertiaire).regular }), children: 'Donnée A' }),
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: getFontVariants(fontTertiaire).regular }), children: 'Donnée B' }),
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: getFontVariants(fontTertiaire).regular }), children: 'Donnée C' })
           ),
           React.createElement(View, { style: styles.uiTableRow },
-            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: fontSecondaire }), children: 'Donnée D' }),
-            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: fontSecondaire }), children: 'Donnée E' }),
-            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: fontSecondaire }), children: 'Donnée F' })
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: getFontVariants(fontTertiaire).regular }), children: 'Donnée D' }),
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: getFontVariants(fontTertiaire).regular }), children: 'Donnée E' }),
+            React.createElement(Text, { style: mergeStyles(styles.uiTableCell, { fontSize: 10, fontFamily: getFontVariants(fontTertiaire).regular }), children: 'Donnée F' })
           )
         )
       ),
@@ -1565,15 +1565,15 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           null,
           React.createElement(View, { style: styles.uiListItem },
             React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12, paddingTop: 2 }, children: '•' }),
-            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontSecondaire).regular, color: texte, lineHeight: 14 }, children: 'Premier élément de la liste' })
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontTertiaire).regular, color: texte, lineHeight: 14 }, children: 'Premier élément de la liste' })
           ),
           React.createElement(View, { style: styles.uiListItem },
             React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12, paddingTop: 2 }, children: '•' }),
-            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontSecondaire).regular, color: texte, lineHeight: 14 }, children: 'Deuxième élément de la liste' })
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontTertiaire).regular, color: texte, lineHeight: 14 }, children: 'Deuxième élément de la liste' })
           ),
           React.createElement(View, { style: styles.uiListItem },
             React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12, paddingTop: 2 }, children: '•' }),
-            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontSecondaire).regular, color: texte, lineHeight: 14 }, children: 'Troisième élément de la liste' })
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontTertiaire).regular, color: texte, lineHeight: 14 }, children: 'Troisième élément de la liste' })
           )
         )
       ),
