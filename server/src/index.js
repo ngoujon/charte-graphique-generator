@@ -14,6 +14,18 @@ const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data'
 
 export const getDataDir = () => DATA_DIR;
 
+async function initDataDir() {
+  const dirs = [
+    path.join(DATA_DIR, 'input'),
+    path.join(DATA_DIR, 'output'),
+    path.join(DATA_DIR, 'output', 'trash'),
+    path.join(DATA_DIR, 'conf'),
+  ];
+  for (const dir of dirs) {
+    await fs.mkdir(dir, { recursive: true });
+  }
+}
+
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -37,7 +49,17 @@ if (hasPublic) {
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`Charte Graphique Generator running on http://localhost:${PORT}`);
-  console.log(`Data directory: ${DATA_DIR}`);
+app.use((err, req, res, next) => {
+  console.error('[Erreur]', err.message || err);
+  res.status(500).json({ error: err.message || 'Erreur serveur' });
+});
+
+initDataDir().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Charte Graphique Generator running on http://localhost:${PORT}`);
+    console.log(`Data directory: ${DATA_DIR}`);
+  });
+}).catch((err) => {
+  console.error('Impossible d\'initialiser le répertoire data:', err);
+  process.exit(1);
 });

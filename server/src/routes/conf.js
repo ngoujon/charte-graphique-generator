@@ -42,6 +42,7 @@ const DEFAULT_CONF = {
 
 confRouter.get('/', async (req, res) => {
   try {
+    await fs.mkdir(confDir(), { recursive: true });
     const confPath = path.join(confDir(), 'charte.json');
     try {
       const data = await fs.readFile(confPath, 'utf-8');
@@ -107,13 +108,19 @@ confRouter.post('/import', async (req, res) => {
 
 confRouter.get('/export', async (req, res) => {
   try {
+    await fs.mkdir(confDir(), { recursive: true });
     const confPath = path.join(confDir(), 'charte.json');
-    const data = await fs.readFile(confPath, 'utf-8');
-    const trimmed = (data || '').trim();
-    const config = trimmed ? JSON.parse(trimmed) : DEFAULT_CONF;
+    let config = DEFAULT_CONF;
+    try {
+      const data = await fs.readFile(confPath, 'utf-8');
+      const trimmed = (data || '').trim();
+      if (trimmed) config = JSON.parse(trimmed);
+    } catch {
+      // Fichier absent ou invalide
+    }
     res.setHeader('Content-Disposition', 'attachment; filename=charte-config.json');
     res.json(config);
-  } catch {
-    res.json(DEFAULT_CONF);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });

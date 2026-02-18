@@ -74,7 +74,7 @@ function App() {
       } catch (e) {
         setMessage({ type: 'error', text: e.message });
       }
-    }, 600);
+    }, 1200);
     return () => clearTimeout(timer);
   }, [config]);
 
