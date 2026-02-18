@@ -630,61 +630,70 @@ function App() {
                   <p className="hint" style={{ marginTop: '-0.5rem', marginBottom: '0.75rem' }}>
                     Police principale, secondaire et tertiaire. Pour chacune : alphabet, chiffres et exemple (titre gras, sous-titre thin, corps regular).
                   </p>
-                  <div className="typo-font-upload">
-                    <input
-                      ref={fontInputRef}
-                      type="file"
-                      accept=".ttf,.otf,.woff"
-                      onChange={uploadFont}
-                      className="font-upload-input-hidden"
-                    />
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={() => fontInputRef.current?.click()}
-                    >
-                      Ajouter une police (.ttf, .otf, .woff)
-                    </button>
-                  </div>
-                  <div className="typo-font-block">
-                    <h4>Police principale</h4>
-                    <FontSelect
-                      value={config.typographie?.principale || 'Helvetica'}
-                      onChange={(v) =>
-                        setConfig({
-                          ...config,
-                          typographie: { ...config.typographie, principale: v },
-                        })
-                      }
-                      customFonts={customFonts}
-                    />
-                  </div>
-                  <div className="typo-font-block">
-                    <h4>Police secondaire</h4>
-                    <FontSelect
-                      value={config.typographie?.secondaire || 'Times-Roman'}
-                      onChange={(v) =>
-                        setConfig({
-                          ...config,
-                          typographie: { ...config.typographie, secondaire: v },
-                        })
-                      }
-                      customFonts={customFonts}
-                    />
-                  </div>
-                  <div className="typo-font-block">
-                    <h4>Police tertiaire</h4>
-                    <FontSelect
-                      value={config.typographie?.tertiaire || 'Courier'}
-                      onChange={(v) =>
-                        setConfig({
-                          ...config,
-                          typographie: { ...config.typographie, tertiaire: v },
-                        })
-                      }
-                      customFonts={customFonts}
-                    />
-                  </div>
+                  <label>
+                    Police principale
+                    <div className="input-wrap">
+                      <FontSelect
+                        value={config.typographie?.principale || 'Helvetica'}
+                        onChange={(v) =>
+                          setConfig({
+                            ...config,
+                            typographie: { ...config.typographie, principale: v },
+                          })
+                        }
+                        customFonts={customFonts}
+                      />
+                    </div>
+                  </label>
+                  <label>
+                    Police secondaire
+                    <div className="input-wrap">
+                      <FontSelect
+                        value={config.typographie?.secondaire || 'Times-Roman'}
+                        onChange={(v) =>
+                          setConfig({
+                            ...config,
+                            typographie: { ...config.typographie, secondaire: v },
+                          })
+                        }
+                        customFonts={customFonts}
+                      />
+                    </div>
+                  </label>
+                  <label>
+                    Police tertiaire
+                    <div className="input-wrap">
+                      <FontSelect
+                        value={config.typographie?.tertiaire || 'Courier'}
+                        onChange={(v) =>
+                          setConfig({
+                            ...config,
+                            typographie: { ...config.typographie, tertiaire: v },
+                          })
+                        }
+                        customFonts={customFonts}
+                      />
+                    </div>
+                  </label>
+                  <label>
+                    Ajouter une police
+                    <div className="input-wrap">
+                      <input
+                        ref={fontInputRef}
+                        type="file"
+                        accept=".ttf,.otf,.woff"
+                        onChange={uploadFont}
+                        className="font-upload-input-hidden"
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => fontInputRef.current?.click()}
+                      >
+                        Parcourir (.ttf, .otf, .woff)
+                      </button>
+                    </div>
+                  </label>
                 </fieldset>
                 <fieldset>
                   <legend>Palette de couleurs</legend>

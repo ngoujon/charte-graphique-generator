@@ -694,55 +694,12 @@ main {
   margin-bottom: 0.25rem;
 }
 
-.typo-font-block {
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
-}
-
-.typo-font-block:last-child {
-  margin-bottom: 0;
-}
-
-.typo-font-upload {
-  margin-bottom: 1rem;
-}
-
 .font-upload-input-hidden {
   position: absolute;
   width: 0;
   height: 0;
   opacity: 0;
   pointer-events: none;
-}
-
-.font-select-native {
-  width: 100%;
-  padding: 0.45rem 0.75rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-family: inherit;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.font-select-native:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-
-.typo-font-block h4 {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0 0 0.5rem;
 }
 
 .config-form textarea.config-textarea {

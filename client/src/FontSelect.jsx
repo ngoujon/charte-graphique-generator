@@ -12,11 +12,11 @@ export function FontSelect({ value, onChange, customFonts = [] }) {
   }));
   const allFonts = [...customOptions, ...BUILTIN_FONTS];
 
+  const safeValue = value && allFonts.some((f) => f.id === value) ? value : 'Helvetica';
   return (
     <select
-      value={value || 'Helvetica'}
+      value={safeValue}
       onChange={(e) => onChange(e.target.value)}
-      className="font-select-native"
     >
       {allFonts.map((font) => (
         <option key={font.id} value={font.id}>
