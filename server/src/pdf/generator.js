@@ -1698,7 +1698,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       }),
       React.createElement(Text, {
         style: styles.aboutText,
-        children: 'Qwebty est une agence web et digitale basée à Lyon. Nous créons des solutions web sur mesure : sites performants, applications SaaS, intégration IA, SEO et conformité RGPD. Ce document a été généré par notre outil de charte graphique.',
+        children: "Qwebty est une activité spécialisée dans la création de solutions digitales sur mesure pour les entrepreneurs, indépendants et petites entreprises. J'accompagne mes clients dans la conception, le développement et l'optimisation de leur présence en ligne, avec une approche personnalisée.\n\nMon objectif est simple : transformer les idées en outils digitaux performants, modernes et adaptés aux besoins réels de chaque projet. Que ce soit pour la création d'un site vitrine, d'une plateforme web, d'une application spécifique ou l'amélioration d'un outil existant, j'interviens à chaque étape avec rigueur et engagement.\n\nEn tant qu'interlocuteur unique, je privilégie une relation directe, transparente et réactive. Chaque projet bénéficie d'une attention particulière, d'une écoute attentive et d'un accompagnement sur mesure. Je m'attache à proposer des solutions claires, efficaces et évolutives, en tenant compte des objectifs, des contraintes et du budget.\n\nQwebty, c'est",
       })
     )
   );
