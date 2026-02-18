@@ -894,6 +894,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
               style: {
                 flexDirection: 'row',
                 alignItems: 'center',
+                justifyContent: 'space-between',
                 marginBottom: SP.md,
                 paddingVertical: SP.sm,
                 borderBottomWidth: 1,
@@ -901,12 +902,12 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
               },
             },
             React.createElement(Text, {
-              style: { fontSize: 11, color: qwebtyAccent, fontFamily: 'Helvetica-Bold', width: 24 },
-              children: `${String(item.page).padStart(2, '0')}`,
-            }),
-            React.createElement(Text, {
               style: { fontSize: 14, color: texte, fontFamily: 'Helvetica-Bold', flex: 1 },
               children: item.label,
+            }),
+            React.createElement(Text, {
+              style: { fontSize: 11, color: qwebtyAccent, fontFamily: 'Helvetica-Bold' },
+              children: `${String(item.page).padStart(2, '0')}`,
             })
           )
         )
