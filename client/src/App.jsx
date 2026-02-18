@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import './App.css';
 
 const API = '/api';
@@ -134,6 +134,93 @@ function App() {
     e.target.value = '';
   };
 
+  const getLogoByType = (type) => {
+    const files = inputFiles || [];
+    return files.find((f) => f.name.startsWith(`logo-${type}-`));
+  };
+
+  const uploadLogo = async (type, file) => {
+    if (!file) return;
+    const form = new FormData();
+    form.append('file', file);
+    try {
+      await fetch(`${API}/input/upload/logo/${type}`, { method: 'POST', body: form });
+      refetchInput();
+      setMessage({ type: 'success', text: `Logo ${type} ajouté` });
+      setTimeout(() => setMessage(null), 2000);
+    } catch (err) {
+      setMessage({ type: 'error', text: err.message });
+    }
+  };
+
+  const LogoDropZone = ({ type, label, bgColor, isDark }) => {
+    const [dragOver, setDragOver] = useState(false);
+    const logo = getLogoByType(type);
+    const fileInputRef = useRef(null);
+
+    const handleDrop = (e) => {
+      e.preventDefault();
+      setDragOver(false);
+      const file = e.dataTransfer?.files?.[0];
+      if (file?.type?.startsWith('image/')) uploadLogo(type, file);
+    };
+
+    const handleDragOver = (e) => {
+      e.preventDefault();
+      setDragOver(true);
+    };
+
+    const handleDragLeave = () => setDragOver(false);
+
+    const handleFileChange = (e) => {
+      const file = e.target.files?.[0];
+      if (file) uploadLogo(type, file);
+      e.target.value = '';
+    };
+
+    return (
+      <div
+        className={`logo-drop-zone ${dragOver ? 'logo-drop-zone-active' : ''} ${isDark ? 'logo-drop-zone-dark' : ''}`}
+        style={{ backgroundColor: bgColor }}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onClick={() => fileInputRef.current?.click()}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="logo-drop-input"
+        />
+        {logo ? (
+          <>
+            <img
+              src={`${API}/input/files/${encodeURIComponent(logo.name)}`}
+              alt={label}
+              className="logo-preview"
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button
+              type="button"
+              className="logo-remove-btn"
+              onClick={(e) => { e.stopPropagation(); deleteInputFile(logo.name); }}
+              title="Supprimer"
+            >
+              ✕
+            </button>
+          </>
+        ) : (
+          <span className="logo-drop-placeholder">
+            {dragOver ? 'Déposez ici' : 'Glissez ou cliquez'}
+          </span>
+        )}
+        <span className="logo-drop-label">{label}</span>
+      </div>
+    );
+  };
+
   const deleteInputFile = async (name) => {
     try {
       await fetch(`${API}/input/files/${encodeURIComponent(name)}`, {
@@ -234,9 +321,39 @@ function App() {
 
       <main className="page-all">
         <section className="panel">
+            <h2>Logos</h2>
+            <p className="hint">
+              Glissez-déposez vos logos selon le fond d'affichage. Un logo par type.
+            </p>
+            <div className="logo-zones-grid">
+              <LogoDropZone
+                type="clair"
+                label="Logo clair (fond clair)"
+                bgColor="#ffffff"
+              />
+              <LogoDropZone
+                type="sombre"
+                label="Logo sombre (fond sombre)"
+                bgColor="#1e293b"
+                isDark
+              />
+              <LogoDropZone
+                type="primaire"
+                label="Sur couleur principale"
+                bgColor={config?.couleurs?.primaire || '#2563eb'}
+              />
+              <LogoDropZone
+                type="secondaire"
+                label="Sur couleur secondaire"
+                bgColor={config?.couleurs?.secondaire || '#64748b'}
+              />
+            </div>
+        </section>
+
+        <section className="panel">
             <h2>Dossier Entrée</h2>
             <p className="hint">
-              Logos : clair, sombre, primaire, secondaire (dans le nom du fichier)
+              Autres images pour la charte (éléments graphiques, etc.)
             </p>
             <div className="upload-zone">
               <label>
