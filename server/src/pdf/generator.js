@@ -503,6 +503,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SP.sm,
   },
+  uiListBullet: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: SP.sm,
+  },
   qwebtyLogo: {
     paddingVertical: SP.xs,
     paddingHorizontal: SP.sm,
@@ -1233,7 +1239,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     React.createElement(
       View,
       { key: title, style: styles.uiBlock },
-      React.createElement(Text, { style: mergeStyles(styles.uiBlockTitle, { fontFamily: getFontVariants(fontTertiaire).bold }), children: title }),
+      React.createElement(Text, { style: styles.uiBlockTitle, children: title }),
       content
     );
 
@@ -1570,16 +1576,16 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           View,
           null,
           React.createElement(View, { style: styles.uiListItem },
-            React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12, paddingTop: 2 }, children: '•' }),
-            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontTertiaire).regular, color: texte, lineHeight: 14 }, children: 'Premier élément de la liste' })
+            React.createElement(View, { style: mergeStyles(styles.uiListBullet, { backgroundColor: primaire }) }),
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontTertiaire).regular, color: texte, lineHeight: 1.5, flex: 1 }, children: 'Premier élément de la liste' })
           ),
           React.createElement(View, { style: styles.uiListItem },
-            React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12, paddingTop: 2 }, children: '•' }),
-            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontTertiaire).regular, color: texte, lineHeight: 14 }, children: 'Deuxième élément de la liste' })
+            React.createElement(View, { style: mergeStyles(styles.uiListBullet, { backgroundColor: primaire }) }),
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontTertiaire).regular, color: texte, lineHeight: 1.5, flex: 1 }, children: 'Deuxième élément de la liste' })
           ),
           React.createElement(View, { style: styles.uiListItem },
-            React.createElement(Text, { style: { color: primaire, marginRight: SP.sm, fontSize: 12, paddingTop: 2 }, children: '•' }),
-            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontTertiaire).regular, color: texte, lineHeight: 14 }, children: 'Troisième élément de la liste' })
+            React.createElement(View, { style: mergeStyles(styles.uiListBullet, { backgroundColor: primaire }) }),
+            React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontTertiaire).regular, color: texte, lineHeight: 1.5, flex: 1 }, children: 'Troisième élément de la liste' })
           )
         )
       ),
