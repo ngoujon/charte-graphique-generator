@@ -1,0 +1,24 @@
+# Mode développement par défaut : hot reload sur le port 3002
+# Les modifications client/server sont visibles sans rebuild
+# Production (sans hot reload) : docker compose -f docker-compose.yml up -d
+services:
+  charte-graphique:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./client:/app/client
+      - client_node_modules:/app/client/node_modules
+      - ./server:/app/server
+      - server_node_modules:/app/server/node_modules
+      - ./data:/app/data
+      - ./package.json:/app/package.json
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - DATA_DIR=/app/data
+    command: sh -c "cd client && npm install && cd ../server && npm install && cd .. && npm run dev"
+
+volumes:
+  client_node_modules:
+  server_node_modules:

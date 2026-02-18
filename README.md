@@ -5,10 +5,10 @@ Application React + Docker pour générer des documents PDF de charge graphique 
 ## Fonctionnement
 
 1. **Entrée** : Déposez vos fichiers (logos, images) dans le dossier entrée
-2. **Configuration** : Personnalisez la charte (couleurs, typographie, projet, marque) dans l’interface
+2. **Configuration** : Personnalisez la charte (couleurs, typographie, projet, marque) dans l'interface
 3. **Sortie** : Générez le PDF → il est créé dans le dossier sortie
 
-L’interface affiche tout sur une seule page (entrée, configuration, sortie) pour un contrôle sans navigation.
+L'interface affiche tout sur une seule page (entrée, configuration, sortie) pour un contrôle sans navigation.
 
 ## Contenu du PDF généré
 
@@ -16,7 +16,7 @@ L’interface affiche tout sur une seule page (entrée, configuration, sortie) p
 - Présentation de la marque (slogan, mission, valeurs, personnalité)
 - **Logo — 4 déclinaisons** : clair, sombre, sur couleur principale, sur couleur secondaire
 - Palette de couleurs (blanc, noir, principale, secondaire, tertiaire + déclinaisons)
-- Typographie (exemple d’article, alphabets, chiffres 0–9)
+- Typographie (exemple d'article, alphabets, chiffres 0–9)
 - Kit UI (boutons, champs, badges, cartes)
 
 Le document applique les 13 principes du design graphique (alignement, contraste, équilibre, hiérarchie, etc.).
@@ -46,32 +46,32 @@ Si vous ne fournissez que clair et sombre, les versions primaire et secondaire u
 - **Exporter** : sauvegarde la config actuelle en JSON (réutilisable)
 - **Importer** : charge une config précédemment exportée
 
-## Développement avec Docker (hot reload)
+## Développement — Live reload sur le port 3002
 
-```bash
-npm run docker:dev
-```
-
-Ouvrez **http://localhost:3002** — les modifications de l’interface (client) sont reflétées en temps réel **sans rebuild**. Les dossiers `client/` et `server/` sont montés en volume.
-
-## Production Docker (port 3002)
-
-> ⚠️ Pour le développement avec hot reload, utilisez `npm run docker:dev` ci-dessus. La commande ci-dessous build l’image et nécessite un rebuild à chaque modification.
-
-```bash
-docker compose up -d
-```
-
-Puis ouvrez http://localhost:3002
-
-## Développement sans Docker
+### Option 1 : Sans Docker (le plus rapide)
 
 ```bash
 npm install && cd server && npm install && cd ../client && npm install && cd ..
 npm run dev
 ```
 
-Frontend : http://localhost:3002 (API sur 3003 en dev)
+Ouvrez **http://localhost:3002** — les modifications sont visibles immédiatement.
+
+### Option 2 : Avec Docker
+
+```bash
+npm run docker:dev
+```
+
+Ou `docker compose up` — le fichier `docker-compose.override.yml` active le mode dev par défaut. Les dossiers `client/` et `server/` sont montés en volume, **aucun rebuild nécessaire** pour voir vos modifications.
+
+## Production Docker (port 3002)
+
+```bash
+npm run docker:prod
+```
+
+Ou `docker compose -f docker-compose.yml up -d` — sans l'override pour le build de production.
 
 ## Structure des dossiers
 
