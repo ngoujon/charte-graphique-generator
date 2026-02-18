@@ -123,9 +123,8 @@ confRouter.post('/reset', async (req, res) => {
 
     const inputPath = inputDir();
     const files = await fs.readdir(inputPath).catch(() => []);
-    const logoPrefixes = ['logo-clair-', 'logo-sombre-', 'logo-primaire-', 'logo-secondaire-'];
     for (const name of files) {
-      if (logoPrefixes.some((p) => name.startsWith(p))) {
+      if (!name.startsWith('.')) {
         await fs.unlink(path.join(inputPath, name)).catch(() => {});
       }
     }
