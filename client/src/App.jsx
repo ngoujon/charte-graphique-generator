@@ -424,8 +424,11 @@ function App() {
 
         <section className="panel">
             <h2>Dossier Sortie</h2>
-            <p className="hint">PDFs générés à partir de l'entrée et de la configuration.</p>
+            <p className="hint">
+              {showTrash ? 'PDFs supprimés. Restaurez ou supprimez définitivement.' : 'PDFs générés à partir de l\'entrée et de la configuration.'}
+            </p>
             <div className="output-actions">
+              {!showTrash && (
               <button
                 className="btn btn-primary btn-large"
                 onClick={generatePdf}
@@ -441,9 +444,10 @@ function App() {
                 </svg>
                 {generating ? 'Génération…' : 'Générer le PDF'}
               </button>
+              )}
               <button
                 className="btn btn-secondary btn-icon-only"
-                onClick={() => refetchOutput()}
+                onClick={() => showTrash ? refetchTrash() : refetchOutput()}
                 title="Rafraîchir la liste"
               >
                 <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -453,9 +457,9 @@ function App() {
                 </svg>
               </button>
               <button
-                className={`btn btn-secondary btn-icon-only ${showTrash ? 'btn-active' : ''}`}
+                className={`btn btn-secondary btn-icon-only switch-output-trash ${showTrash ? 'btn-active' : ''}`}
                 onClick={() => setShowTrash((v) => !v)}
-                title={showTrash ? 'Masquer la corbeille' : 'Afficher la corbeille'}
+                title={showTrash ? 'Afficher le dossier sortie' : 'Afficher la corbeille'}
               >
                 <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="3 6 5 6 21 6" />
@@ -466,40 +470,74 @@ function App() {
               </button>
             </div>
             <ul className="file-list file-list-output">
-              {((outputFiles || []).slice(0, showAllOutput ? undefined : 3)).map((f) => (
-                <li key={f.name}>
-                  <button
-                    className="btn-icon btn-icon-preview"
-                    onClick={() => window.open(`${API}/output/files/${encodeURIComponent(f.name)}`, '_blank', 'noopener,noreferrer')}
-                    title="Aperçu (ouvrir le PDF)"
-                  >
-                    <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </button>
-                  <span className="file-name">{f.name}</span>
-                  <span className="size">{formatSize(f.size)}</span>
-                  <button
-                    className="btn-icon"
-                    onClick={() => deleteOutputFile(f.name)}
-                    title="Supprimer (déplacer dans la corbeille)"
-                  >
-                    🗑
-                  </button>
-                </li>
-              ))}
+              {showTrash
+                ? ((trashFiles || []).slice(0, showAllOutput ? undefined : 3)).map((f) => (
+                    <li key={f.name}>
+                      <button
+                        className="btn-icon btn-icon-preview"
+                        onClick={() => window.open(`${API}/output/trash/files/${encodeURIComponent(f.name)}`, '_blank', 'noopener,noreferrer')}
+                        title="Aperçu (ouvrir le PDF)"
+                      >
+                        <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      </button>
+                      <span className="file-name">{f.name}</span>
+                      <span className="size">{formatSize(f.size)}</span>
+                      <button
+                        className="btn-icon btn-icon-restore"
+                        onClick={() => restoreTrashFile(f.name)}
+                        title="Restaurer"
+                      >
+                        ↩
+                      </button>
+                      <button
+                        className="btn-icon"
+                        onClick={() => permanentlyDeleteTrashFile(f.name)}
+                        title="Supprimer définitivement"
+                      >
+                        ✕
+                      </button>
+                    </li>
+                  ))
+                : ((outputFiles || []).slice(0, showAllOutput ? undefined : 3)).map((f) => (
+                    <li key={f.name}>
+                      <button
+                        className="btn-icon btn-icon-preview"
+                        onClick={() => window.open(`${API}/output/files/${encodeURIComponent(f.name)}`, '_blank', 'noopener,noreferrer')}
+                        title="Aperçu (ouvrir le PDF)"
+                      >
+                        <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      </button>
+                      <span className="file-name">{f.name}</span>
+                      <span className="size">{formatSize(f.size)}</span>
+                      <button
+                        className="btn-icon"
+                        onClick={() => deleteOutputFile(f.name)}
+                        title="Supprimer (déplacer dans la corbeille)"
+                      >
+                        🗑
+                      </button>
+                    </li>
+                  ))}
             </ul>
-            {(outputFiles?.length ?? 0) > 3 && (
+            {((showTrash ? trashFiles : outputFiles)?.length ?? 0) > 3 && (
               <button
                 className="btn btn-secondary btn-show-more"
                 onClick={() => setShowAllOutput((v) => !v)}
               >
-                {showAllOutput ? 'Voir moins' : `Voir plus (${outputFiles.length - 3} autre${outputFiles.length - 3 > 1 ? 's' : ''})`}
+                {showAllOutput ? 'Voir moins' : `Voir plus (${(showTrash ? trashFiles : outputFiles).length - 3} autre${(showTrash ? trashFiles : outputFiles).length - 3 > 1 ? 's' : ''})`}
               </button>
             )}
-            {(!outputFiles || outputFiles.length === 0) && (
+            {(!showTrash && (!outputFiles || outputFiles.length === 0)) && (
               <p className="empty">Aucun PDF. Cliquez sur "Générer le PDF" pour en créer un.</p>
+            )}
+            {(showTrash && (!trashFiles || trashFiles.length === 0)) && (
+              <p className="empty">Corbeille vide.</p>
             )}
         </section>
         </div>
@@ -833,53 +871,6 @@ function App() {
               </div>
             )}
         </section>
-
-        {showTrash && (
-        <section className="panel panel-trash">
-            <h2>Corbeille</h2>
-            <p className="hint">PDFs supprimés. Restaurez ou supprimez définitivement.</p>
-            <div className="output-actions">
-              <button
-                className="btn btn-secondary btn-icon-only"
-                onClick={() => refetchTrash()}
-                title="Rafraîchir la liste"
-              >
-                <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="23 4 23 10 17 10" />
-                  <polyline points="1 20 1 14 7 14" />
-                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-                </svg>
-              </button>
-            </div>
-            <ul className="file-list">
-              {(trashFiles || []).map((f) => (
-                <li key={f.name}>
-                  <a href={`${API}/output/trash/files/${encodeURIComponent(f.name)}`} target="_blank" rel="noreferrer">
-                    {f.name}
-                  </a>
-                  <span className="size">{formatSize(f.size)}</span>
-                  <button
-                    className="btn-icon btn-icon-restore"
-                    onClick={() => restoreTrashFile(f.name)}
-                    title="Restaurer"
-                  >
-                    ↩
-                  </button>
-                  <button
-                    className="btn-icon"
-                    onClick={() => permanentlyDeleteTrashFile(f.name)}
-                    title="Supprimer définitivement"
-                  >
-                    ✕
-                  </button>
-                </li>
-              ))}
-            </ul>
-            {(!trashFiles || trashFiles.length === 0) && (
-              <p className="empty">Corbeille vide.</p>
-            )}
-        </section>
-        )}
       </main>
       <footer className="app-footer">
         <img src="/qwebty-logo.png" alt="Qwebty" className="qwebty-logo-footer" />
