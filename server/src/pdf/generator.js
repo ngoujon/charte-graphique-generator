@@ -379,25 +379,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 80,
   },
-  uiSelect: {
-    borderWidth: 1,
-    borderColor: BORDER,
-    borderRadius: 6,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  uiDateTime: {
-    borderWidth: 1,
-    borderColor: BORDER,
-    borderRadius: 6,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   uiNumberStepper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1301,81 +1282,9 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             }),
           },
           React.createElement(Text, {
-            style: { color: MUTED, fontSize: 11, fontFamily: fontSecondaire, textAlign: 'center' },
+            style: { color: MUTED, fontSize: 11, fontFamily: getFontVariants(fontPrincipale).regular, textAlign: 'center' },
             children: 'Glissez-déposez vos fichiers ici ou cliquez pour parcourir',
           })
-        )
-      ),
-      createUiBlock(
-        'Menu déroulant (select)',
-        React.createElement(
-          View,
-          { style: { gap: SP.sm } },
-          React.createElement(
-            View,
-            {
-              style: mergeStyles(styles.uiSelect, {
-                borderColor: BORDER,
-                backgroundColor: fond,
-              }),
-            },
-            React.createElement(Text, {
-              style: { color: texte, fontSize: 12, fontFamily: fontSecondaire },
-              children: 'Sélectionner une option',
-            }),
-            React.createElement(Text, { style: { color: MUTED, fontSize: 10 }, children: '▼' })
-          ),
-          React.createElement(
-            View,
-            {
-              style: mergeStyles(styles.uiSelect, {
-                borderColor: BORDER,
-                backgroundColor: fond,
-              }),
-            },
-            React.createElement(Text, {
-              style: { color: texte, fontSize: 12, fontFamily: fontSecondaire },
-              children: 'Option choisie',
-            }),
-            React.createElement(Text, { style: { color: MUTED, fontSize: 10 }, children: '▼' })
-          )
-        )
-      ),
-      createUiBlock(
-        'Date et heure',
-        React.createElement(
-          View,
-          { style: { flexDirection: 'row', gap: SP.md, flexWrap: 'wrap' } },
-          React.createElement(
-            View,
-            {
-              style: mergeStyles(styles.uiDateTime, {
-                borderColor: BORDER,
-                backgroundColor: fond,
-                flex: 1,
-                minWidth: 120,
-              }),
-            },
-            React.createElement(Text, {
-              style: { color: MUTED, fontSize: 12, fontFamily: fontSecondaire },
-              children: 'jj/mm/aaaa',
-            })
-          ),
-          React.createElement(
-            View,
-            {
-              style: mergeStyles(styles.uiDateTime, {
-                borderColor: BORDER,
-                backgroundColor: fond,
-                flex: 1,
-                minWidth: 100,
-              }),
-            },
-            React.createElement(Text, {
-              style: { color: MUTED, fontSize: 12, fontFamily: fontSecondaire },
-              children: 'hh:mm',
-            })
-          )
         )
       ),
       createUiBlock(
@@ -1389,17 +1298,17 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             React.createElement(
               View,
               { style: styles.uiNumberBtn },
-              React.createElement(Text, { style: { fontSize: 16, fontFamily: fontSecondaire, color: texte }, children: '−' })
+              React.createElement(Text, { style: { fontSize: 16, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: '−' })
             ),
             React.createElement(
               View,
               { style: styles.uiNumberValue },
-              React.createElement(Text, { style: { fontSize: 12, fontFamily: fontSecondaire, color: texte }, children: '1' })
+              React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: '1' })
             ),
             React.createElement(
               View,
               { style: [styles.uiNumberBtn, styles.uiNumberBtnLast] },
-              React.createElement(Text, { style: { fontSize: 16, fontFamily: fontSecondaire, color: texte }, children: '+' })
+              React.createElement(Text, { style: { fontSize: 16, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: '+' })
             )
           ),
           React.createElement(
@@ -1408,17 +1317,17 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             React.createElement(
               View,
               { style: styles.uiNumberBtn },
-              React.createElement(Text, { style: { fontSize: 16, fontFamily: fontSecondaire, color: texte }, children: '−' })
+              React.createElement(Text, { style: { fontSize: 16, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: '−' })
             ),
             React.createElement(
               View,
               { style: styles.uiNumberValue },
-              React.createElement(Text, { style: { fontSize: 12, fontFamily: fontSecondaire, color: texte }, children: '5' })
+              React.createElement(Text, { style: { fontSize: 12, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: '5' })
             ),
             React.createElement(
               View,
               { style: [styles.uiNumberBtn, styles.uiNumberBtnLast] },
-              React.createElement(Text, { style: { fontSize: 16, fontFamily: fontSecondaire, color: texte }, children: '+' })
+              React.createElement(Text, { style: { fontSize: 16, fontFamily: getFontVariants(fontPrincipale).regular, color: texte }, children: '+' })
             )
           )
         )
