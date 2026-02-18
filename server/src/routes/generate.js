@@ -34,7 +34,10 @@ generateRouter.post('/', async (req, res) => {
       .map((name) => path.join(inputDir, name));
 
     await fs.mkdir(outputDir, { recursive: true });
-    const filename = `charte-graphique-${Date.now()}.pdf`;
+    const ref = (config.projet?.reference || '').trim().replace(/[/\\:*?"<>|]/g, '-').replace(/\s+/g, '-') || 'sans-ref';
+    const now = new Date();
+    const datetime = now.toISOString().slice(0, 19).replace('T', '-').replace(/:/g, '');
+    const filename = `charte-graphique-${ref}-${datetime}.pdf`;
     const outputPath = path.join(outputDir, filename);
 
     const logoPath = path.join(__dirname, '..', 'public', 'qwebty-logo.png');
