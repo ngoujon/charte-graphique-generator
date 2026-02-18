@@ -76,37 +76,57 @@ function App() {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const text = await file.text();
-      const parsed = JSON.parse(text);
-      await fetch(`${API}/conf/import`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ config: parsed }),
-      });
-      refetchConf();
-      setMessage({ type: 'success', text: 'Configuration importée' });
+      const isZip = file.name.toLowerCase().endsWith('.zip');
+      if (isZip) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch(`${API}/conf/import/full`, {
+          method: 'POST',
+          body: formData,
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || `Erreur ${res.status}`);
+        }
+        await res.json();
+        await refetchConf();
+        await refetchInput();
+        await refetchFonts();
+        setMessage({ type: 'success', text: 'Configuration complète importée (config, images, polices)' });
+      } else {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        const res = await fetch(`${API}/conf/import`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ config: parsed }),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || `Erreur ${res.status}`);
+        }
+        await refetchConf();
+        setMessage({ type: 'success', text: 'Configuration importée (texte uniquement)' });
+      }
       setTimeout(() => setMessage(null), 3000);
     } catch (err) {
-      setMessage({ type: 'error', text: 'Fichier JSON invalide' });
+      setMessage({ type: 'error', text: err.message || 'Import échoué' });
     }
     e.target.value = '';
   };
 
   const exportConfig = async () => {
     try {
-      const res = await fetch(`${API}/conf/export`);
+      const res = await fetch(`${API}/conf/export/full`);
       if (!res.ok) throw new Error(await res.text());
-      const config = await res.json();
-      const blob = new Blob([JSON.stringify(config, null, 2)], {
-        type: 'application/json',
-      });
+      const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'charte-config.json';
+      a.download = 'charte-complete.zip';
       a.click();
       URL.revokeObjectURL(url);
-      setMessage({ type: 'success', text: 'Configuration exportée' });
+      setMessage({ type: 'success', text: 'Configuration complète exportée (config, images, polices)' });
       setTimeout(() => setMessage(null), 2000);
     } catch (e) {
       setMessage({ type: 'error', text: e.message });
@@ -591,18 +611,18 @@ function App() {
         <section className="panel">
             <h2>Configuration (conf)</h2>
             <p className="hint">
-              Les modifications sont appliquées en temps réel. Importez/exportez pour réutiliser une config.
+              Les modifications sont appliquées en temps réel. Exportez tout (config + images + polices) ou importez un .zip ou .json.
             </p>
             <div className="config-actions">
-              <label className="btn btn-secondary btn-icon-only" title="Importer config">
-                <input type="file" accept=".json" onChange={importConfig} hidden />
+              <label className="btn btn-secondary btn-icon-only" title="Importer config (.zip ou .json)">
+                <input type="file" accept=".zip,.json" onChange={importConfig} hidden />
                 <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="17 8 12 3 7 8" />
                   <line x1="12" y1="3" x2="12" y2="15" />
                 </svg>
               </label>
-              <button className="btn btn-secondary btn-icon-only" onClick={exportConfig} title="Exporter config">
+              <button className="btn btn-secondary btn-icon-only" onClick={exportConfig} title="Exporter tout (config, images, polices)">
                 <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="7 10 12 15 17 10" />
