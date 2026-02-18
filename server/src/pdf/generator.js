@@ -629,6 +629,11 @@ function hexToRgb(hex) {
   return m ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) } : null;
 }
 
+function hexToRgba(hex, alpha = 0.15) {
+  const rgb = hexToRgb(hex);
+  return rgb ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})` : 'rgba(0,0,0,0.1)';
+}
+
 function getHexLuminance(hex) {
   const rgb = hexToRgb(hex);
   if (!rgb) return 0.5;
@@ -1342,56 +1347,58 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             View,
             {
               style: mergeStyles(styles.uiAlert, {
-                backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                borderLeftWidth: 4,
-                borderLeftColor: '#10b981',
-              }),
-            },
-            React.createElement(Text, {
-              style: { fontSize: 11, fontFamily: fontSecondaire, color: texte },
-              children: 'Succès — Opération réalisée avec succès.',
-            })
-          ),
-          React.createElement(
-            View,
-            {
-              style: mergeStyles(styles.uiAlert, {
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderLeftWidth: 4,
-                borderLeftColor: '#ef4444',
-              }),
-            },
-            React.createElement(Text, {
-              style: { fontSize: 11, fontFamily: fontSecondaire, color: texte },
-              children: 'Erreur — Une erreur s\'est produite.',
-            })
-          ),
-          React.createElement(
-            View,
-            {
-              style: mergeStyles(styles.uiAlert, {
-                backgroundColor: 'rgba(100, 116, 139, 0.15)',
-                borderLeftWidth: 4,
-                borderLeftColor: secondaire,
-              }),
-            },
-            React.createElement(Text, {
-              style: { fontSize: 11, fontFamily: fontSecondaire, color: texte },
-              children: 'Attention — Vérifiez les informations.',
-            })
-          ),
-          React.createElement(
-            View,
-            {
-              style: mergeStyles(styles.uiAlert, {
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                backgroundColor: hexToRgba(primaire, 0.12),
                 borderLeftWidth: 4,
                 borderLeftColor: primaire,
               }),
             },
             React.createElement(Text, {
-              style: { fontSize: 11, fontFamily: fontSecondaire, color: texte },
-              children: 'Info — Information complémentaire.',
+              style: { fontSize: 11, fontFamily: getFontVariants(fontPrincipale).regular, color: texte },
+              children: 'Principale — Message utilisant la couleur principale de la charte.',
+            })
+          ),
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiAlert, {
+                backgroundColor: hexToRgba(secondaire, 0.12),
+                borderLeftWidth: 4,
+                borderLeftColor: secondaire,
+              }),
+            },
+            React.createElement(Text, {
+              style: { fontSize: 11, fontFamily: getFontVariants(fontPrincipale).regular, color: texte },
+              children: 'Secondaire — Message utilisant la couleur secondaire.',
+            })
+          ),
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiAlert, {
+                backgroundColor: fond,
+                borderLeftWidth: 4,
+                borderLeftColor: lightenHex(texte, 0.6),
+                borderWidth: 1,
+                borderColor: lightenHex(texte, 0.85),
+              }),
+            },
+            React.createElement(Text, {
+              style: { fontSize: 11, fontFamily: getFontVariants(fontPrincipale).regular, color: texte },
+              children: 'Clair — Alerte sur fond clair avec bordure discrète.',
+            })
+          ),
+          React.createElement(
+            View,
+            {
+              style: mergeStyles(styles.uiAlert, {
+                backgroundColor: texte,
+                borderLeftWidth: 4,
+                borderLeftColor: texte,
+              }),
+            },
+            React.createElement(Text, {
+              style: { fontSize: 11, fontFamily: getFontVariants(fontPrincipale).regular, color: fond },
+              children: 'Sombre — Message sur fond sombre, texte clair.',
             })
           )
         )
