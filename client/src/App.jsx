@@ -43,6 +43,32 @@ function App() {
   const [showConfirmDeleteAll, setShowConfirmDeleteAll] = useState(false);
   const [showConfirmReset, setShowConfirmReset] = useState(false);
 
+  useEffect(() => {
+    if (!showConfirmDeleteAll) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setShowConfirmDeleteAll(false);
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        deleteAllOutputFiles();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showConfirmDeleteAll]);
+
+  useEffect(() => {
+    if (!showConfirmReset) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setShowConfirmReset(false);
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        resetConfig();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showConfirmReset]);
+
   const { data: inputFiles, refetch: refetchInput } = useApi('/input/files');
   const { data: outputFiles, refetch: refetchOutput } = useApi('/output/files');
   const { data: trashFiles, refetch: refetchTrash } = useApi('/output/trash/files');
