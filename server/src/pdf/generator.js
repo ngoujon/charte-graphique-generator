@@ -374,10 +374,10 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: BORDER,
     borderRadius: 8,
-    padding: SP.lg,
+    padding: SP.md,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 80,
+    minHeight: 56,
   },
   uiNumberStepper: {
     flexDirection: 'row',
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   uiBlock: {
-    marginBottom: SP.lg,
+    marginBottom: SP.md,
   },
   uiBlockTitle: {
     fontSize: 10,
@@ -430,12 +430,12 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     color: MUTED,
-    marginBottom: SP.sm,
+    marginBottom: SP.xs,
   },
   uiAlert: {
-    padding: SP.md,
+    padding: SP.sm,
     borderRadius: 8,
-    marginBottom: SP.sm,
+    marginBottom: SP.xs,
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
@@ -577,11 +577,11 @@ function wrapPageContent(content, pageNum, totalPages, logoSrc) {
   );
 }
 
-function createSectionHeader(num, title) {
+function createSectionHeader(num, title, headerStyle) {
   const titleColor = '#1a1a1a';
   return React.createElement(
     View,
-    { style: styles.sectionHeader },
+    { style: mergeStyles(styles.sectionHeader, headerStyle) },
     React.createElement(Text, {
       style: mergeStyles(styles.sectionTitle, { color: titleColor, borderBottomColor: titleColor }),
       children: `${num}. ${title}`,
@@ -1216,9 +1216,9 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(
         View,
         { style: styles.section },
-        createSectionHeader(6, 'Kit UI'),
+        createSectionHeader(6, 'Kit UI', { marginBottom: SP.sm }),
       React.createElement(Text, {
-        style: mergeStyles(styles.sectionIntro),
+        style: mergeStyles(styles.sectionIntro, { marginTop: 0, marginBottom: SP.sm }),
         children: 'Composants d\'interface utilisant la charte graphique',
       }),
       createUiBlock(
