@@ -3,3 +3,6 @@ node_modules
 *.md
 data
 .env*
+.DS_Store
+._*
+**/._*

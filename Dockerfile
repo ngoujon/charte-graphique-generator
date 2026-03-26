@@ -22,6 +22,7 @@ COPY --from=client-builder /app/client/dist ./public
 
 # Create data directories
 RUN mkdir -p /app/data/input /app/data/output /app/data/conf
+RUN chmod -R a+rX /app
 
 ENV NODE_ENV=production
 ENV PORT=3002

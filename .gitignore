@@ -17,6 +17,7 @@ npm-debug.log*
 
 # OS
 .DS_Store
+._*
 Thumbs.db
 
 # IDE
