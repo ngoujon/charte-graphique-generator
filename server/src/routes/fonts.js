@@ -3,6 +3,9 @@ import fs from 'fs/promises';
 import path from 'path';
 import multer from 'multer';
 import { getDataDir } from '../dataDir.js';
+import { assertSafeFilename } from '../utils/safeFilename.js';
+import { listFilesInDir } from '../utils/listFiles.js';
+import { normalizeFontName } from '../../../shared/normalizeFontName.js';
 
 export const fontsRouter = Router();
 const fontsDir = () => path.join(getDataDir(), 'fonts');
@@ -33,7 +36,7 @@ const upload = multer({
     if (ACCEPTED_EXT.includes(ext)) {
       cb(null, true);
     } else {
-      cb(new Error(`Format non supporté. Utilisez : .ttf, .otf ou .woff`), false);
+      cb(new Error('Format non supporté. Utilisez : .ttf, .otf ou .woff'), false);
     }
   },
   limits: { fileSize: 5 * 1024 * 1024 },
@@ -45,21 +48,20 @@ function familyIdFromFilename(filename) {
 }
 
 function normalizedFontName(filename) {
-  const base = path.basename(filename, path.extname(filename));
-  return base.replace(/-[0-9]+$/, '').toLowerCase();
+  return normalizeFontName(path.basename(filename, path.extname(filename)));
 }
 
 fontsRouter.get('/list', async (req, res) => {
   try {
-    await fs.mkdir(fontsDir(), { recursive: true });
-    const files = await fs.readdir(fontsDir());
+    const files = await listFilesInDir(fontsDir(), (f) =>
+      ACCEPTED_EXT.includes(path.extname(f).toLowerCase())
+    );
     const seen = new Set();
     const fonts = files
-      .filter((f) => ACCEPTED_EXT.includes(path.extname(f).toLowerCase()))
       .map((f) => {
-        const id = familyIdFromFilename(f);
-        const label = path.basename(f, path.extname(f)).replace(/-[0-9]+$/, '').replace(/-/g, ' ');
-        return { id, label, filename: f };
+        const id = familyIdFromFilename(f.name);
+        const label = path.basename(f.name, path.extname(f.name)).replace(/-[0-9]+$/, '').replace(/-/g, ' ');
+        return { id, label, filename: f.name };
       })
       .filter((f) => {
         const key = normalizedFontName(f.filename);
@@ -108,10 +110,12 @@ fontsRouter.post('/upload', (req, res, next) => {
 });
 
 fontsRouter.delete('/:filename', async (req, res) => {
+  const filename = decodeURIComponent(req.params.filename);
+  if (!assertSafeFilename(filename, res)) return;
   try {
-    const filePath = path.join(fontsDir(), req.params.filename);
+    const filePath = path.join(fontsDir(), filename);
     await fs.unlink(filePath);
-    res.json({ deleted: req.params.filename });
+    res.json({ deleted: filename });
   } catch (err) {
     if (err.code === 'ENOENT') return res.status(404).json({ error: 'Police introuvable' });
     res.status(500).json({ error: err.message });

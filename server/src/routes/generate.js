@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { getDataDir } from '../dataDir.js';
 import { generatePdf } from '../pdf/generator.js';
+import { normalizeConfig } from '../../../shared/config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -16,16 +17,12 @@ generateRouter.post('/', async (req, res) => {
     const outputDir = path.join(dataDir, 'output');
     const confPath = path.join(dataDir, 'conf', 'charte.json');
 
-    let config = {};
+    let config = normalizeConfig({});
     try {
       const confData = await fs.readFile(confPath, 'utf-8');
-      config = JSON.parse(confData);
+      config = normalizeConfig(JSON.parse(confData));
     } catch {
-      config = {
-        projet: { nom: 'Charte Graphique', description: '' },
-        couleurs: { primaire: '#2563eb', secondaire: '#64748b', texte: '#1e293b' },
-        typographie: { titre: 'Helvetica-Bold', corps: 'Helvetica' },
-      };
+      /* utilise DEFAULT_CONF via normalizeConfig */
     }
 
     const inputFiles = await fs.readdir(inputDir).catch(() => []);

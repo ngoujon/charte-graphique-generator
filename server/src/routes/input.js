@@ -3,6 +3,8 @@ import fs from 'fs/promises';
 import path from 'path';
 import multer from 'multer';
 import { getDataDir } from '../dataDir.js';
+import { assertSafeFilename } from '../utils/safeFilename.js';
+import { listFilesInDir } from '../utils/listFiles.js';
 
 export const inputRouter = Router();
 const inputDir = () => path.join(getDataDir(), 'input');
@@ -29,16 +31,7 @@ const upload = multer({ storage });
 
 inputRouter.get('/files', async (req, res) => {
   try {
-    await fs.mkdir(inputDir(), { recursive: true });
-    const files = await fs.readdir(inputDir());
-    const details = await Promise.all(
-      files
-        .filter((f) => !f.startsWith('.'))
-        .map(async (name) => {
-          const stat = await fs.stat(path.join(inputDir(), name));
-          return { name, size: stat.size, modified: stat.mtime };
-        })
-    );
+    const details = await listFilesInDir(inputDir());
     res.json(details);
   } catch (err) {
     console.error('[input/files]', err);
@@ -66,17 +59,22 @@ inputRouter.post('/upload', upload.array('files', 20), (req, res) => {
 });
 
 inputRouter.delete('/files/:name', async (req, res) => {
+  const name = decodeURIComponent(req.params.name);
+  if (!assertSafeFilename(name, res)) return;
   try {
-    const filePath = path.join(inputDir(), req.params.name);
+    const filePath = path.join(inputDir(), name);
     await fs.unlink(filePath);
-    res.json({ deleted: req.params.name });
+    res.json({ deleted: name });
   } catch (err) {
+    if (err.code === 'ENOENT') return res.status(404).json({ error: 'Fichier introuvable' });
     res.status(500).json({ error: err.message });
   }
 });
 
 inputRouter.get('/files/:name', (req, res) => {
-  const filePath = path.join(inputDir(), req.params.name);
+  const name = decodeURIComponent(req.params.name);
+  if (!assertSafeFilename(name, res)) return;
+  const filePath = path.join(inputDir(), name);
   res.sendFile(filePath, (err) => {
     if (err) res.status(404).json({ error: 'Fichier introuvable' });
   });

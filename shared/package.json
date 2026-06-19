@@ -1,0 +1,9 @@
+{
+  "name": "@charte/shared",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "config.js",
+  "dependencies": {
+    "zod": "^3.24.1"
+  }
+}

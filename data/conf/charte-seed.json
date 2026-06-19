@@ -4,29 +4,35 @@
     "nom": "Mon Projet",
     "description": "Charte graphique - Document de charge graphique",
     "auteur": "",
+    "reference": "",
     "date": "2025-02-15"
   },
   "marque": {
     "slogan": "Votre slogan ici",
     "mission": "Notre mission est de...",
     "valeurs": "Innovation, Qualité, Proximité",
-    "personnalite": "Moderne, fiable, accessible"
+    "personnalite": "Moderne, fiable, accessible",
+    "recherche": ""
   },
   "couleurs": {
+    "clair": "#ffffff",
+    "sombre": "#1a1a1a",
     "primaire": "#2563eb",
-    "secondaire": "#64748b",
-    "fond": "#ffffff",
-    "texte": "#1e293b"
+    "secondaire": "#64748b"
   },
   "typographie": {
-    "titre": "Helvetica-Bold",
-    "corps": "Helvetica",
-    "tailleTitre": 24,
-    "tailleSousTitre": 18,
-    "tailleCorps": 12,
-    "exempleTitre": "Titre de l'exemple",
-    "exempleSousTitre": "Sous-titre de l'exemple",
-    "exempleDescription": "Description ou corps de texte. Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    "principale": "Helvetica",
+    "secondaire": "Times-Roman",
+    "tertiaire": "Courier"
+  },
+  "sections": {
+    "marque": true,
+    "logo": true,
+    "couleurs": true,
+    "typographie": true,
+    "kitUi": true,
+    "elementsGraphiques": true,
+    "aboutQwebty": true
   },
   "logo": null
 }

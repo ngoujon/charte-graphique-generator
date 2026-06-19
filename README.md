@@ -9,9 +9,10 @@ Application React + Express pour générer des documents PDF de charte graphique
 
 ## Fonctionnement
 
-1. **Entrée** : Déposez vos fichiers (logos, images) dans le dossier `data/input`
-2. **Configuration** : Personnalisez la charte (couleurs, typographie, projet, marque) dans l'interface
-3. **Sortie** : Générez le PDF → il est créé dans le dossier `data/output`
+1. **Entrée** : Déposez vos images (éléments graphiques) via glisser-déposer ou sélection de fichiers
+2. **Logos** : Uploadez les 4 déclinaisons (clair, sombre, primaire, secondaire) dans la configuration
+3. **Configuration** : Personnalisez la charte (couleurs, typographie, projet, marque, sections PDF)
+4. **Sortie** : Générez le PDF → il est créé dans le dossier `data/output`
 
 L'interface affiche tout sur une seule page (entrée, configuration, sortie) pour un contrôle sans navigation.
 
@@ -20,36 +21,43 @@ L'interface affiche tout sur une seule page (entrée, configuration, sortie) pou
 - Couverture avec nom du projet
 - Présentation de la marque (slogan, mission, valeurs, personnalité)
 - **Logo — 4 déclinaisons** : clair, sombre, sur couleur principale, sur couleur secondaire
-- Palette de couleurs (blanc, noir, principale, secondaire + déclinaisons)
-- Typographie (exemple d'article, alphabets, chiffres 0–9)
+- Palette de couleurs (clair, sombre, principale, secondaire + déclinaisons)
+- Typographie (3 polices : principale, secondaire, tertiaire)
 - Kit UI (boutons, champs, badges, cartes)
+- Éléments graphiques (images du dossier entrée, hors logos)
+- À propos de Qwebty
 
-Le document applique les 13 principes du design graphique (alignement, contraste, équilibre, hiérarchie, etc.).
+Les sections sont activables/désactivables dans l'interface. Le document applique les 13 principes du design graphique.
 
-## Logos — Nommage des fichiers
+## Logos
 
-Pour que vos logos soient reconnus automatiquement, nommez vos fichiers ainsi :
+Les logos s'uploadent via les zones dédiées dans la configuration. Les fichiers sont nommés automatiquement (`logo-clair-*`, `logo-sombre-*`, etc.).
+
+Pour une détection automatique par nom de fichier dans le PDF, vous pouvez aussi utiliser :
 
 | Déclinaison | Exemples de noms |
 |-------------|------------------|
-| Fond clair | `logo-clair`, `clair`, `light`, `claire` |
-| Fond sombre | `logo-sombre`, `sombre`, `dark`, `noir` |
-| Sur couleur principale | `logo-primaire`, `primaire`, `primary`, `principale` |
+| Fond clair | `logo-clair`, `clair`, `light` |
+| Fond sombre | `logo-sombre`, `sombre`, `dark` |
+| Sur couleur principale | `logo-primaire`, `primaire`, `primary` |
 | Sur couleur secondaire | `logo-secondaire`, `secondaire`, `secondary` |
-
-Si vous ne fournissez que clair et sombre, les versions primaire et secondaire utiliseront le logo sombre par défaut.
 
 ## Configuration
 
-- **Projet** : nom, description, auteur, date
-- **Marque** : slogan, mission, valeurs, personnalité
-- **Palette** : blanc, noir, couleur principale, secondaire
-- **Typographie** : polices (titre, corps), tailles, exemples de texte
+- **Projet** : nom, description, auteur, référence, date
+- **Marque** : slogan, mission, valeurs, personnalité, recherche
+- **Palette** : clair, sombre, couleur principale, secondaire
+- **Typographie** : 3 polices (principale, secondaire, tertiaire) + upload custom
+- **Sections PDF** : toggles pour inclure/exclure des pages
+- **Templates** : presets startup, institution, retail
+- **Multi-projets** : créer et basculer entre plusieurs chartes
+- **Historique** : snapshots automatiques avec restauration
 
 ## Import / Export
 
-- **Exporter** : sauvegarde la config actuelle en JSON (réutilisable)
-- **Importer** : charge une config précédemment exportée
+- **Exporter ZIP** : config + images + polices (bouton téléchargement)
+- **Exporter tokens Figma** : JSON couleurs et typographie
+- **Importer** : fichier `.zip` (complet) ou `.json` (config seule)
 
 ## Démarrage
 
@@ -57,12 +65,13 @@ Si vous ne fournissez que clair et sombre, les versions primaire et secondaire u
 
 ```bash
 npm install
+cd shared && npm install && cd ..
 cd server && npm install && cd ..
 cd client && npm install && cd ..
 npm run dev
 ```
 
-Ouvrez **http://localhost:3002** — le client (Vite) tourne sur le port 3002, le serveur API sur le port 3003. Les modifications sont visibles immédiatement (hot reload).
+Ouvrez **http://localhost:3002** — le client (Vite) tourne sur le port 3002, le serveur API sur le port 3003.
 
 ### Option 2 : Avec Docker (mode développement)
 
@@ -70,15 +79,11 @@ Ouvrez **http://localhost:3002** — le client (Vite) tourne sur le port 3002, l
 npm run docker:dev
 ```
 
-Ou `docker compose up` — le fichier `docker-compose.override.yml` active le mode dev par défaut. Les dossiers `client/` et `server/` sont montés en volume, **aucun rebuild nécessaire** pour voir vos modifications. L'application est accessible sur **http://localhost:3002**.
-
 ### Option 3 : Production Docker
 
 ```bash
 npm run docker:prod
 ```
-
-Ou `docker compose -f docker-compose.yml up -d` — sans l'override pour le build de production. L'application est accessible sur **http://localhost:3002**.
 
 ## Structure du projet
 
@@ -86,12 +91,13 @@ Ou `docker compose -f docker-compose.yml up -d` — sans l'override pour le buil
 charte-graphique-generator/
 ├── client/           # Frontend React (Vite)
 ├── server/           # Backend Express + génération PDF
+├── shared/           # Schéma config (Zod), utilitaires partagés
 ├── data/
 │   ├── input/        # Fichiers sources (images, logos)
 │   ├── output/       # PDFs générés
-│   └── conf/         # Configuration (charte.json)
+│   ├── trash/        # Corbeille PDF
+│   └── conf/         # Configuration (charte.json, history/, projects/)
 ├── docker-compose.yml
-├── docker-compose.override.yml   # Mode dev par défaut
 └── Dockerfile.dev
 ```
 
@@ -100,8 +106,10 @@ charte-graphique-generator/
 | Commande | Description |
 |----------|-------------|
 | `npm run dev` | Lance client (3002) + serveur (3003) en mode développement |
-| `npm run build` | Build client + copie dans server/public + prépare la production |
+| `npm run build` | Build client + copie dans server/public |
 | `npm start` | Lance le serveur en mode production (après build) |
+| `npm test` | Tests unitaires (Vitest) |
+| `npm run lint` | Vérification ESLint |
 | `npm run docker:dev` | Lance l'app en Docker avec hot reload |
 | `npm run docker:prod` | Lance l'app en Docker (build de production) |
 
@@ -110,4 +118,11 @@ charte-graphique-generator/
 - **Frontend** : React 18, Vite 6
 - **Backend** : Express
 - **PDF** : @react-pdf/renderer
+- **Validation** : Zod (package `shared/`)
+- **Tests** : Vitest
 - **Conteneur** : Docker
+
+## Raccourcis clavier
+
+- **Ctrl+S** : sauvegarde explicite de la configuration
+- **Échap** / **Entrée** : fermer / confirmer les modales de confirmation

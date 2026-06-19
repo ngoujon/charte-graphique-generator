@@ -32,6 +32,8 @@ import {
 import fs from 'fs/promises';
 import path from 'path';
 import { QWEBTY } from './qwebty-brand.js';
+import { normalizeSections } from '../../../shared/config.js';
+import { hexToRgba, getHexLuminance, lightenHex, darkenHex } from './colorUtils.js';
 
 const SP = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 };
 const BORDER = '#e2e8f0';
@@ -651,43 +653,6 @@ function fixTypoOrphans(text) {
     .replace(/ %/g, '\u00A0%');
 }
 
-function hexToRgb(hex) {
-  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return m ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) } : null;
-}
-
-function hexToRgba(hex, alpha = 0.15) {
-  const rgb = hexToRgb(hex);
-  return rgb ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})` : 'rgba(0,0,0,0.1)';
-}
-
-function getHexLuminance(hex) {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return 0.5;
-  const [r, g, b] = [rgb.r, rgb.g, rgb.b].map((v) => v / 255);
-  return 0.299 * r + 0.587 * g + 0.114 * b;
-}
-
-function rgbToHex(r, g, b) {
-  return '#' + [r, g, b].map((x) => Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, '0')).join('');
-}
-
-function lightenHex(hex, amount = 0.2) {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return hex;
-  return rgbToHex(
-    rgb.r + (255 - rgb.r) * amount,
-    rgb.g + (255 - rgb.g) * amount,
-    rgb.b + (255 - rgb.b) * amount
-  );
-}
-
-function darkenHex(hex, amount = 0.2) {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return hex;
-  return rgbToHex(rgb.r * (1 - amount), rgb.g * (1 - amount), rgb.b * (1 - amount));
-}
-
 function formatDateFr(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
@@ -803,7 +768,33 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
   const getFontVariants = (base) => FONT_FAMILIES[base] || BUILTIN_FONT_FAMILIES.Helvetica;
 
   const dateGen = projet.date || new Date().toISOString().slice(0, 10);
-  const totalPagesCount = 11 + (otherImages.length > 0 ? 1 : 0);
+  const pdfSections = normalizeSections(config.sections);
+  const includeGraphiques = pdfSections.elementsGraphiques && otherImages.length > 0;
+  let sectionPageCount = 0;
+  if (pdfSections.marque) sectionPageCount++;
+  if (pdfSections.logo) sectionPageCount++;
+  if (pdfSections.couleurs) sectionPageCount++;
+  if (pdfSections.typographie) sectionPageCount += 3;
+  if (pdfSections.kitUi) sectionPageCount += 2;
+  if (includeGraphiques) sectionPageCount++;
+  if (pdfSections.aboutQwebty) sectionPageCount++;
+  const totalPagesCount = 2 + sectionPageCount;
+  let nextPageNum = 2;
+  const pageMap = {};
+  if (pdfSections.marque) pageMap.marque = ++nextPageNum;
+  if (pdfSections.logo) pageMap.logo = ++nextPageNum;
+  if (pdfSections.couleurs) pageMap.couleurs = ++nextPageNum;
+  if (pdfSections.typographie) {
+    pageMap.typo1 = ++nextPageNum;
+    pageMap.typo2 = ++nextPageNum;
+    pageMap.typo3 = ++nextPageNum;
+  }
+  if (pdfSections.kitUi) {
+    pageMap.kitUi1 = ++nextPageNum;
+    pageMap.kitUi2 = ++nextPageNum;
+  }
+  if (includeGraphiques) pageMap.graphiques = ++nextPageNum;
+  if (pdfSections.aboutQwebty) pageMap.about = ++nextPageNum;
 
   const dateFormatted = formatDateFr(dateGen) || dateGen;
   const qwebtyAccent = MUTED;
@@ -899,15 +890,14 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     )
   );
 
-  const sommaireItems = [
-    { label: 'Présentation de la marque', page: 3 },
-    { label: 'Logo', page: 4 },
-    { label: 'Palette de couleurs', page: 5 },
-    { label: 'Typographie (principale, secondaire, tertiaire)', page: 6 },
-    { label: 'Kit UI', page: 9 },
-  ];
-  if (otherImages.length > 0) sommaireItems.push({ label: 'Éléments graphiques', page: 11 });
-  sommaireItems.push({ label: 'À propos de Qwebty', page: totalPagesCount });
+  const sommaireItems = [];
+  if (pdfSections.marque) sommaireItems.push({ label: 'Présentation de la marque', page: pageMap.marque });
+  if (pdfSections.logo) sommaireItems.push({ label: 'Logo', page: pageMap.logo });
+  if (pdfSections.couleurs) sommaireItems.push({ label: 'Palette de couleurs', page: pageMap.couleurs });
+  if (pdfSections.typographie) sommaireItems.push({ label: 'Typographie (principale, secondaire, tertiaire)', page: pageMap.typo1 });
+  if (pdfSections.kitUi) sommaireItems.push({ label: 'Kit UI', page: pageMap.kitUi1 });
+  if (includeGraphiques) sommaireItems.push({ label: 'Éléments graphiques', page: pageMap.graphiques });
+  if (pdfSections.aboutQwebty) sommaireItems.push({ label: 'À propos de Qwebty', page: pageMap.about });
 
   const pageSommaire = React.createElement(
     Page,
@@ -1037,13 +1027,13 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         }),
         ...marqueItems
       ),
-      3,
+      pageMap.marque,
       totalPagesCount,
       qwebtyLogoSrc,
       projet.reference || ''
     )
   );
-  pages.push(pageMarque);
+  if (pdfSections.marque) pages.push(pageMarque);
 
   const logoSectionChildren = [];
 
@@ -1132,14 +1122,14 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         }),
         React.createElement(View, { style: styles.logoGrid }, ...logoGridItems)
       ),
-      4,
+      pageMap.logo,
       totalPagesCount,
       qwebtyLogoSrc,
       projet.reference || ''
     )
   );
 
-  pages.push(pageLogo);
+  if (pdfSections.logo) pages.push(pageLogo);
 
   const paletteLabels = {
     clair: 'Fond',
@@ -1200,13 +1190,13 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
           React.createElement(View, { style: styles.paletteRow }, paletteCards[2], paletteCards[3])
         )
       ),
-      5,
+      pageMap.couleurs,
       totalPagesCount,
       qwebtyLogoSrc,
       projet.reference || ''
     )
   );
-  pages.push(pageCouleurs);
+  if (pdfSections.couleurs) pages.push(pageCouleurs);
 
   const ALPHABET_MAJ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const ALPHABET_MIN = 'abcdefghijklmnopqrstuvwxyz';
@@ -1288,9 +1278,11 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     );
   };
 
-  pages.push(createFontPage(fontPrincipale, 'principale', 6));
-  pages.push(createFontPage(fontSecondaire, 'secondaire', 7));
-  pages.push(createFontPage(fontTertiaire, 'tertiaire', 8));
+  if (pdfSections.typographie) {
+    pages.push(createFontPage(fontPrincipale, 'principale', pageMap.typo1));
+    pages.push(createFontPage(fontSecondaire, 'secondaire', pageMap.typo2));
+    pages.push(createFontPage(fontTertiaire, 'tertiaire', pageMap.typo3));
+  }
 
   const createUiBlock = (title, content) =>
     React.createElement(
@@ -1543,13 +1535,13 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         )
       )
     ),
-    9,
+    pageMap.kitUi1,
     totalPagesCount,
     qwebtyLogoSrc,
     projet.reference || ''
   )
   );
-  pages.push(pageUiKit);
+  if (pdfSections.kitUi) pages.push(pageUiKit);
 
   const pageUiKit2 = React.createElement(
     Page,
@@ -1676,15 +1668,15 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
         )
       )
     ),
-    10,
+    pageMap.kitUi2,
     totalPagesCount,
     qwebtyLogoSrc,
     projet.reference || ''
   )
   );
-  pages.push(pageUiKit2);
+  if (pdfSections.kitUi) pages.push(pageUiKit2);
 
-  if (otherImages.length > 0) {
+  if (includeGraphiques) {
     const pageImages = React.createElement(
       Page,
       {
@@ -1717,7 +1709,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
             )
           )
         ),
-        11,
+        pageMap.graphiques,
         totalPagesCount,
         qwebtyLogoSrc,
         projet.reference || ''
@@ -1726,12 +1718,10 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
     pages.push(pageImages);
   }
 
-  const aboutQwebtyPageNum = otherImages.length > 0 ? 12 : 11;
-  const aboutSectionNum = otherImages.length > 0 ? 8 : 7;
   const aboutContent = React.createElement(
     View,
     { style: styles.section },
-    createSectionHeader(aboutSectionNum, 'À propos de Qwebty'),
+    createSectionHeader(7, 'À propos de Qwebty'),
     React.createElement(
       View,
       { style: styles.aboutMain },
@@ -1755,9 +1745,9 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       size: 'A4',
       style: mergeStyles(styles.page, { backgroundColor: fond }),
     },
-    wrapPageContent(aboutContent, aboutQwebtyPageNum, totalPagesCount, qwebtyLogoSrc, projet.reference || '')
+    wrapPageContent(aboutContent, pageMap.about, totalPagesCount, qwebtyLogoSrc, projet.reference || '')
   );
-  pages.push(pageAboutQwebty);
+  if (pdfSections.aboutQwebty) pages.push(pageAboutQwebty);
 
   const CharteDocument = () =>
     React.createElement(Document, null, ...pages);
