@@ -11,14 +11,17 @@ services:
       - client_node_modules:/app/client/node_modules
       - ./server:/app/server
       - server_node_modules:/app/server/node_modules
+      - ./shared:/app/shared
+      - shared_node_modules:/app/shared/node_modules
       - ./data:/app/data
       - ./package.json:/app/package.json
     environment:
       - NODE_ENV=development
       - PORT=3003
       - DATA_DIR=/app/data
-    command: sh -c "cd client && npm install && cd ../server && npm install && cd .. && npm run dev"
+    command: sh -c "cd shared && npm install && cd ../client && npm install && cd ../server && npm install && cd .. && npm run dev"
 
 volumes:
   client_node_modules:
   server_node_modules:
+  shared_node_modules:

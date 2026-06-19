@@ -5,8 +5,9 @@ WORKDIR /app
 COPY package*.json ./
 COPY client/package*.json ./client/
 COPY server/package*.json ./server/
+COPY shared/package*.json ./shared/
 
-RUN npm install && cd client && npm install && cd ../server && npm install
+RUN npm install && cd shared && npm install && cd ../client && npm install && cd ../server && npm install
 RUN chmod -R a+rX /app
 
 # Source monté en volume, pas copié

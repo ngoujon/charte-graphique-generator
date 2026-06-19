@@ -1,31 +1,34 @@
 # Build client
 FROM node:20-alpine AS client-builder
+WORKDIR /app
+COPY shared/package*.json ./shared/
+RUN cd shared && npm ci
+COPY shared/ ./shared/
+COPY client/package*.json ./client/
+RUN cd client && npm ci
+COPY client/ ./client/
 WORKDIR /app/client
-COPY client/package*.json ./
-RUN npm ci
-COPY client/ ./
 RUN npm run build
 
 # Production
 FROM node:20-alpine
 WORKDIR /app
 
-# Copy server package and install
-COPY server/package*.json ./
-RUN npm ci --omit=dev
+COPY server/package*.json ./server/
+RUN cd server && npm ci --omit=dev
 
-# Copy server source
-COPY server/src ./src
+COPY server/src ./server/src
+COPY shared ./shared
 
-# Copy built client into server public
-COPY --from=client-builder /app/client/dist ./public
+COPY --from=client-builder /app/client/dist ./server/public
 
-# Create data directories
-RUN mkdir -p /app/data/input /app/data/output /app/data/conf
+RUN mkdir -p /app/data/input /app/data/output /app/data/conf /app/data/trash /app/data/fonts
 RUN chmod -R a+rX /app
 
 ENV NODE_ENV=production
 ENV PORT=3002
+ENV DATA_DIR=/app/data
+WORKDIR /app/server
 EXPOSE 3002
 
 CMD ["node", "src/index.js"]
