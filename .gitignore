@@ -32,6 +32,8 @@ data/output/*
 data/trash/*
 data/fonts/*
 data/conf/charte.json
+data/conf/history/*
+data/conf/projects/*
 !data/input/.gitkeep
 !data/output/.gitkeep
 !data/trash/.gitkeep
