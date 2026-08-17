@@ -10,7 +10,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const generateRouter = Router();
 
+let isGenerating = false;
+
 generateRouter.post('/', async (req, res) => {
+  if (isGenerating) {
+    return res.status(409).json({ error: 'Une génération est déjà en cours, veuillez patienter.' });
+  }
+  isGenerating = true;
   try {
     const dataDir = getDataDir();
     const inputDir = path.join(dataDir, 'input');
@@ -46,5 +52,7 @@ generateRouter.post('/', async (req, res) => {
   } catch (err) {
     console.error('PDF generation error:', err);
     res.status(500).json({ error: err.message });
+  } finally {
+    isGenerating = false;
   }
 });

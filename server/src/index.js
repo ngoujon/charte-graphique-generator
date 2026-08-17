@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
@@ -10,6 +12,7 @@ import { confRouter } from './routes/conf.js';
 import { generateRouter } from './routes/generate.js';
 import { fontsRouter } from './routes/fonts.js';
 import { bootstrapRouter } from './routes/bootstrap.js';
+import { scheduleAutoPurge } from './utils/purge.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3002;
@@ -30,8 +33,36 @@ async function initDataDir() {
 }
 
 const app = express();
-app.use(cors());
+app.use(helmet({
+  contentSecurityPolicy: false, // sert aussi le client statique, CSP à affiner si besoin
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
+
+// CORS_ORIGIN peut lister une ou plusieurs origines séparées par des virgules.
+// Sans configuration, ouvert (usage local uniquement) — à restreindre en production.
+const corsOrigin = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
+  : true;
+app.use(cors({ origin: corsOrigin }));
+
 app.use(express.json({ limit: '10mb' }));
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api', apiLimiter);
+
+const generateLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Trop de générations demandées, réessayez dans quelques minutes.' },
+});
+app.use('/api/generate', generateLimiter);
 
 const publicDir = path.join(__dirname, '..', 'public');
 const hasPublic = await fs.access(publicDir).then(() => true).catch(() => false);
@@ -67,6 +98,7 @@ initDataDir().then(() => {
     console.log(`Charte Graphique Generator running on http://localhost:${PORT}`);
     console.log(`Data directory: ${DATA_DIR}`);
   });
+  scheduleAutoPurge();
 }).catch((err) => {
   console.error('Impossible d\'initialiser le répertoire data:', err);
   process.exit(1);

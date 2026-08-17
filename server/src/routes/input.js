@@ -27,7 +27,17 @@ const createLogoStorage = (logoType) =>
     },
   });
 
-const upload = multer({ storage });
+const ALLOWED_MIME_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']);
+const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15 Mo par fichier
+
+const imageFileFilter = (req, file, cb) => {
+  if (!ALLOWED_MIME_TYPES.has(file.mimetype)) {
+    return cb(new Error('Type de fichier non autorisé (images uniquement : PNG, JPEG, WebP, SVG)'));
+  }
+  cb(null, true);
+};
+
+const upload = multer({ storage, fileFilter: imageFileFilter, limits: { fileSize: MAX_FILE_SIZE } });
 
 inputRouter.get('/files', async (req, res) => {
   try {
@@ -45,7 +55,7 @@ inputRouter.post('/upload', upload.array('files', 20), (req, res) => {
 });
 
 ['clair', 'sombre', 'primaire', 'secondaire'].forEach((type) => {
-  inputRouter.post(`/upload/logo/${type}`, multer({ storage: createLogoStorage(type) }).single('file'), async (req, res) => {
+  inputRouter.post(`/upload/logo/${type}`, multer({ storage: createLogoStorage(type), fileFilter: imageFileFilter, limits: { fileSize: MAX_FILE_SIZE } }).single('file'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'Aucun fichier' });
     try {
       const files = await fs.readdir(inputDir());
@@ -75,7 +85,7 @@ inputRouter.get('/files/:name', (req, res) => {
   const name = decodeURIComponent(req.params.name);
   if (!assertSafeFilename(name, res)) return;
   const filePath = path.join(inputDir(), name);
-  res.sendFile(filePath, (err) => {
+  res.sendFile(filePath, { headers: { 'Cache-Control': 'private, max-age=3600' } }, (err) => {
     if (err) res.status(404).json({ error: 'Fichier introuvable' });
   });
 });

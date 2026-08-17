@@ -936,6 +936,19 @@ main {
   margin-bottom: 0.75rem;
 }
 
+.contrast-hint {
+  font-weight: 500;
+}
+
+.contrast-hint.contrast-AAA,
+.contrast-hint.contrast-AA {
+  color: var(--success);
+}
+
+.contrast-hint.contrast-fail {
+  color: var(--error);
+}
+
 .error-text {
   color: var(--error);
 }

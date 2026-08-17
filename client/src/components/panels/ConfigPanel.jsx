@@ -5,6 +5,7 @@ import { Modal } from '../ui/Modal';
 import { useModalKeyboard } from '../../hooks/useModalKeyboard';
 import { apiFetch } from '../../services/api';
 import { parseColorInput } from '@shared/parseColorInput.js';
+import { contrastRatio, wcagLevel } from '@shared/contrastRatio.js';
 import { normalizeFontName } from '@shared/normalizeFontName.js';
 
 const SECTION_LABELS = {
@@ -465,6 +466,20 @@ export function ConfigPanel({
                     );
                   })}
                 </div>
+                {(() => {
+                  const clair = parseColorInput(displayConfig.couleurs?.clair) || '#ffffff';
+                  const sombre = parseColorInput(displayConfig.couleurs?.sombre) || '#1a1a1a';
+                  const ratio = contrastRatio(clair, sombre);
+                  const level = wcagLevel(ratio);
+                  if (!ratio) return null;
+                  const levelLabel = { AAA: 'Excellent (AAA)', AA: 'Suffisant (AA)', fail: 'Insuffisant' }[level];
+                  return (
+                    <p className={`hint field-hint contrast-hint contrast-${level}`}>
+                      Contraste texte / fond : {ratio.toFixed(1)}:1 — {levelLabel}
+                      {level === 'fail' && ' (recommandé WCAG : au moins 4.5:1)'}
+                    </p>
+                  );
+                })()}
               </fieldset>
 
               <fieldset>

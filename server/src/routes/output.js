@@ -2,6 +2,7 @@ import { Router } from 'express';
 import fs from 'fs/promises';
 import path from 'path';
 import { getDataDir } from '../dataDir.js';
+import { assertSafeFilename } from '../utils/safeFilename.js';
 
 export const outputRouter = Router();
 const outputDir = () => path.join(getDataDir(), 'output');
@@ -27,8 +28,10 @@ outputRouter.get('/files', async (req, res) => {
 });
 
 outputRouter.get('/files/:name', (req, res) => {
-  const filePath = path.join(outputDir(), req.params.name);
-  res.sendFile(filePath, (err) => {
+  const name = decodeURIComponent(req.params.name);
+  if (!assertSafeFilename(name, res)) return;
+  const filePath = path.join(outputDir(), name);
+  res.sendFile(filePath, { headers: { 'Cache-Control': 'private, max-age=3600' } }, (err) => {
     if (err) res.status(404).json({ error: 'Fichier introuvable' });
   });
 });
@@ -95,15 +98,18 @@ outputRouter.get('/trash/files', async (req, res) => {
 });
 
 outputRouter.get('/trash/files/:name', (req, res) => {
-  const filePath = path.join(trashDir(), decodeURIComponent(req.params.name));
-  res.sendFile(filePath, (err) => {
+  const name = decodeURIComponent(req.params.name);
+  if (!assertSafeFilename(name, res)) return;
+  const filePath = path.join(trashDir(), name);
+  res.sendFile(filePath, { headers: { 'Cache-Control': 'private, max-age=3600' } }, (err) => {
     if (err) res.status(404).json({ error: 'Fichier introuvable' });
   });
 });
 
 outputRouter.post('/trash/files/:name/restore', async (req, res) => {
+  const name = decodeURIComponent(req.params.name);
+  if (!assertSafeFilename(name, res)) return;
   try {
-    const name = decodeURIComponent(req.params.name);
     const srcPath = path.join(trashDir(), name);
     await fs.access(srcPath);
     const destPath = path.join(outputDir(), name);
@@ -117,8 +123,9 @@ outputRouter.post('/trash/files/:name/restore', async (req, res) => {
 });
 
 outputRouter.delete('/trash/files/:name', async (req, res) => {
+  const name = decodeURIComponent(req.params.name);
+  if (!assertSafeFilename(name, res)) return;
   try {
-    const name = decodeURIComponent(req.params.name);
     const filePath = path.join(trashDir(), name);
     await fs.unlink(filePath);
     res.json({ deleted: name });

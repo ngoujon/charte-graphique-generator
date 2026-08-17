@@ -23,7 +23,7 @@ COPY shared ./shared
 COPY --from=client-builder /app/client/dist ./server/public
 
 RUN mkdir -p /app/data/input /app/data/output /app/data/conf /app/data/trash /app/data/fonts
-RUN chmod -R a+rX /app
+RUN chown -R node:node /app
 
 ENV NODE_ENV=production
 ENV PORT=3002
@@ -31,4 +31,5 @@ ENV DATA_DIR=/app/data
 WORKDIR /app/server
 EXPOSE 3002
 
+USER node
 CMD ["node", "src/index.js"]
