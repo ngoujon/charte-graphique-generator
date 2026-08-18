@@ -26,6 +26,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Playwright MCP
+.playwright-mcp
+
 # Data (générés par l'app)
 data/input/*
 data/output/*
