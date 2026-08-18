@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useBootstrap } from './hooks/useBootstrap';
 import { useApi } from './hooks/useApi';
+import { useTheme } from './hooks/useTheme';
 import { apiFetch } from './services/api';
 import { Toast } from './components/ui/Toast';
 import { InputPanel } from './components/panels/InputPanel';
@@ -13,6 +14,7 @@ function App() {
   const [message, setMessage] = useState(null);
   const [saveStatus, setSaveStatus] = useState(null);
   const [showConfirmReset, setShowConfirmReset] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const {
     config: bootstrapConfig,
@@ -126,9 +128,29 @@ function App() {
             <p>data/input → data/output • data/trash • data/conf</p>
           </div>
         </div>
-        <a href="http://www.qwebty.com" target="_blank" rel="noreferrer" className="qwebty-link">
-          www.qwebty.com
-        </a>
+        <div className="app-header-actions">
+          <button
+            type="button"
+            className="btn btn-secondary btn-icon-only theme-toggle"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
+            aria-label={theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre'}
+          >
+            {theme === 'dark' ? (
+              <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+              </svg>
+            ) : (
+              <svg className="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
+          </button>
+          <a href="http://www.qwebty.com" target="_blank" rel="noreferrer" className="qwebty-link">
+            www.qwebty.com
+          </a>
+        </div>
       </header>
 
       <Toast message={message} />
