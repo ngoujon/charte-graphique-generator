@@ -59,11 +59,9 @@ outputRouter.delete('/files', async (req, res) => {
 outputRouter.delete('/files/:name', async (req, res) => {
   try {
     const name = decodeURIComponent(req.params.name);
+    if (!assertSafeFilename(name, res)) return;
     if (!name.endsWith('.pdf')) {
       return res.status(400).json({ error: 'Seuls les PDF peuvent être supprimés' });
-    }
-    if (name.includes('..') || path.isAbsolute(name)) {
-      return res.status(400).json({ error: 'Nom de fichier invalide' });
     }
     const srcPath = path.join(outputDir(), name);
     await fs.access(srcPath);
