@@ -1732,7 +1732,7 @@ export async function generatePdf(config, imagePaths, outputPath, logoPath = nul
       React.createElement(View, { style: { alignSelf: 'stretch', marginTop: SP.xl } },
         React.createElement(Text, {
           style: { fontSize: 12, fontFamily: 'Helvetica', color: texte, textAlign: 'right' },
-          children: 'ngoujon',
+          children: 'L’équipe Qwebty',
         })
       )
     )

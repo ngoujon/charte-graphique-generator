@@ -1,128 +1,88 @@
 # Charte Graphique Generator
 
-Application React + Express pour générer des documents PDF de charte graphique. Interface tout-en-un pour configurer et produire des chartes graphiques professionnelles.
+A React + Express web app that produces a complete **brand guidelines PDF** ("charte graphique") from a single configuration screen: logos, colour palette, typography, UI kit and graphic elements. Everything — input, configuration and output — lives on one page, so you can tweak settings and regenerate the PDF without navigating around.
 
-## Prérequis
+> The UI and the generated documents are in French. PDFs carry a small "Qwebty" footer and an "About" page, which you can disable in the PDF sections panel.
 
-- **Node.js** 18+
-- **Docker** (optionnel, pour l'exécution en conteneur)
+## Screenshots
 
-## Fonctionnement
+*Screenshots use a fictional brand ("Nimbus Labs") created from the built-in "Startup tech" template.*
 
-1. **Entrée** : Déposez vos images (éléments graphiques) via glisser-déposer ou sélection de fichiers
-2. **Logos** : Uploadez les 4 déclinaisons (clair, sombre, primaire, secondaire) dans la configuration
-3. **Configuration** : Personnalisez la charte (couleurs, typographie, projet, marque, sections PDF)
-4. **Sortie** : Générez le PDF → il est créé dans le dossier `data/output`
+![Configuration screen](docs/screenshots/app.png)
 
-L'interface affiche tout sur une seule page (entrée, configuration, sortie) pour un contrôle sans navigation.
+![Pages of a generated PDF](docs/screenshots/pdf-pages.png)
 
-## Contenu du PDF généré
+## How it works
 
-- Couverture avec nom du projet
-- Présentation de la marque (slogan, mission, valeurs, personnalité)
-- **Logo — 4 déclinaisons** : clair, sombre, sur couleur principale, sur couleur secondaire
-- Palette de couleurs (clair, sombre, principale, secondaire + déclinaisons)
-- Typographie (3 polices : principale, secondaire, tertiaire)
-- Kit UI (boutons, champs, badges, cartes)
-- Éléments graphiques (images du dossier entrée, hors logos)
-- À propos de Qwebty
+1. **Input** — drop your images (graphic elements) by drag and drop or file picker.
+2. **Logos** — upload the four logo variants (on light, dark, primary and secondary backgrounds).
+3. **Configuration** — customise the project, brand, colours, typography and which PDF sections to include.
+4. **Output** — click *Générer le PDF*; the file is written to `data/output/`.
 
-Les sections sont activables/désactivables dans l'interface. Le document applique les 13 principes du design graphique.
+## What the PDF contains
 
-## Logos
+- Cover page with the project name
+- Brand presentation (slogan, mission, values, personality)
+- Logo in 4 variants
+- Colour palette with tints
+- Typography (primary, secondary and tertiary fonts: bold / regular / thin specimens)
+- UI kit (buttons, inputs, badges, cards)
+- Graphic elements (images from the input folder)
+- About page
 
-Les logos s'uploadent via les zones dédiées dans la configuration. Les fichiers sont nommés automatiquement (`logo-clair-*`, `logo-sombre-*`, etc.).
+Each section can be toggled on or off. Layout follows the 13 principles of graphic design.
 
-Pour une détection automatique par nom de fichier dans le PDF, vous pouvez aussi utiliser :
+## Features
 
-| Déclinaison | Exemples de noms |
-|-------------|------------------|
-| Fond clair | `logo-clair`, `clair`, `light` |
-| Fond sombre | `logo-sombre`, `sombre`, `dark` |
-| Sur couleur principale | `logo-primaire`, `primaire`, `primary` |
-| Sur couleur secondaire | `logo-secondaire`, `secondaire`, `secondary` |
+- Logo auto-detection by file name (`logo-clair` / `light`, `logo-sombre` / `dark`, `logo-primaire` / `primary`, `logo-secondaire` / `secondary`)
+- Templates: startup, institution, retail
+- Multiple projects with quick switching
+- Automatic history snapshots with restore
+- Custom font upload (`.ttf`, `.otf`, `.woff`)
+- Export as ZIP (config + images + fonts), export Figma tokens (colours and typography JSON), import `.zip` or `.json`
+- Light and dark UI themes, `Ctrl+S` to save explicitly
 
-## Configuration
+## Getting started
 
-- **Projet** : nom, description, auteur, référence, date
-- **Marque** : slogan, mission, valeurs, personnalité, recherche
-- **Palette** : clair, sombre, couleur principale, secondaire
-- **Typographie** : 3 polices (principale, secondaire, tertiaire) + upload custom
-- **Sections PDF** : toggles pour inclure/exclure des pages
-- **Templates** : presets startup, institution, retail
-- **Multi-projets** : créer et basculer entre plusieurs chartes
-- **Historique** : snapshots automatiques avec restauration
-
-## Import / Export
-
-- **Exporter ZIP** : config + images + polices (bouton téléchargement)
-- **Exporter tokens Figma** : JSON couleurs et typographie
-- **Importer** : fichier `.zip` (complet) ou `.json` (config seule)
-
-## Démarrage
-
-### Option 1 : Sans Docker (recommandé pour le développement)
+### Without Docker
 
 ```bash
 npm install
-cd shared && npm install && cd ..
-cd server && npm install && cd ..
-cd client && npm install && cd ..
+(cd shared && npm install)
+(cd server && npm install)
+(cd client && npm install)
 npm run dev
 ```
 
-Ouvrez **http://localhost:3002** — le client (Vite) tourne sur le port 3002, le serveur API sur le port 3003.
+Open <http://localhost:3002> — Vite serves the client on port 3002 and the API runs on port 3003.
 
-### Option 2 : Avec Docker (mode développement)
-
-```bash
-npm run docker:dev
-```
-
-### Option 3 : Production Docker
+### With Docker
 
 ```bash
-npm run docker:prod
+npm run docker:dev    # development, hot reload
+npm run docker:prod   # production build
 ```
 
-## Structure du projet
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Client (3002) + server (3003) in development mode |
+| `npm run build` | Build the client and copy it to `server/public` |
+| `npm start` | Start the production server (after build) |
+| `npm test` | Unit tests (Vitest) |
+| `npm run lint` | ESLint |
+
+## Project structure
 
 ```
 charte-graphique-generator/
-├── client/           # Frontend React (Vite)
-├── server/           # Backend Express + génération PDF
-├── shared/           # Schéma config (Zod), utilitaires partagés
-├── data/
-│   ├── input/        # Fichiers sources (images, logos)
-│   ├── output/       # PDFs générés
-│   ├── trash/        # Corbeille PDF
-│   └── conf/         # Configuration (charte.json, history/, projects/)
-├── docker-compose.yml
-└── Dockerfile.dev
+├── client/     # React front end (Vite)
+├── server/     # Express back end + PDF generation (@react-pdf/renderer)
+├── shared/     # Config schema (Zod) and shared helpers
+└── data/       # input/, output/, trash/, conf/ — generated at runtime, git-ignored
 ```
 
-## Scripts disponibles
+## Tech stack
 
-| Commande | Description |
-|----------|-------------|
-| `npm run dev` | Lance client (3002) + serveur (3003) en mode développement |
-| `npm run build` | Build client + copie dans server/public |
-| `npm start` | Lance le serveur en mode production (après build) |
-| `npm test` | Tests unitaires (Vitest) |
-| `npm run lint` | Vérification ESLint |
-| `npm run docker:dev` | Lance l'app en Docker avec hot reload |
-| `npm run docker:prod` | Lance l'app en Docker (build de production) |
-
-## Stack technique
-
-- **Frontend** : React 18, Vite 6
-- **Backend** : Express
-- **PDF** : @react-pdf/renderer
-- **Validation** : Zod (package `shared/`)
-- **Tests** : Vitest
-- **Conteneur** : Docker
-
-## Raccourcis clavier
-
-- **Ctrl+S** : sauvegarde explicite de la configuration
-- **Échap** / **Entrée** : fermer / confirmer les modales de confirmation
+React 18, Vite 6, Express, @react-pdf/renderer, Zod, Vitest, Docker.
