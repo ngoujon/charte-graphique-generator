@@ -17,6 +17,9 @@ WORKDIR /app
 COPY server/package*.json ./server/
 RUN cd server && npm ci --omit=dev
 
+COPY shared/package*.json ./shared/
+RUN cd shared && npm ci --omit=dev
+
 COPY server/src ./server/src
 COPY shared ./shared
 

@@ -1,19 +1,20 @@
 import { z } from 'zod';
+import { DEFAULT_TYPOGRAPHIE, isKnownFont } from './fonts.js';
 
 export const DEFAULT_CONF = {
   version: 1,
   projet: {
-    nom: 'Mon Projet',
-    description: 'Charte graphique du projet',
+    nom: 'Ma marque',
+    description: '',
     auteur: '',
     reference: '',
     date: new Date().toISOString().split('T')[0],
   },
   marque: {
-    slogan: 'Votre slogan ici',
-    mission: 'Notre mission est de...',
-    valeurs: 'Innovation, Qualité, Proximité',
-    personnalite: 'Moderne, fiable, accessible',
+    slogan: '',
+    mission: '',
+    valeurs: '',
+    personnalite: '',
     recherche: '',
   },
   couleurs: {
@@ -22,11 +23,7 @@ export const DEFAULT_CONF = {
     primaire: '#2563eb',
     secondaire: '#64748b',
   },
-  typographie: {
-    principale: 'Helvetica',
-    secondaire: 'Times-Roman',
-    tertiaire: 'Courier',
-  },
+  typographie: { ...DEFAULT_TYPOGRAPHIE },
   sections: {
     marque: true,
     logo: true,
@@ -83,19 +80,18 @@ export function normalizeCouleurs(couleurs) {
 
 export function normalizeTypographie(typo) {
   if (!typo || typeof typo !== 'object') return { ...DEFAULT_CONF.typographie };
-  const validFonts = ['Helvetica', 'Times-Roman', 'Courier'];
-  const toBaseFont = (v) => {
+  const toKnownFont = (v) => {
     if (!v) return null;
     const s = String(v).trim();
-    if (s.startsWith('custom:')) return s;
+    if (isKnownFont(s)) return s;
     const base = s.replace(/-Bold|-Oblique|-Italic|-BoldOblique|-BoldItalic/g, '');
-    return validFonts.includes(base) ? base : null;
+    return isKnownFont(base) ? base : null;
   };
-  const getFont = (v, fallback) => toBaseFont(v) ?? fallback;
+  const getFont = (v, fallback) => toKnownFont(v) ?? fallback;
   return {
-    principale: getFont(typo.principale ?? typo.titre, 'Helvetica'),
-    secondaire: getFont(typo.secondaire ?? typo.corps, 'Times-Roman'),
-    tertiaire: getFont(typo.tertiaire, 'Courier'),
+    principale: getFont(typo.principale ?? typo.titre, DEFAULT_TYPOGRAPHIE.principale),
+    secondaire: getFont(typo.secondaire ?? typo.corps, DEFAULT_TYPOGRAPHIE.secondaire),
+    tertiaire: getFont(typo.tertiaire, DEFAULT_TYPOGRAPHIE.tertiaire),
   };
 }
 
@@ -126,47 +122,39 @@ export function validateConfig(raw) {
   return { ok: true, config: normalizeConfig(result.data) };
 }
 
+/**
+ * Styles de départ : n'appliquent que les couleurs et les polices,
+ * sans toucher aux textes saisis par l'utilisateur.
+ */
 export const CHARTE_TEMPLATES = {
   startup: {
-    label: 'Startup tech',
-    config: {
-      projet: { nom: 'Ma Startup', description: 'Charte graphique — identité digitale' },
-      marque: {
-        slogan: 'Innover. Créer. Grandir.',
-        mission: 'Accélérer la transformation digitale des PME.',
-        valeurs: 'Agilité, Innovation, Transparence',
-        personnalite: 'Dynamique, moderne, audacieuse',
-      },
-      couleurs: { clair: '#ffffff', sombre: '#0f172a', primaire: '#7c3aed', secondaire: '#06b6d4' },
-      typographie: { principale: 'Helvetica', secondaire: 'Helvetica', tertiaire: 'Courier' },
-    },
+    label: 'Tech & startup',
+    description: 'Moderne, net, énergique',
+    couleurs: { clair: '#ffffff', sombre: '#0f172a', primaire: '#6d28d9', secondaire: '#06b6d4' },
+    typographie: { principale: 'Space Grotesk', secondaire: 'Inter', tertiaire: 'JetBrains Mono' },
   },
   institution: {
     label: 'Institution',
-    config: {
-      projet: { nom: 'Institution', description: 'Charte graphique institutionnelle' },
-      marque: {
-        slogan: 'Au service du public',
-        mission: 'Servir les citoyens avec excellence et intégrité.',
-        valeurs: 'Service, Intégrité, Proximité',
-        personnalite: 'Sérieuse, accessible, fiable',
-      },
-      couleurs: { clair: '#ffffff', sombre: '#1e293b', primaire: '#1e40af', secondaire: '#64748b' },
-      typographie: { principale: 'Times-Roman', secondaire: 'Helvetica', tertiaire: 'Courier' },
-    },
+    description: 'Sérieux, sobre, fiable',
+    couleurs: { clair: '#ffffff', sombre: '#1e293b', primaire: '#1e40af', secondaire: '#b45309' },
+    typographie: { principale: 'Merriweather', secondaire: 'Source Sans 3', tertiaire: 'Source Sans 3' },
   },
   retail: {
-    label: 'Commerce / Retail',
-    config: {
-      projet: { nom: 'Ma Boutique', description: 'Charte graphique retail' },
-      marque: {
-        slogan: 'Votre style, notre passion',
-        mission: 'Offrir une expérience d\'achat unique et chaleureuse.',
-        valeurs: 'Qualité, Proximité, Plaisir',
-        personnalite: 'Chaleureuse, tendance, accueillante',
-      },
-      couleurs: { clair: '#fffbf5', sombre: '#292524', primaire: '#dc2626', secondaire: '#f59e0b' },
-      typographie: { principale: 'Helvetica', secondaire: 'Times-Roman', tertiaire: 'Courier' },
-    },
+    label: 'Commerce',
+    description: 'Chaleureux, accueillant',
+    couleurs: { clair: '#fffbf5', sombre: '#292524', primaire: '#dc2626', secondaire: '#f59e0b' },
+    typographie: { principale: 'Poppins', secondaire: 'DM Sans', tertiaire: 'Poppins' },
+  },
+  premium: {
+    label: 'Premium',
+    description: 'Élégant, raffiné',
+    couleurs: { clair: '#faf8f5', sombre: '#141414', primaire: '#1c1c1c', secondaire: '#b08d57' },
+    typographie: { principale: 'Playfair Display', secondaire: 'Raleway', tertiaire: 'Libre Baskerville' },
+  },
+  nature: {
+    label: 'Nature & bien-être',
+    description: 'Doux, organique, apaisant',
+    couleurs: { clair: '#f7f7f2', sombre: '#1f2a24', primaire: '#3f6e4f', secondaire: '#d4a373' },
+    typographie: { principale: 'Lora', secondaire: 'DM Sans', tertiaire: 'Lora' },
   },
 };

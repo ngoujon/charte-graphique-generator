@@ -8,6 +8,18 @@
     "start": "node src/index.js"
   },
   "dependencies": {
+    "@fontsource/dm-sans": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/libre-baskerville": "^5.3.0",
+    "@fontsource/lora": "^5.3.0",
+    "@fontsource/merriweather": "^5.3.0",
+    "@fontsource/montserrat": "^5.3.0",
+    "@fontsource/playfair-display": "^5.3.0",
+    "@fontsource/poppins": "^5.3.0",
+    "@fontsource/raleway": "^5.3.0",
+    "@fontsource/source-sans-3": "^5.3.1",
+    "@fontsource/space-grotesk": "^5.3.0",
     "@react-pdf/renderer": "^4.0.0",
     "cors": "^2.8.5",
     "express": "^4.21.0",
@@ -16,6 +28,7 @@
     "jszip": "^3.10.1",
     "multer": "^1.4.5-lts.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "sharp": "^0.35.5"
   }
 }

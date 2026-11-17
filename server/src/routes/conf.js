@@ -69,8 +69,21 @@ async function writeConfigFile(conf, { snapshot = true } = {}) {
   return normalized;
 }
 
+const SNAPSHOT_INTERVAL_MS = 2 * 60 * 1000;
+
 async function saveHistorySnapshot(conf) {
   await fs.mkdir(historyDir(), { recursive: true });
+  // Regroupe les sauvegardes automatiques rapprochées : on remplace le dernier
+  // instantané s'il a moins de 2 minutes, pour garder un historique lisible.
+  const existing = (await fs.readdir(historyDir()).catch(() => [])).filter((f) => f.endsWith('.json')).sort();
+  const latest = existing[existing.length - 1];
+  if (latest) {
+    const stat = await fs.stat(path.join(historyDir(), latest)).catch(() => null);
+    if (stat && Date.now() - stat.mtimeMs < SNAPSHOT_INTERVAL_MS) {
+      await fs.writeFile(path.join(historyDir(), latest), JSON.stringify(conf, null, 2));
+      return;
+    }
+  }
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const id = `charte-${timestamp}`;
   await fs.writeFile(path.join(historyDir(), `${id}.json`), JSON.stringify(conf, null, 2));
@@ -82,6 +95,36 @@ async function saveHistorySnapshot(conf) {
   for (const f of files.slice(MAX_HISTORY)) {
     await fs.unlink(path.join(historyDir(), f)).catch(() => {});
   }
+}
+
+/** Dossier où sont rangés les logos et images d'un projet inactif. */
+const projectFilesDir = (ref) => path.join(projectsDir(), '_files', ref);
+
+async function moveDirContents(src, dest) {
+  await fs.mkdir(dest, { recursive: true });
+  const names = (await fs.readdir(src).catch(() => [])).filter((n) => !n.startsWith('.'));
+  for (const name of names) {
+    await fs.rename(path.join(src, name), path.join(dest, name));
+  }
+}
+
+async function copyDirContents(src, dest) {
+  await fs.mkdir(dest, { recursive: true });
+  const names = (await fs.readdir(src).catch(() => [])).filter((n) => !n.startsWith('.'));
+  for (const name of names) {
+    await fs.copyFile(path.join(src, name), path.join(dest, name));
+  }
+}
+
+/**
+ * Change les fichiers d'entrée de projet : les logos et images du projet actif
+ * sont rangés avec lui, puis ceux du projet ouvert sont remis dans data/input.
+ */
+async function swapProjectFiles(fromRef, toRef) {
+  if (fromRef === toRef) return;
+  await moveDirContents(inputDir(), projectFilesDir(fromRef));
+  await moveDirContents(projectFilesDir(toRef), inputDir());
+  await fs.rm(projectFilesDir(toRef), { recursive: true, force: true });
 }
 
 function refToFilename(ref) {
@@ -336,6 +379,9 @@ confRouter.get('/templates', (req, res) => {
   const templates = Object.entries(CHARTE_TEMPLATES).map(([id, t]) => ({
     id,
     label: t.label,
+    description: t.description,
+    couleurs: t.couleurs,
+    typographie: t.typographie,
   }));
   res.json(templates);
 });
@@ -347,13 +393,10 @@ confRouter.post('/templates/:id/apply', async (req, res) => {
     const current = await readConfigFile();
     const merged = normalizeConfig({
       ...current,
-      ...template.config,
-      projet: { ...current.projet, ...template.config.projet },
-      marque: { ...current.marque, ...template.config.marque },
-      couleurs: { ...current.couleurs, ...template.config.couleurs },
-      typographie: { ...current.typographie, ...template.config.typographie },
+      couleurs: { ...current.couleurs, ...template.couleurs },
+      typographie: { ...current.typographie, ...template.typographie },
     });
-    const conf = await writeConfigFile(merged, { snapshot: false });
+    const conf = await writeConfigFile(merged);
     res.json(conf);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -389,7 +432,7 @@ confRouter.get('/projects', async (req, res) => {
 
 confRouter.post('/projects', async (req, res) => {
   try {
-    const { ref, duplicateFrom } = req.body;
+    const { ref, duplicateFrom, blank, nom } = req.body;
     if (!ref || typeof ref !== 'string') {
       return res.status(400).json({ error: 'Référence projet requise' });
     }
@@ -403,15 +446,21 @@ confRouter.post('/projects', async (req, res) => {
     }
 
     let base = normalizeConfig({});
-    if (duplicateFrom) {
+    if (blank) {
+      base = normalizeConfig({ projet: { nom: nom || ref, date: new Date().toISOString().split('T')[0] } });
+    } else if (duplicateFrom) {
       const srcPath = path.join(projectsDir(), `${duplicateFrom}.json`);
       const data = await fs.readFile(srcPath, 'utf-8');
       base = normalizeConfig(JSON.parse(data));
     } else {
       base = await readConfigFile();
     }
-    base.projet = { ...base.projet, reference: safeRef };
+    base.projet = { ...base.projet, ...(nom ? { nom } : {}), ...(blank ? {} : { reference: safeRef }) };
     await fs.writeFile(destPath, JSON.stringify(base, null, 2));
+    if (!blank) {
+      // Une copie reprend aussi les logos et images du projet actif.
+      await copyDirContents(inputDir(), projectFilesDir(safeRef));
+    }
     res.json({ ref: safeRef, projetNom: base.projet?.nom });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -427,6 +476,7 @@ confRouter.post('/projects/:ref/activate', async (req, res) => {
     const projectPath = path.join(projectsDir(), `${ref}.json`);
     const data = await fs.readFile(projectPath, 'utf-8');
     const conf = normalizeConfig(JSON.parse(data));
+    await swapProjectFiles(await readActiveRef(), ref);
     await writeActiveRef(ref);
     await fs.writeFile(path.join(confDir(), 'charte.json'), JSON.stringify(conf, null, 2));
     res.json(conf);

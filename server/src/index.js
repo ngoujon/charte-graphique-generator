@@ -62,7 +62,16 @@ const generateLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'Trop de générations demandées, réessayez dans quelques minutes.' },
 });
-app.use('/api/generate', generateLimiter);
+app.post('/api/generate', generateLimiter);
+
+const previewLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  limit: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Trop d’aperçus demandés, réessayez dans quelques minutes.' },
+});
+app.use('/api/generate/preview', previewLimiter);
 
 const publicDir = path.join(__dirname, '..', 'public');
 const hasPublic = await fs.access(publicDir).then(() => true).catch(() => false);
@@ -88,7 +97,7 @@ if (hasPublic) {
   });
 }
 
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error('[Erreur]', err.message || err);
   res.status(500).json({ error: err.message || 'Erreur serveur' });
 });

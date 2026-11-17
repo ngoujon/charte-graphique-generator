@@ -21,8 +21,14 @@ describe('normalizeTypographie', () => {
     expect(normalizeTypographie({ titre: 'Helvetica-Bold', corps: 'Times-Roman' })).toEqual({
       principale: 'Helvetica',
       secondaire: 'Times-Roman',
-      tertiaire: 'Courier',
+      tertiaire: 'JetBrains Mono',
     });
+  });
+
+  it('accepte les polices du catalogue et rejette les inconnues', () => {
+    const t = normalizeTypographie({ principale: 'Playfair Display', secondaire: 'Comic Sans' });
+    expect(t.principale).toBe('Playfair Display');
+    expect(t.secondaire).toBe('Inter');
   });
 
   it('conserve les polices custom', () => {

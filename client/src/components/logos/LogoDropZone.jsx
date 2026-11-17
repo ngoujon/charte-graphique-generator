@@ -1,87 +1,87 @@
 import { useState, useRef } from 'react';
-import { API } from '../../services/api';
+import { inputFileUrl } from '../../services/api';
+import { readableOn } from '@shared/colors.js';
+import { parseColorInput } from '@shared/parseColorInput.js';
+import { Icon } from '../ui/Icon';
 
-export function LogoDropZone({ type, label, bgColor, isDark, logo, onUpload, onDelete, uploading: externalUploading }) {
+const ACCEPT = 'image/png,image/jpeg,image/webp,image/svg+xml';
+
+export function LogoDropZone({ type, label, hint, bgColor, logo, onUpload, onDelete }) {
   const [dragOver, setDragOver] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef(null);
-  const isLoading = uploading || externalUploading;
+  const [busy, setBusy] = useState(false);
+  const inputRef = useRef(null);
+  const bg = parseColorInput(bgColor) || '#ffffff';
+  const fg = readableOn(bg);
 
-  const handleDrop = async (e) => {
-    e.preventDefault();
-    setDragOver(false);
-    const file = e.dataTransfer?.files?.[0];
-    if (file?.type?.startsWith('image/') && !isLoading) {
-      setUploading(true);
+  const send = async (file) => {
+    if (!file || busy) return;
+    setBusy(true);
+    try {
       await onUpload(type, file);
-      setUploading(false);
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if ((e.key === 'Enter' || e.key === ' ') && !isLoading) {
-      e.preventDefault();
-      fileInputRef.current?.click();
-    }
-  };
-
-  const handleFileChange = async (e) => {
-    const file = e.target.files?.[0];
-    e.target.value = '';
-    if (file && !isLoading) {
-      setUploading(true);
-      await onUpload(type, file);
-      setUploading(false);
+    } finally {
+      setBusy(false);
     }
   };
 
   return (
-    <div
-      className={`logo-drop-zone ${dragOver ? 'logo-drop-zone-active' : ''} ${isDark ? 'logo-drop-zone-dark' : ''} ${isLoading ? 'logo-drop-zone-loading' : ''}`}
-      style={{ backgroundColor: bgColor }}
-      onDrop={handleDrop}
-      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-      onDragLeave={() => setDragOver(false)}
-      onClick={() => !isLoading && fileInputRef.current?.click()}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
-      aria-label={`${label}. Glissez ou cliquez pour ajouter`}
-    >
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        className="logo-drop-input"
-        tabIndex={-1}
-      />
-      {isLoading ? (
-        <span className="logo-drop-placeholder">Chargement…</span>
-      ) : logo ? (
-        <>
-          <img
-            key={logo.name}
-            src={`${API}/input/files/${encodeURIComponent(logo.name)}?t=${logo.modified || Date.now()}`}
-            alt={label}
-            className="logo-preview"
-            onClick={(e) => e.stopPropagation()}
-          />
-          <button
-            type="button"
-            className="logo-remove-btn"
-            onClick={(e) => { e.stopPropagation(); onDelete(logo.name); }}
-            aria-label={`Supprimer ${label}`}
-          >
-            ✕
+    <div className="logo-card">
+      <div
+        className={`logo-drop ${dragOver ? 'is-over' : ''} ${logo ? 'has-logo' : ''}`}
+        style={{ backgroundColor: bg, color: fg }}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragOver(false);
+          send(e.dataTransfer?.files?.[0]);
+        }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragOver(true);
+        }}
+        onDragLeave={() => setDragOver(false)}
+        onClick={() => !busy && inputRef.current?.click()}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label={`${label} : ${logo ? 'remplacer le fichier' : 'ajouter un fichier'}`}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          accept={ACCEPT}
+          hidden
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = '';
+            send(file);
+          }}
+        />
+        {busy ? (
+          <span className="logo-drop-text">Envoi…</span>
+        ) : logo ? (
+          <img src={inputFileUrl(logo)} alt={label} className="logo-drop-img" />
+        ) : (
+          <span className="logo-drop-text">
+            <Icon name="upload" size={20} />
+            {dragOver ? 'Déposez le fichier' : 'Glisser ou cliquer'}
+          </span>
+        )}
+      </div>
+      <div className="logo-card-meta">
+        <div>
+          <strong>{label}</strong>
+          <span>{hint}</span>
+        </div>
+        {logo && (
+          <button type="button" className="icon-btn icon-btn-sm" onClick={() => onDelete(logo.name)} aria-label={`Retirer : ${label}`}>
+            <Icon name="trash" size={16} />
           </button>
-        </>
-      ) : (
-        <span className="logo-drop-placeholder">
-          {dragOver ? 'Déposez ici' : 'Glissez ou cliquez'}
-        </span>
-      )}
-      <span className="logo-drop-label">{label}</span>
+        )}
+      </div>
     </div>
   );
 }
